@@ -1,0 +1,221 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  YAYASAN
+  GURU
+  ORANG_TUA
+}
+
+enum Score {
+  MANDIRI
+  DENGAN_BANTUAN
+  BELUM_MAMPU
+}
+
+enum Jenjang {
+  TKLB
+  SDLB
+  SMPLB
+  SMALB
+}
+
+model Foundation {
+  id          String        @id @default(cuid())
+  name        String        // e.g. "Yayasan Pendidikan Harapan Mulia"
+  code        String        @unique // e.g. "YAYASAN-HARAPAN"
+  address     String?
+  phone       String?
+  logo        String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  users       User[]
+  students    Student[]
+  classes     Class[]
+  logs        ActivityLog[]
+}
+
+model User {
+  id            String         @id @default(cuid())
+  name          String?
+  email         String?        @unique
+  passwordHash  String
+  role          Role           @default(ORANG_TUA)
+  phone         String?
+  avatar        String?
+  foundationId  String?
+  foundation    Foundation?    @relation(fields: [foundationId], references: [id])
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // Relations
+  students      Student[]      @relation("ParentStudents")
+  classesTaught Class[]        @relation("ClassTeacher")
+  materials     Material[]
+  ppiPlans      PpiPlan[]
+  assessments   Assessment[]
+  dailyJournals DailyJournal[]
+  activityLogs  ActivityLog[]
+}
+
+model Student {
+  id             String         @id @default(cuid())
+  name           String
+  nisn           String         @unique
+  gender         String         @default("L") // L / P
+  birthDate      DateTime?
+  disabilityType String         // Tunanetra, Tunarungu, Autisme, Tunagrahita, Tunadaksa, dll
+  jenjang        Jenjang        @default(SDLB)
+  parentId       String?
+  parent         User?          @relation("ParentStudents", fields: [parentId], references: [id])
+  foundationId   String?
+  foundation     Foundation?    @relation(fields: [foundationId], references: [id])
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  
+  classes        ClassStudent[]
+  ppiPlans       PpiPlan[]
+  assessments    Assessment[]
+  dailyJournals  DailyJournal[]
+}
+
+model Class {
+  id           String         @id @default(cuid())
+  name         String         // e.g. "Kelas 2 SDLB - Autisme"
+  jenjang      Jenjang        @default(SDLB)
+  teacherId    String?
+  teacher      User?          @relation("ClassTeacher", fields: [teacherId], references: [id])
+  foundationId String?
+  foundation   Foundation?    @relation(fields: [foundationId], references: [id])
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  
+  students     ClassStudent[]
+  materials    Material[]
+}
+
+model ClassStudent {
+  id        String  @id @default(cuid())
+  classId   String
+  studentId String
+  class     Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, studentId])
+}
+
+model Subject {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  materials   Material[]
+}
+
+model Material {
+  id            String       @id @default(cuid())
+  title         String
+  content       String
+  attachmentUrl String?
+  classId       String
+  subjectId     String
+  createdById   String
+  createdAt     DateTime     @default(now())
+
+  class         Class        @relation(fields: [classId], references: [id])
+  subject       Subject      @relation(fields: [subjectId], references: [id])
+  createdBy     User         @relation(fields: [createdById], references: [id])
+  assignments   Assignment[]
+}
+
+model Assignment {
+  id           String    @id @default(cuid())
+  materialId   String
+  deadline     DateTime?
+  instructions String?
+  material     Material  @relation(fields: [materialId], references: [id])
+}
+
+model Assessment {
+  id             String    @id @default(cuid())
+  studentId      String
+  teacherId      String
+  category       String    // "Bina Diri (ADL)", "Motorik Kasar & Halus", "Bahasa & Komunikasi", "Kognitif / Akademik", "Sosial Emosional"
+  title          String    // e.g. "Asesmen Kemampuan Awal Semester Ganjil"
+  aspect         String    // e.g. "Kemampuan Makan & Minum Mandiri"
+  score          Score     // MANDIRI, DENGAN_BANTUAN, BELUM_MAMPU
+  findings       String    // Hasil observasi guru
+  recommendation String?   // Rekomendasi program tindak lanjut / PPI
+  assessmentDate DateTime  @default(now())
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  student        Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  teacher        User      @relation(fields: [teacherId], references: [id])
+}
+
+model PpiPlan {
+  id                String          @id @default(cuid())
+  academicYear      String
+  currentCapability String
+  longTermGoal      String
+  shortTermGoal     String
+  studentId         String
+  teacherId         String
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  student           Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  teacher           User            @relation(fields: [teacherId], references: [id])
+  evaluations       PpiEvaluation[]
+}
+
+model PpiEvaluation {
+  id             String   @id @default(cuid())
+  ppiPlanId      String
+  evaluationDate DateTime @default(now())
+  score          Score
+  narrativeNotes String?
+  
+  ppiPlan        PpiPlan  @relation(fields: [ppiPlanId], references: [id], onDelete: Cascade)
+}
+
+model DailyJournal {
+  id               String    @id @default(cuid())
+  studentId        String
+  teacherId        String
+  date             DateTime  @default(now())
+  mood             String    // "Gembira & Fokus", "Tenang", "Gelisah", "Tantrum"
+  healthCondition  String?   // "Sehat bugar", "Flu", dll
+  eatingNote       String?   // "Makan bekal habis mandiri"
+  learningActivity String    // Aktivitas terapi / belajar hari ini
+  parentFeedback   String?   // Catatan respon dari orang tua di rumah
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  student          Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  teacher          User      @relation(fields: [teacherId], references: [id])
+}
+
+model ActivityLog {
+  id           String      @id @default(cuid())
+  userId       String
+  userName     String
+  userRole     Role
+  action       String      // "CREATE", "UPDATE", "DELETE", "LOGIN", "ASSESSMENT", "EVALUATION"
+  entity       String      // "Student", "User", "Class", "PpiPlan", "Assessment", "Journal"
+  entityId     String?
+  description  String
+  foundationId String?
+  foundation   Foundation? @relation(fields: [foundationId], references: [id])
+  createdAt    DateTime    @default(now())
+
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
