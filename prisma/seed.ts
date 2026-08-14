@@ -7,8 +7,10 @@ async function main() {
   console.log("🌱 Mulai seeding database lengkap SLB App Multi-Kelas & Multi-Orang Tua...");
 
   // Clean existing data
+  await prisma.notification.deleteMany({});
   await prisma.activityLog.deleteMany({});
   await prisma.dailyJournal.deleteMany({});
+
   await prisma.ppiEvaluation.deleteMany({});
   await prisma.ppiPlan.deleteMany({});
   await prisma.assessment.deleteMany({});
@@ -914,8 +916,90 @@ async function main() {
     ],
   });
 
-  console.log("✨ Seeding selesai sukses! 16 Siswa, 4 Guru, dan 4 Akun Demo Orang Tua telah siap digunakan.");
+  // 13. Create Real Notifications for Demo Users
+  await prisma.notification.createMany({
+    data: [
+      // Guru Dewi (guru@slb.sch.id)
+      {
+        userId: guruDewi.id,
+        title: "Respon Orang Tua: Rizky Pratama",
+        message: "Bpk. Hendra mengirimkan catatan di buku penghubung: 'Alhamdulillah Rizky mulai terbiasa merapikan kotak makannya sendiri.'",
+        type: "FEEDBACK",
+        link: "/guru/jurnal",
+        isRead: false,
+      },
+      {
+        userId: guruDewi.id,
+        title: "Sinkronisasi Tahun Ajaran Aktif",
+        message: "Tahun Ajaran 2026/2027 Semester Ganjil telah aktif dan disinkronkan ke rekapitulasi.",
+        type: "INFO",
+        link: "/guru/rekap",
+        isRead: true,
+      },
+
+      // Orang Tua Hendra (ortu@slb.sch.id)
+      {
+        userId: ortuHendra.id,
+        title: "Kabar Sekolah Ananda: Rizky Pratama",
+        message: "Ibu Guru Dewi telah mencatat aktivitas harian terapi & bina diri ananda hari ini (Mood: Gembira & Sangat Fokus).",
+        type: "JOURNAL",
+        link: "/ortu",
+        isRead: false,
+      },
+      {
+        userId: ortuHendra.id,
+        title: "Hasil Asesmen Baru: Rizky Pratama",
+        message: "Guru telah mencatat hasil asesmen aspek 'Latihan Cuci Tangan 6 Langkah' dengan hasil 🟢 Mandiri.",
+        type: "ASSESSMENT",
+        link: "/ortu",
+        isRead: false,
+      },
+
+      // Guru Ahmad (guru.ahmad@slb.sch.id)
+      {
+        userId: guruAhmad.id,
+        title: "Respon Orang Tua: Dimas Anggara",
+        message: "Ibu Ratna merespon: 'Dimas di rumah senang menceritakan kembali kisah fabel yang dibacanya.'",
+        type: "FEEDBACK",
+        link: "/guru/jurnal",
+        isRead: false,
+      },
+
+      // Orang Tua Ratna (ortu.ratna@slb.sch.id)
+      {
+        userId: ortuRatna.id,
+        title: "Target PPI Baru: Dimas Anggara",
+        message: "Pak Guru Ahmad telah merancang target pembelajaran individual baru (Orientasi Braille).",
+        type: "PPI",
+        link: "/ortu",
+        isRead: false,
+      },
+
+      // Pengurus Yayasan (yayasan@slb.sch.id)
+      {
+        userId: yayasanUser.id,
+        title: "Laporan Agregat Capaian Semester",
+        message: "Data rekapitulasi kemandirian seluruh rombel kelas binaan telah siap disupervisi.",
+        type: "SYSTEM",
+        link: "/guru/rekap",
+        isRead: false,
+      },
+
+      // Super Admin (admin@slb.sch.id)
+      {
+        userId: adminUser.id,
+        title: "Sistem Inklusif Siap Pakai",
+        message: "Seluruh data master (16 Siswa, 4 Guru, 4 Kelas Rombel) aktif dan terintegrasi.",
+        type: "SYSTEM",
+        link: "/admin",
+        isRead: true,
+      },
+    ],
+  });
+
+  console.log("✨ Seeding selesai sukses! 16 Siswa, 4 Guru, 4 Akun Ortu, & Notifikasi telah siap digunakan.");
 }
+
 
 main()
   .catch((e) => {

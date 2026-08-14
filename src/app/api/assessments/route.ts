@@ -4,8 +4,10 @@ import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { Score } from "@prisma/client";
 import { logActivity } from "@/lib/activityLog";
+import { createNotification } from "@/lib/notifications";
 
 export const dynamic = "force-dynamic";
+
 
 export async function GET(req: Request) {
   try {
@@ -168,7 +170,20 @@ export async function POST(req: Request) {
       foundationId: assessment.student.foundationId,
     });
 
+    // Notify Parent
+    if (assessment.student?.parentId) {
+      const scoreBadge = score === "MANDIRI" ? "🟢 Mandiri" : score === "DENGAN_BANTUAN" ? "🟡 Dengan Bantuan" : "🔴 Belum Mampu";
+      await createNotification({
+        userId: assessment.student.parentId,
+        title: `Asesmen Baru: ${assessment.student.name}`,
+        message: `Guru telah mencatat asesmen aspek "${assessment.aspect}" (${category}) dengan hasil ${scoreBadge}.`,
+        type: "ASSESSMENT",
+        link: "/ortu",
+      });
+    }
+
     return NextResponse.json(assessment, { status: 201 });
+
   } catch (error: any) {
     console.error("Error creating assessment:", error);
     return NextResponse.json({ error: "Gagal menyimpan asesmen: " + error.message }, { status: 500 });

@@ -3,8 +3,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { logActivity } from "@/lib/activityLog";
+import { createNotification } from "@/lib/notifications";
 
 export const dynamic = "force-dynamic";
+
 
 export async function GET(req: Request) {
   try {
@@ -184,6 +186,31 @@ export async function POST(req: Request) {
       foundationId: journal.student.foundationId,
     });
 
+    // Automatic Notifications
+    if (role === "GURU" || role === "ADMIN") {
+      // Notify the parent
+      if (journal.student?.parentId) {
+        await createNotification({
+          userId: journal.student.parentId,
+          title: `Kabar Sekolah Ananda: ${journal.student.name}`,
+          message: `Guru ${session.user.name || "Wali Kelas"} telah mencatat aktivitas harian & terapi ananda (Mood: ${journal.mood}).`,
+          type: "JOURNAL",
+          link: "/ortu",
+        });
+      }
+    } else if (role === "ORANG_TUA") {
+      // Notify the teacher
+      if (journal.teacherId) {
+        await createNotification({
+          userId: journal.teacherId,
+          title: `Catatan Rumah: ${journal.student.name}`,
+          message: `Ayah/Bunda ${session.user.name || "Orang Tua"} mengirim kabar kondisi ananda dari rumah (Mood: ${journal.mood}).`,
+          type: "FEEDBACK",
+          link: "/guru/jurnal",
+        });
+      }
+    }
+
     return NextResponse.json(journal, { status: 201 });
   } catch (error: any) {
     console.error("Error creating journal:", error);
@@ -249,10 +276,22 @@ export async function PATCH(req: Request) {
       foundationId: journal.student.foundationId,
     });
 
+    // If parent updated feedback, notify teacher
+    if (role === "ORANG_TUA" && journal.teacherId && parentFeedback) {
+      await createNotification({
+        userId: journal.teacherId,
+        title: `Respon Orang Tua: ${journal.student.name}`,
+        message: `Ayah/Bunda ${session.user.name || "Orang Tua"} telah merespon catatan buku penghubung.`,
+        type: "FEEDBACK",
+        link: "/guru/jurnal",
+      });
+    }
+
     return NextResponse.json(updated);
   } catch (error: any) {
     console.error("Error updating parent feedback:", error);
     return NextResponse.json({ error: "Gagal menyimpan respon orang tua: " + error.message }, { status: 500 });
   }
 }
+
 

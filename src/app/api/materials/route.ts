@@ -2,8 +2,10 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { createBatchNotifications } from "@/lib/notifications";
 
 export const dynamic = "force-dynamic";
+
 
 export async function GET(req: Request) {
   try {
@@ -94,7 +96,7 @@ export async function POST(req: Request) {
       data: {
         title: title.trim(),
         content: content.trim(),
-        classId,
+        classId: finalClassId,
         subjectId,
         createdById: teacherId,
         attachmentUrl: attachmentUrl || null,
@@ -109,10 +111,35 @@ export async function POST(req: Request) {
       },
       include: {
         assignments: true,
+        subject: true,
+        class: true,
       },
     });
 
+    // Notify parents in this class
+    const classStudents = await prisma.classStudent.findMany({
+      where: { classId: finalClassId },
+      include: { student: { select: { parentId: true, name: true } } },
+    });
+
+    const uniqueParentIds = Array.from(
+      new Set(classStudents.map((cs) => cs.student.parentId).filter(Boolean) as string[])
+    );
+
+    if (uniqueParentIds.length > 0) {
+      await createBatchNotifications(
+        uniqueParentIds.map((parentId) => ({
+          userId: parentId,
+          title: `Materi Baru: ${material.title}`,
+          message: `Guru telah membagikan materi pembelajaran baru untuk mata pelajaran ${material.subject.name}.`,
+          type: "MATERIAL" as const,
+          link: "/ortu",
+        }))
+      );
+    }
+
     return NextResponse.json(material, { status: 201 });
+
   } catch (error: any) {
     console.error("Error creating material:", error);
     return NextResponse.json({ error: "Gagal membuat materi pembelajaran: " + error.message }, { status: 500 });

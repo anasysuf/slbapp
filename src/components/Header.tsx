@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import {
   Bell,
   Calendar,
@@ -33,14 +34,18 @@ interface HeaderProps {
 }
 
 export default function Header({ title, subtitle }: HeaderProps) {
+  const router = useRouter();
   const { data: session } = useSession();
   const { openSidebar } = useSidebar();
   const role = (session?.user as any)?.role;
   const foundationName = (session?.user as any)?.foundationName;
 
+
   // Notification states
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState<number>(0);
+  const [loadingNotifs, setLoadingNotifs] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
 
   // User Dropdown & Change Password Modal states
@@ -65,66 +70,82 @@ export default function Header({ title, subtitle }: HeaderProps) {
     year: "numeric",
   }).format(new Date());
 
-  useEffect(() => {
-    // Generate dynamic notifications based on role
-    if (role === "GURU") {
-      setNotifications([
-        {
-          id: "1",
-          type: "FEEDBACK",
-          title: "Respon Orang Tua Masuk",
-          desc: "Bpk. Hendra mengirimkan catatan di buku penghubung Rizky.",
-          time: "10 menit lalu",
-          unread: true,
-          link: "/guru/jurnal",
-        },
-        {
-          id: "2",
-          type: "INFO",
-          title: "Tahun Ajaran Aktif",
-          desc: "Tahun Ajaran 2026/2027 Semester Ganjil telah disinkronkan.",
-          time: "1 jam lalu",
-          unread: false,
-          link: "/guru/rekap",
-        },
-      ]);
-    } else if (role === "ORANG_TUA") {
-      setNotifications([
-        {
-          id: "1",
-          type: "JOURNAL",
-          title: "Kabar Harian dari Sekolah",
-          desc: "Ibu Guru telah memperbarui catatan aktivitas terapi dan belajar ananda hari ini.",
-          time: "15 menit lalu",
-          unread: true,
-          link: "/ortu",
-        },
-      ]);
-    } else if (role === "YAYASAN") {
-      setNotifications([
-        {
-          id: "1",
-          type: "YAYASAN",
-          title: "Laporan Agregat Semester",
-          desc: "Capaian kemandirian siswa per rombel telah diperbarui untuk supervisi.",
-          time: "30 menit lalu",
-          unread: true,
-          link: "/guru/rekap",
-        },
-      ]);
-    } else {
-      setNotifications([
-        {
-          id: "1",
-          type: "ADMIN",
-          title: "Sistem Inklusif Siap Pakai",
-          desc: "Seluruh instrumen asesmen dan modul PPI aktif dan terenkripsi.",
-          time: "Hari ini",
-          unread: true,
-          link: "/admin",
-        },
-      ]);
+  const fetchNotifications = async () => {
+    try {
+      setLoadingNotifs(true);
+      const res = await fetch("/api/notifications");
+      if (res.ok) {
+        const data = await res.json();
+        setNotifications(data.notifications || []);
+        setUnreadCount(data.unreadCount || 0);
+      }
+    } catch (err) {
+      console.error("Error fetching notifications:", err);
+    } finally {
+      setLoadingNotifs(false);
     }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      const res = await fetch("/api/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ markAllAsRead: true }),
+      });
+      if (res.ok) {
+        setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+        setUnreadCount(0);
+      }
+    } catch (err) {
+      console.error("Error marking all read:", err);
+    }
+  };
+
+  const handleNotificationClick = async (notif: any) => {
+    setIsNotifOpen(false);
+    if (!notif.isRead) {
+      try {
+        await fetch("/api/notifications", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ notificationId: notif.id }),
+        });
+        setNotifications((prev) =>
+          prev.map((n) => (n.id === notif.id ? { ...n, isRead: true } : n))
+        );
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+      } catch (err) {
+        console.error("Error updating notification:", err);
+      }
+    }
+    if (notif.link) {
+      router.push(notif.link);
+    }
+  };
+
+  const formatRelativeTime = (dateStr: string) => {
+    try {
+      const date = new Date(dateStr);
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMins / 60);
+      const diffDays = Math.floor(diffHours / 24);
+
+      if (diffMins < 1) return "Baru saja";
+      if (diffMins < 60) return `${diffMins} menit lalu`;
+      if (diffHours < 24) return `${diffHours} jam lalu`;
+      if (diffDays === 1) return "Kemarin";
+      if (diffDays < 7) return `${diffDays} hari lalu`;
+      return date.toLocaleDateString("id-ID", { day: "numeric", month: "short" });
+    } catch {
+      return "Hari ini";
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
 
     const handleClickOutside = (e: MouseEvent) => {
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
@@ -137,6 +158,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [role]);
+
 
   const handleLogout = async () => {
     await signOut({ redirect: false });
@@ -205,7 +227,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
   };
 
   const roleInfo = getRoleBadge(role);
-  const unreadCount = notifications.filter((n) => n.unread).length;
+
 
   return (
     <>
@@ -259,35 +281,74 @@ export default function Header({ title, subtitle }: HeaderProps) {
             </button>
 
             {isNotifOpen && (
-              <div className="absolute right-0 mt-2 w-80 sm:w-88 bg-white rounded-2xl shadow-2xl border border-slate-200 p-4 z-50 animate-fade-in space-y-3">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+              <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-slate-200 p-4 z-50 animate-fade-in space-y-3">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <div className="flex items-center gap-1.5">
                     <Bell className="w-4 h-4 text-teal-600" />
-                    <span className="font-extrabold text-xs text-slate-900">Pemberitahuan Terkini</span>
+                    <span className="font-extrabold text-xs text-slate-900">Pemberitahuan Sistem</span>
                   </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 bg-teal-50 text-teal-800 rounded-full">
-                    {unreadCount} Baru
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {unreadCount > 0 && (
+                      <button
+                        onClick={handleMarkAllAsRead}
+                        className="text-[10px] font-bold text-teal-700 hover:text-teal-900 hover:underline"
+                      >
+                        Tandai Semua Dibaca
+                      </button>
+                    )}
+                    <span className="text-[10px] font-bold px-2 py-0.5 bg-teal-50 text-teal-800 rounded-full border border-teal-200">
+                      {unreadCount} Baru
+                    </span>
+                  </div>
                 </div>
 
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {notifications.map((n) => (
-                    <Link
-                      key={n.id}
-                      href={n.link}
-                      onClick={() => setIsNotifOpen(false)}
-                      className="p-2.5 rounded-xl bg-slate-50 hover:bg-teal-50/60 border border-slate-100 transition-colors block space-y-1"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-xs text-slate-900">{n.title}</span>
-                        <span className="text-[9px] text-slate-400">{n.time}</span>
-                      </div>
-                      <p className="text-[11px] text-slate-600 leading-snug">{n.desc}</p>
-                    </Link>
-                  ))}
-                </div>
+                {loadingNotifs ? (
+                  <div className="py-6 text-center text-xs text-slate-400">Memuat pemberitahuan...</div>
+                ) : notifications.length === 0 ? (
+                  <div className="py-8 text-center space-y-2">
+                    <div className="w-10 h-10 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center mx-auto text-slate-400">
+                      <Bell className="w-5 h-5" />
+                    </div>
+                    <p className="text-xs font-semibold text-slate-500">Tidak ada notifikasi baru saat ini</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+                    {notifications.map((n) => {
+                      const isUnread = !n.isRead;
+                      return (
+                        <div
+                          key={n.id}
+                          onClick={() => handleNotificationClick(n)}
+                          className={`p-3 rounded-2xl border transition-all cursor-pointer block space-y-1 text-left ${
+                            isUnread
+                              ? "bg-teal-50/50 border-teal-200/80 hover:bg-teal-50"
+                              : "bg-slate-50/60 border-slate-100 hover:bg-slate-100/70"
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex items-center gap-1.5">
+                              {isUnread && (
+                                <span className="w-2 h-2 rounded-full bg-teal-600 shrink-0" />
+                              )}
+                              <span className="font-bold text-xs text-slate-900 leading-snug">
+                                {n.title}
+                              </span>
+                            </div>
+                            <span className="text-[9px] text-slate-400 shrink-0 whitespace-nowrap">
+                              {formatRelativeTime(n.createdAt)}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-slate-600 leading-snug pl-3.5">
+                            {n.message}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
+
           </div>
 
           {/* User Profile Pill & Interactive Dropdown (Kanan Atas) */}

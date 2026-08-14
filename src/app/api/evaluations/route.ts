@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { Score } from "@prisma/client";
 import { logActivity } from "@/lib/activityLog";
+import { createNotification } from "@/lib/notifications";
 
 export const dynamic = "force-dynamic";
 
@@ -78,9 +79,22 @@ export async function POST(req: Request) {
       foundationId: evaluation.ppiPlan.student.foundationId,
     });
 
+    // Notify Parent
+    if (evaluation.ppiPlan.student?.parentId) {
+      const scoreBadge = score === "MANDIRI" ? "🟢 Mandiri" : score === "DENGAN_BANTUAN" ? "🟡 Dengan Bantuan" : "🔴 Belum Mampu";
+      await createNotification({
+        userId: evaluation.ppiPlan.student.parentId,
+        title: `Evaluasi Belajar Ananda: ${evaluation.ppiPlan.student.name}`,
+        message: `Guru telah mencatat skor evaluasi sesi belajar "${evaluation.ppiPlan.shortTermGoal}" dengan hasil ${scoreBadge}.`,
+        type: "EVALUATION",
+        link: "/ortu",
+      });
+    }
+
     return NextResponse.json(evaluation, { status: 201 });
   } catch (error: any) {
     console.error("Error creating evaluation:", error);
     return NextResponse.json({ error: "Gagal menyimpan evaluasi: " + error.message }, { status: 500 });
   }
 }
+

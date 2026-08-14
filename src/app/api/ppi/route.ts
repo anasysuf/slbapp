@@ -3,8 +3,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { logActivity } from "@/lib/activityLog";
+import { createNotification } from "@/lib/notifications";
 
 export const dynamic = "force-dynamic";
+
 
 export async function GET(req: Request) {
   try {
@@ -165,7 +167,19 @@ export async function POST(req: Request) {
       foundationId: ppiPlan.student.foundationId,
     });
 
+    // Notify Parent
+    if (ppiPlan.student?.parentId) {
+      await createNotification({
+        userId: ppiPlan.student.parentId,
+        title: `Program PPI Baru Disusun: ${ppiPlan.student.name}`,
+        message: `Guru telah merancang target pembelajaran individual (PPI) baru: "${ppiPlan.shortTermGoal}".`,
+        type: "PPI",
+        link: "/ortu",
+      });
+    }
+
     return NextResponse.json(ppiPlan, { status: 201 });
+
   } catch (error: any) {
     console.error("Error creating PPI plan:", error);
     return NextResponse.json({ error: "Gagal membuat PPI: " + error.message }, { status: 500 });
