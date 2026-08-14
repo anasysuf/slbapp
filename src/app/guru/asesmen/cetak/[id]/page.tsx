@@ -59,8 +59,16 @@ export default function CetakAsesmenPage() {
       <div className="max-w-3xl mx-auto bg-white p-8 sm:p-12 rounded-3xl shadow-xl print:shadow-none print:rounded-none print:p-6 border border-slate-200 print:border-none space-y-6">
         {/* Kop Surat */}
         <div className="border-b-2 border-slate-900 pb-4 text-center relative">
-          <div className="w-14 h-14 rounded-2xl bg-teal-800 text-white flex items-center justify-center absolute left-0 top-0 print:w-12 print:h-12">
-            <GraduationCap className="w-8 h-8 print:w-7 print:h-7" />
+          <div className="w-14 h-14 rounded-2xl bg-white border border-slate-300 text-teal-800 flex items-center justify-center absolute left-0 top-0 print:w-12 print:h-12 overflow-hidden">
+            {assessment.student?.foundation?.logo ? (
+              assessment.student.foundation.logo.startsWith("data:") || assessment.student.foundation.logo.startsWith("http") ? (
+                <img src={assessment.student.foundation.logo} alt="Logo" className="w-full h-full object-contain" />
+              ) : (
+                <span className="text-2xl">{assessment.student.foundation.logo}</span>
+              )
+            ) : (
+              <GraduationCap className="w-8 h-8 print:w-7 print:h-7 text-teal-800" />
+            )}
           </div>
           <h1 className="text-lg font-black uppercase tracking-wider text-slate-900">
             {assessment.student?.foundation?.name || "YAYASAN PENDIDIKAN LUAR BIASA HARAPAN MULIA"}

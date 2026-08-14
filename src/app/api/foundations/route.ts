@@ -83,3 +83,59 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Gagal membuat yayasan: " + error.message }, { status: 500 });
   }
 }
+
+export async function PUT(req: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Akses ditolak: Belum terautentikasi" }, { status: 401 });
+    }
+
+    const role = (session.user as any).role;
+    if (role !== "ADMIN") {
+      return NextResponse.json({ error: "Akses ditolak: Hanya Super Admin yang dapat mengubah identitas sekolah/yayasan" }, { status: 403 });
+    }
+
+    const body = await req.json();
+    const { id, name, code, address, phone, logo } = body;
+
+    // Find the foundation to update (either by passed ID or user's foundationId or first foundation)
+    let targetId = id || (session.user as any).foundationId;
+    if (!targetId) {
+      const firstFound = await prisma.foundation.findFirst();
+      targetId = firstFound?.id;
+    }
+
+    if (!targetId) {
+      return NextResponse.json({ error: "Data lembaga/sekolah tidak ditemukan" }, { status: 404 });
+    }
+
+    const updated = await prisma.foundation.update({
+      where: { id: targetId },
+      data: {
+        name: name ? name.trim() : undefined,
+        code: code ? code.toUpperCase().trim() : undefined,
+        address: address !== undefined ? (address ? address.trim() : null) : undefined,
+        phone: phone !== undefined ? (phone ? phone.trim() : null) : undefined,
+        logo: logo !== undefined ? (logo ? logo.trim() : null) : undefined,
+      },
+    });
+
+    // Log Activity
+    await logActivity({
+      userId: (session.user as any).id,
+      userName: session.user.name || "Super Admin",
+      userRole: role,
+      action: "UPDATE",
+      entity: "Foundation",
+      entityId: updated.id,
+      description: `Super Admin memperbarui identitas & profil sekolah/yayasan: ${updated.name}`,
+      foundationId: updated.id,
+    });
+
+    return NextResponse.json(updated);
+  } catch (error: any) {
+    console.error("Error updating foundation:", error);
+    return NextResponse.json({ error: "Gagal memperbarui data sekolah: " + error.message }, { status: 500 });
+  }
+}

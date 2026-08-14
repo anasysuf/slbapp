@@ -51,6 +51,7 @@ function SidebarNavList({ onItemClick }: { onItemClick?: () => void }) {
   ];
 
   const adminLinks = [
+    { href: "/admin?tab=sekolah", label: "Profil & Logo Sekolah", icon: Building2, tab: "sekolah" },
     { href: "/admin?tab=siswa", label: "Master Data Siswa", icon: Users, tab: "siswa" },
     { href: "/admin?tab=pengguna", label: "Manajemen Pengguna", icon: UserCheck, tab: "pengguna" },
     { href: "/admin?tab=kelas", label: "Rombel & Jenjang", icon: GraduationCap, tab: "kelas" },
