@@ -39,7 +39,7 @@ function SidebarNavList({ onItemClick }: { onItemClick?: () => void }) {
     { href: "/guru/evaluasi", label: "Input Evaluasi", icon: FileCheck },
     { href: "/guru/jurnal", label: "Buku Penghubung", icon: HeartHandshake },
     { href: "/guru/materi", label: "Materi & Tugas", icon: BookOpen },
-    { href: "/guru/rekap", label: "Rekap Semester", icon: BarChart3 },
+    { href: "/guru/rekap", label: "Rekapitulasi Semester", icon: BarChart3 },
   ];
 
   const ortuLinks = [
@@ -72,16 +72,18 @@ function SidebarNavList({ onItemClick }: { onItemClick?: () => void }) {
   if (role === "ADMIN") currentLinks = adminLinks;
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1.5">
       <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
         {role === "ADMIN" ? "Menu Master Admin" : `Menu Navigasi (${role || "GURU"})`}
       </div>
 
       {currentLinks.map((item: any) => {
         const Icon = item.icon;
-        let isActive = pathname === item.href;
-        if (role === "ADMIN" || (role === "YAYASAN" && item.tab)) {
+        let isActive = false;
+        if (item.tab) {
           isActive = pathname === "/admin" && activeTabParam === item.tab;
+        } else {
+          isActive = pathname === item.href;
         }
 
         return (
@@ -89,17 +91,17 @@ function SidebarNavList({ onItemClick }: { onItemClick?: () => void }) {
             key={item.href}
             href={item.href}
             onClick={onItemClick}
-            className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex items-center justify-between w-full h-10 px-3.5 rounded-xl text-xs font-semibold transition-all ${
               isActive
                 ? "bg-teal-600 text-white shadow-md shadow-teal-600/30"
                 : "text-slate-300 hover:bg-slate-800/60 hover:text-white"
             }`}
           >
-            <div className="flex items-center gap-3">
-              <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-slate-400"}`} />
-              <span>{item.label}</span>
+            <div className="flex items-center gap-3 min-w-0 overflow-hidden">
+              <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-white" : "text-slate-400"}`} />
+              <span className="truncate">{item.label}</span>
             </div>
-            {isActive && <ChevronRight className="w-3.5 h-3.5 opacity-80" />}
+            {isActive && <ChevronRight className="w-3.5 h-3.5 shrink-0 opacity-80" />}
           </Link>
         );
       })}
