@@ -26,7 +26,6 @@ export default function GuruAsesmenPage() {
   const [students, setStudents] = useState<any[]>([]);
   const [assessments, setAssessments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedClassId, setSelectedClassId] = useState<string>("SEMUA");
   const [selectedCategory, setSelectedCategory] = useState<string>("SEMUA");
   const [selectedStudentId, setSelectedStudentId] = useState<string>("SEMUA");
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -35,6 +34,8 @@ export default function GuruAsesmenPage() {
   const [isAssessmentModalOpen, setIsAssessmentModalOpen] = useState(false);
   const [isPpiModalOpen, setIsPpiModalOpen] = useState(false);
   const [ppiPrefill, setPpiPrefill] = useState<{ studentId?: string; recommendation?: string }>({});
+
+  const teacherClass = classes[0];
 
   const fetchData = async () => {
     try {
@@ -63,9 +64,6 @@ export default function GuruAsesmenPage() {
 
   // Filter logic
   const filteredAssessments = assessments.filter((item) => {
-    const matchClass =
-      selectedClassId === "SEMUA" ||
-      item.student?.classes?.some((c: any) => c.classId === selectedClassId || c.class?.id === selectedClassId);
     const matchCategory = selectedCategory === "SEMUA" || item.category === selectedCategory;
     const matchStudent = selectedStudentId === "SEMUA" || item.studentId === selectedStudentId;
     const matchSearch =
@@ -74,7 +72,7 @@ export default function GuruAsesmenPage() {
       item.aspect.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.findings.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchClass && matchCategory && matchStudent && matchSearch;
+    return matchCategory && matchStudent && matchSearch;
   });
 
   const handleConvertToPpi = (assessment: any) => {
@@ -113,7 +111,7 @@ export default function GuruAsesmenPage() {
           <div className="p-6 rounded-3xl bg-gradient-to-r from-teal-800 via-teal-700 to-emerald-700 text-white shadow-xl shadow-teal-800/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/15 backdrop-blur rounded-full text-xs font-semibold mb-2 text-teal-100">
-                <ClipboardCheck className="w-3.5 h-3.5 text-teal-300" /> Instrumen Khusus Pendidikan Luar Biasa
+                <ClipboardCheck className="w-3.5 h-3.5 text-teal-300" /> {teacherClass ? `${teacherClass.name} (${teacherClass.jenjang})` : "Instrumen Khusus SLB"}
               </div>
               <h2 className="text-xl sm:text-2xl font-black tracking-tight">
                 Asesmen Perkembangan Siswa Binaan
@@ -143,53 +141,21 @@ export default function GuruAsesmenPage() {
             </div>
           </div>
 
-          {/* Filter Bar: Kelas & Kategori */}
-          <div className="space-y-2.5">
-            {classes.length > 1 && (
-              <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                <span className="text-xs font-bold text-slate-500 shrink-0">Kelas:</span>
-                <button
-                  onClick={() => setSelectedClassId("SEMUA")}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-                    selectedClassId === "SEMUA"
-                      ? "bg-slate-900 text-white shadow"
-                      : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
-                  }`}
-                >
-                  Semua Kelas ({classes.length})
-                </button>
-                {classes.map((cls) => (
-                  <button
-                    key={cls.id}
-                    onClick={() => setSelectedClassId(cls.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-                      selectedClassId === cls.id
-                        ? "bg-teal-700 text-white shadow"
-                        : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
-                    }`}
-                  >
-                    {cls.name} ({cls.jenjang})
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* Category Quick Filter Pills */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-                    selectedCategory === cat
-                      ? "bg-teal-700 text-white shadow-md shadow-teal-700/20"
-                      : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
-                  }`}
-                >
-                  {cat === "SEMUA" ? "Semua Kategori" : cat}
-                </button>
-              ))}
-            </div>
+          {/* Category Quick Filter Pills */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                  selectedCategory === cat
+                    ? "bg-teal-700 text-white shadow-md shadow-teal-700/20"
+                    : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+                }`}
+              >
+                {cat === "SEMUA" ? "Semua Kategori" : cat}
+              </button>
+            ))}
           </div>
 
           {/* Search & Student Filter Toolbar */}

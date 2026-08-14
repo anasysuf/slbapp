@@ -73,22 +73,21 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { title, content, classId, subjectId, attachmentUrl, assignmentInstructions, assignmentDeadline } = body;
 
-    if (!title || !content || !classId || !subjectId) {
-      return NextResponse.json({ error: "Judul, isi, kelas, dan mapel wajib diisi" }, { status: 400 });
-    }
-
+    let finalClassId = classId;
     const teacherId = (session.user as any).id;
 
     if (role === "GURU") {
       const teacherClass = await prisma.class.findFirst({
-        where: {
-          id: classId,
-          teacherId: teacherId,
-        },
+        where: { teacherId: teacherId },
       });
       if (!teacherClass) {
-        return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat mengunggah materi untuk rombel kelas yang Anda ampu" }, { status: 403 });
+        return NextResponse.json({ error: "Akun Anda belum ditugaskan ke rombel kelas oleh Admin" }, { status: 403 });
       }
+      finalClassId = teacherClass.id;
+    }
+
+    if (!title || !content || !finalClassId || !subjectId) {
+      return NextResponse.json({ error: "Judul, isi, dan mata pelajaran wajib diisi" }, { status: 400 });
     }
 
     const material = await prisma.material.create({

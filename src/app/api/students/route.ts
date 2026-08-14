@@ -157,17 +157,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "NISN sudah terdaftar pada siswa lain" }, { status: 400 });
     }
 
-    // For GURU: ensure they assign the student to their own class
+    let finalClassId = classId;
+    let finalJenjang = jenjang ? (jenjang as Jenjang) : Jenjang.SDLB;
+
+    // For GURU: automatically bind to the teacher's assigned class and jenjang set by Admin
     if (role === "GURU") {
-      if (!classId) {
-        return NextResponse.json({ error: "Guru wajib memilih rombel kelas yang diampu untuk siswa baru" }, { status: 400 });
-      }
-      const targetClass = await prisma.class.findUnique({
-        where: { id: classId },
+      const teacherClass = await prisma.class.findFirst({
+        where: { teacherId: (session.user as any).id },
       });
-      if (!targetClass || targetClass.teacherId !== (session.user as any).id) {
-        return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat mendaftarkan siswa ke kelas yang Anda ampu" }, { status: 403 });
+      if (!teacherClass) {
+        return NextResponse.json({ error: "Akun Anda belum ditugaskan ke rombel kelas oleh Admin" }, { status: 403 });
       }
+      finalClassId = teacherClass.id;
+      finalJenjang = teacherClass.jenjang;
     }
 
     const student = await prisma.student.create({
@@ -175,14 +177,14 @@ export async function POST(req: Request) {
         name: name.trim(),
         nisn: nisn.trim(),
         disabilityType: disabilityType.trim(),
-        jenjang: jenjang ? (jenjang as Jenjang) : Jenjang.SDLB,
+        jenjang: finalJenjang,
         parentId: parentId || null,
         gender: gender || "L",
         foundationId: userFoundationId || null,
-        classes: classId
+        classes: finalClassId
           ? {
               create: {
-                classId: classId,
+                classId: finalClassId,
               },
             }
           : undefined,

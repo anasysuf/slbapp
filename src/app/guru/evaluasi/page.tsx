@@ -9,8 +9,10 @@ import EvaluationModal from "@/components/EvaluationModal";
 export default function GuruEvaluasiPage() {
   const [classes, setClasses] = useState<any[]>([]);
   const [ppiPlans, setPpiPlans] = useState<any[]>([]);
-  const [selectedClassId, setSelectedClassId] = useState("SEMUA");
   const [loading, setLoading] = useState(true);
+
+  const teacherClass = classes[0];
+
   const [evalModalState, setEvalModalState] = useState<{
     isOpen: boolean;
     ppiPlanId: string;
@@ -45,13 +47,6 @@ export default function GuruEvaluasiPage() {
     fetchData();
   }, []);
 
-  const filteredPlans = ppiPlans.filter((plan) => {
-    return (
-      selectedClassId === "SEMUA" ||
-      plan.student?.classes?.some((c: any) => c.classId === selectedClassId || c.class?.id === selectedClassId)
-    );
-  });
-
   return (
     <div className="flex min-h-screen bg-slate-50">
       <Sidebar />
@@ -66,7 +61,7 @@ export default function GuruEvaluasiPage() {
           <div className="p-6 rounded-3xl bg-gradient-to-r from-emerald-800 to-teal-800 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/15 backdrop-blur rounded-full text-xs font-semibold mb-2">
-                <FileCheck2 className="w-3.5 h-3.5" /> Skala Penilaian: Mandiri • Dengan Bantuan • Belum Mampu
+                <FileCheck2 className="w-3.5 h-3.5" /> {teacherClass ? `${teacherClass.name} (${teacherClass.jenjang})` : "Skala Penilaian Khusus"}
               </div>
               <h2 className="text-xl sm:text-2xl font-black">Matriks Evaluasi Capaian Target</h2>
               <p className="text-emerald-100 text-xs sm:text-sm mt-1 max-w-2xl">
@@ -75,50 +70,20 @@ export default function GuruEvaluasiPage() {
             </div>
           </div>
 
-          {/* Class Filter */}
-          {classes.length > 1 && (
-            <div className="flex items-center gap-2 overflow-x-auto pb-1">
-              <span className="text-xs font-bold text-slate-500 shrink-0">Filter Rombel:</span>
-              <button
-                onClick={() => setSelectedClassId("SEMUA")}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-                  selectedClassId === "SEMUA"
-                    ? "bg-slate-900 text-white shadow"
-                    : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
-                }`}
-              >
-                Semua Kelas ({classes.length})
-              </button>
-              {classes.map((cls) => (
-                <button
-                  key={cls.id}
-                  onClick={() => setSelectedClassId(cls.id)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-                    selectedClassId === cls.id
-                      ? "bg-emerald-700 text-white shadow"
-                      : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
-                  }`}
-                >
-                  {cls.name} ({cls.jenjang})
-                </button>
-              ))}
-            </div>
-          )}
-
           {/* Table / List of PPI Plans to Evaluate */}
           <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="p-5 border-b border-slate-100 flex items-center justify-between">
               <h3 className="font-bold text-base text-slate-800">Daftar Target Siswa untuk Dievaluasi</h3>
-              <span className="text-xs font-bold text-slate-500">{filteredPlans.length} Target Aktif</span>
+              <span className="text-xs font-bold text-slate-500">{ppiPlans.length} Target Aktif</span>
             </div>
 
             {loading ? (
               <div className="p-12 text-center text-xs text-slate-400">Memuat target PPI...</div>
-            ) : filteredPlans.length === 0 ? (
+            ) : ppiPlans.length === 0 ? (
               <div className="p-12 text-center text-xs text-slate-400">Belum ada target PPI yang dapat dievaluasi.</div>
             ) : (
               <div className="divide-y divide-slate-100">
-                {filteredPlans.map((plan) => {
+                {ppiPlans.map((plan) => {
                   const evaluations = plan.evaluations || [];
                   const latest = evaluations[0];
                   const className = plan.student?.classes?.[0]?.class?.name;

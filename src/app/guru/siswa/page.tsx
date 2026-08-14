@@ -28,8 +28,6 @@ export default function GuruStudentManagementPage() {
 
   // Filters
   const [search, setSearch] = useState("");
-  const [selectedClassId, setSelectedClassId] = useState("SEMUA");
-  const [selectedJenjang, setSelectedJenjang] = useState("SEMUA");
   const [selectedDisability, setSelectedDisability] = useState("SEMUA");
 
   // Modals
@@ -41,10 +39,10 @@ export default function GuruStudentManagementPage() {
   const [name, setName] = useState("");
   const [nisn, setNisn] = useState("");
   const [disabilityType, setDisabilityType] = useState("Autisme");
-  const [jenjang, setJenjang] = useState("SDLB");
   const [gender, setGender] = useState("L");
   const [parentId, setParentId] = useState("");
-  const [classId, setClassId] = useState("");
+
+  const teacherClass = classes[0];
 
   const fetchData = async () => {
     try {
@@ -75,8 +73,8 @@ export default function GuruStudentManagementPage() {
 
   const handleCreateStudent = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (classes.length > 0 && !classId) {
-      alert("Silakan pilih rombel kelas yang Anda ampu");
+    if (!teacherClass) {
+      alert("Akun Anda belum memiliki penugasan rombel kelas oleh Admin");
       return;
     }
 
@@ -88,10 +86,10 @@ export default function GuruStudentManagementPage() {
           name,
           nisn,
           disabilityType,
-          jenjang,
+          jenjang: teacherClass.jenjang,
           gender,
           parentId: parentId || null,
-          classId: classId || (classes[0]?.id || null),
+          classId: teacherClass.id,
         }),
       });
 
@@ -113,10 +111,8 @@ export default function GuruStudentManagementPage() {
     setName(student.name);
     setNisn(student.nisn);
     setDisabilityType(student.disabilityType);
-    setJenjang(student.jenjang || "SDLB");
     setGender(student.gender || "L");
     setParentId(student.parentId || "");
-    setClassId(student.classes?.[0]?.class?.id || "");
     setIsEditModalOpen(true);
   };
 
@@ -132,10 +128,8 @@ export default function GuruStudentManagementPage() {
           name,
           nisn,
           disabilityType,
-          jenjang,
           gender,
           parentId: parentId || null,
-          classId: classId || null,
         }),
       });
 
@@ -178,20 +172,14 @@ export default function GuruStudentManagementPage() {
     setName("");
     setNisn("");
     setDisabilityType("Autisme");
-    setJenjang("SDLB");
     setGender("L");
     setParentId("");
-    setClassId(classes[0]?.id || "");
   };
 
   const filteredStudents = students.filter((s) => {
     const matchSearch = s.name.toLowerCase().includes(search.toLowerCase()) || s.nisn.includes(search);
-    const matchClass =
-      selectedClassId === "SEMUA" ||
-      s.classes?.some((c: any) => c.classId === selectedClassId || c.class?.id === selectedClassId);
-    const matchJenjang = selectedJenjang === "SEMUA" || s.jenjang === selectedJenjang;
     const matchDisability = selectedDisability === "SEMUA" || s.disabilityType === selectedDisability;
-    return matchSearch && matchClass && matchJenjang && matchDisability;
+    return matchSearch && matchDisability;
   });
 
   return (
@@ -200,8 +188,8 @@ export default function GuruStudentManagementPage() {
 
       <main className="flex-1 flex flex-col min-w-0">
         <Header
-          title="Manajemen Siswa & Kelas (Guru SLB)"
-          subtitle="Akses Terbatas: Hanya Mengelola Rombel Kelas dan Siswa yang Diampu Sendiri"
+          title="Manajemen Siswa Kelas (Guru SLB)"
+          subtitle="Daftar Siswa Khusus Rombel Binaan yang Ditetapkan oleh Administrator Sekolah"
         />
 
         <div className="p-4 sm:p-6 space-y-6 max-w-7xl">
@@ -211,9 +199,17 @@ export default function GuruStudentManagementPage() {
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/15 backdrop-blur rounded-full text-xs font-semibold mb-2 text-teal-200">
                 <Users className="w-3.5 h-3.5" /> Portal Khusus Guru Kelas
               </div>
-              <h2 className="text-xl sm:text-2xl font-black">Data Rombel & Siswa Binaan Anda</h2>
+              <h2 className="text-xl sm:text-2xl font-black">
+                {teacherClass ? teacherClass.name : "Rombel Kelas Binaan"}
+              </h2>
               <p className="text-teal-100 text-xs sm:text-sm mt-1 max-w-xl">
-                Sistem telah dipisahkan: Anda hanya melihat dan mengelola <strong>{classes.length} rombel kelas</strong> dan <strong>{students.length} siswa binaan</strong> yang Anda ampu secara langsung.
+                {teacherClass ? (
+                  <>
+                    Jenjang: <strong>{teacherClass.jenjang}</strong> • Anda mengampu <strong>{students.length} siswa berkebutuhan khusus</strong> pada rombel ini. Penugasan kelas dan penyesuaian jenjang diatur oleh Admin Sekolah.
+                  </>
+                ) : (
+                  "Akun Anda belum memiliki penugasan rombel kelas oleh Admin."
+                )}
               </p>
             </div>
 
@@ -222,61 +218,17 @@ export default function GuruStudentManagementPage() {
                 resetForm();
                 setIsAddModalOpen(true);
               }}
-              className="px-5 py-3 bg-white text-teal-900 hover:bg-teal-50 font-bold text-xs rounded-xl shadow-lg flex items-center gap-2 self-start md:self-auto transition-transform hover:scale-105"
+              disabled={!teacherClass}
+              className="px-5 py-3 bg-white text-teal-900 hover:bg-teal-50 font-bold text-xs rounded-xl shadow-lg flex items-center gap-2 self-start md:self-auto transition-transform hover:scale-105 disabled:opacity-50"
             >
               <PlusCircle className="w-4 h-4 text-teal-700" />
               <span>+ Tambah Siswa ke Kelas Saya</span>
             </button>
           </div>
 
-          {/* Teacher's Classes Badges / Selector */}
-          {classes.length > 0 ? (
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2">
-              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                <GraduationCap className="w-4 h-4 text-teal-600" />
-                <span>Pilih Rombel Kelas yang Diampu:</span>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <button
-                  onClick={() => setSelectedClassId("SEMUA")}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                    selectedClassId === "SEMUA"
-                      ? "bg-teal-700 text-white shadow-md shadow-teal-700/20"
-                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                  }`}
-                >
-                  Semua Kelas ({students.length} Siswa)
-                </button>
-                {classes.map((cls) => {
-                  const studentCount = cls.students?.length || cls._count?.students || 0;
-                  return (
-                    <button
-                      key={cls.id}
-                      onClick={() => setSelectedClassId(cls.id)}
-                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                        selectedClassId === cls.id
-                          ? "bg-teal-700 text-white shadow-md shadow-teal-700/20"
-                          : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200/60"
-                      }`}
-                    >
-                      <span>{cls.name}</span>
-                      <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-white/30 text-current">
-                        {cls.jenjang} • {studentCount}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ) : (
-            <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl text-amber-800 text-xs flex items-center gap-2">
-              <span>⚠️ Anda belum memiliki penugasan rombel kelas aktif. Silakan hubungi Administrator Yayasan.</span>
-            </div>
-          )}
-
           {/* Filters Bar */}
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center gap-3">
-            <div className="relative flex-1 min-w-[200px]">
+          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+            <div className="relative flex-1 min-w-[200px] max-w-md">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
               <input
                 type="text"
@@ -287,31 +239,15 @@ export default function GuruStudentManagementPage() {
               />
             </div>
 
-            {/* Filter Jenjang */}
-            <div className="flex items-center gap-1.5 text-xs">
-              <span className="font-bold text-slate-500">Jenjang:</span>
-              <select
-                value={selectedJenjang}
-                onChange={(e) => setSelectedJenjang(e.target.value)}
-                className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-slate-50 focus:ring-2 focus:ring-teal-500"
-              >
-                <option value="SEMUA">Semua Jenjang</option>
-                <option value="TKLB">TKLB (Taman Kanak-Kanak)</option>
-                <option value="SDLB">SDLB (Sekolah Dasar)</option>
-                <option value="SMPLB">SMPLB (Menengah Pertama)</option>
-                <option value="SMALB">SMALB (Menengah Atas)</option>
-              </select>
-            </div>
-
             {/* Filter Disabilitas */}
             <div className="flex items-center gap-1.5 text-xs">
-              <span className="font-bold text-slate-500">Disabilitas:</span>
+              <span className="font-bold text-slate-500">Filter Disabilitas:</span>
               <select
                 value={selectedDisability}
                 onChange={(e) => setSelectedDisability(e.target.value)}
                 className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-slate-50 focus:ring-2 focus:ring-teal-500"
               >
-                <option value="SEMUA">Semua Disabilitas</option>
+                <option value="SEMUA">Semua Disabilitas ({students.length})</option>
                 <option value="Autisme">Autisme</option>
                 <option value="Tunarungu">Tunarungu</option>
                 <option value="Tunanetra">Tunanetra</option>
@@ -474,56 +410,38 @@ export default function GuruStudentManagementPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Jenjang SLB *</label>
-                  <select
-                    value={jenjang}
-                    onChange={(e) => setJenjang(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
-                  >
-                    <option value="TKLB">TKLB</option>
-                    <option value="SDLB">SDLB</option>
-                    <option value="SMPLB">SMPLB</option>
-                    <option value="SMALB">SMALB</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Disabilitas *</label>
-                  <select
-                    value={disabilityType}
-                    onChange={(e) => setDisabilityType(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
-                  >
-                    <option value="Autisme">Autisme</option>
-                    <option value="Tunarungu">Tunarungu</option>
-                    <option value="Tunanetra">Tunanetra</option>
-                    <option value="Tunagrahita Ringan">Tunagrahita Ringan</option>
-                    <option value="Tunagrahita Sedang">Tunagrahita Sedang</option>
-                    <option value="Tunadaksa">Tunadaksa</option>
-                    <option value="Slow Learner">Slow Learner</option>
-                  </select>
-                </div>
+              <div>
+                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Disabilitas *</label>
+                <select
+                  value={disabilityType}
+                  onChange={(e) => setDisabilityType(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
+                >
+                  <option value="Autisme">Autisme</option>
+                  <option value="Tunarungu">Tunarungu</option>
+                  <option value="Tunanetra">Tunanetra</option>
+                  <option value="Tunagrahita Ringan">Tunagrahita Ringan</option>
+                  <option value="Tunagrahita Sedang">Tunagrahita Sedang</option>
+                  <option value="Tunadaksa">Tunadaksa</option>
+                  <option value="Slow Learner">Slow Learner</option>
+                </select>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">
-                  Penugasan Rombel Kelas Saya *
-                </label>
-                <select
-                  value={classId}
-                  onChange={(e) => setClassId(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
-                  required
-                >
-                  <option value="">-- Pilih Rombel Kelas yang Anda Ampu --</option>
-                  {classes.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name} ({c.jenjang})
-                    </option>
-                  ))}
-                </select>
+              {/* Rombel & Jenjang Info Box (Auto-assigned by Admin) */}
+              <div className="p-3.5 bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-200 rounded-2xl space-y-1">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-teal-800 flex items-center gap-1">
+                  <GraduationCap className="w-3.5 h-3.5" />
+                  <span>Rombel Kelas & Jenjang Tetap:</span>
+                </div>
+                <div className="text-xs font-black text-teal-950 flex items-center justify-between">
+                  <span>{teacherClass?.name || "Kelas Binaan"}</span>
+                  <span className="px-2 py-0.5 rounded-lg bg-teal-700 text-white text-[10px] font-bold">
+                    {teacherClass?.jenjang || "SDLB"}
+                  </span>
+                </div>
+                <p className="text-[10px] text-teal-700 italic">
+                  * Otomatis terdaftar ke kelas binaan Anda yang telah ditetapkan oleh Admin Sekolah.
+                </p>
               </div>
 
               <div>
@@ -598,56 +516,38 @@ export default function GuruStudentManagementPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Jenjang SLB *</label>
-                  <select
-                    value={jenjang}
-                    onChange={(e) => setJenjang(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
-                  >
-                    <option value="TKLB">TKLB</option>
-                    <option value="SDLB">SDLB</option>
-                    <option value="SMPLB">SMPLB</option>
-                    <option value="SMALB">SMALB</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Disabilitas *</label>
-                  <select
-                    value={disabilityType}
-                    onChange={(e) => setDisabilityType(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
-                  >
-                    <option value="Autisme">Autisme</option>
-                    <option value="Tunarungu">Tunarungu</option>
-                    <option value="Tunanetra">Tunanetra</option>
-                    <option value="Tunagrahita Ringan">Tunagrahita Ringan</option>
-                    <option value="Tunagrahita Sedang">Tunagrahita Sedang</option>
-                    <option value="Tunadaksa">Tunadaksa</option>
-                    <option value="Slow Learner">Slow Learner</option>
-                  </select>
-                </div>
+              <div>
+                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Disabilitas *</label>
+                <select
+                  value={disabilityType}
+                  onChange={(e) => setDisabilityType(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
+                >
+                  <option value="Autisme">Autisme</option>
+                  <option value="Tunarungu">Tunarungu</option>
+                  <option value="Tunanetra">Tunanetra</option>
+                  <option value="Tunagrahita Ringan">Tunagrahita Ringan</option>
+                  <option value="Tunagrahita Sedang">Tunagrahita Sedang</option>
+                  <option value="Tunadaksa">Tunadaksa</option>
+                  <option value="Slow Learner">Slow Learner</option>
+                </select>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">
-                  Penugasan Rombel Kelas Saya *
-                </label>
-                <select
-                  value={classId}
-                  onChange={(e) => setClassId(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
-                  required
-                >
-                  <option value="">-- Pilih Rombel Kelas yang Anda Ampu --</option>
-                  {classes.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name} ({c.jenjang})
-                    </option>
-                  ))}
-                </select>
+              {/* Rombel & Jenjang Info Box (Readonly) */}
+              <div className="p-3.5 bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-200 rounded-2xl space-y-1">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-teal-800 flex items-center gap-1">
+                  <GraduationCap className="w-3.5 h-3.5" />
+                  <span>Rombel Kelas & Jenjang Siswa:</span>
+                </div>
+                <div className="text-xs font-black text-teal-950 flex items-center justify-between">
+                  <span>{editingStudent?.classes?.[0]?.class?.name || teacherClass?.name || "Kelas Binaan"}</span>
+                  <span className="px-2 py-0.5 rounded-lg bg-teal-700 text-white text-[10px] font-bold">
+                    {editingStudent?.jenjang || teacherClass?.jenjang || "SDLB"}
+                  </span>
+                </div>
+                <p className="text-[10px] text-slate-500 italic">
+                  * Penugasan kelas dan mutasi jenjang siswa dikelola terpusat oleh Admin Sekolah.
+                </p>
               </div>
 
               <div>

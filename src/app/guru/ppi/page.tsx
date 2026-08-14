@@ -13,8 +13,9 @@ export default function GuruPpiPage() {
   const [students, setStudents] = useState<any[]>([]);
   const [ppiPlans, setPpiPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedClassId, setSelectedClassId] = useState("SEMUA");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const teacherClass = classes[0];
 
   // Modals
   const [isPpiModalOpen, setIsPpiModalOpen] = useState(false);
@@ -56,16 +57,13 @@ export default function GuruPpiPage() {
   }, []);
 
   const filteredPpi = ppiPlans.filter((p) => {
-    const matchClass =
-      selectedClassId === "SEMUA" ||
-      p.student?.classes?.some((c: any) => c.classId === selectedClassId || c.class?.id === selectedClassId);
     const matchSearch =
       searchQuery === "" ||
       p.student?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.shortTermGoal.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.longTermGoal.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchClass && matchSearch;
+    return matchSearch;
   });
 
   return (
@@ -83,7 +81,7 @@ export default function GuruPpiPage() {
           <div className="p-6 rounded-3xl bg-gradient-to-r from-teal-800 via-indigo-900 to-indigo-800 text-white shadow-xl shadow-indigo-900/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/15 backdrop-blur rounded-full text-xs font-semibold mb-2 text-indigo-200">
-                <Target className="w-3.5 h-3.5 text-amber-300" /> Individualized Education Plan (IEP)
+                <Target className="w-3.5 h-3.5 text-amber-300" /> {teacherClass ? `${teacherClass.name} (${teacherClass.jenjang})` : "Individualized Education Plan"}
               </div>
               <h2 className="text-xl sm:text-2xl font-black tracking-tight">
                 Rencana & Target Kemandirian Siswa Binaan
@@ -101,36 +99,6 @@ export default function GuruPpiPage() {
               <span>+ Susun PPI Baru</span>
             </button>
           </div>
-
-          {/* Class Filter Pills */}
-          {classes.length > 1 && (
-            <div className="flex items-center gap-2 overflow-x-auto pb-1">
-              <span className="text-xs font-bold text-slate-500 shrink-0">Filter Rombel:</span>
-              <button
-                onClick={() => setSelectedClassId("SEMUA")}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-                  selectedClassId === "SEMUA"
-                    ? "bg-slate-900 text-white shadow"
-                    : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
-                }`}
-              >
-                Semua Kelas ({classes.length})
-              </button>
-              {classes.map((cls) => (
-                <button
-                  key={cls.id}
-                  onClick={() => setSelectedClassId(cls.id)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-                    selectedClassId === cls.id
-                      ? "bg-indigo-700 text-white shadow"
-                      : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
-                  }`}
-                >
-                  {cls.name} ({cls.jenjang})
-                </button>
-              ))}
-            </div>
-          )}
 
           {/* Search Bar */}
           <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">

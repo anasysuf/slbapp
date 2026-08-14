@@ -104,45 +104,57 @@ export default function GuruDashboard() {
           </div>
 
           {/* Rombel Kelas Binaan Guru */}
-          {classes.length > 0 && (
-            <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-teal-600" />
-                  <h3 className="font-bold text-sm text-slate-800">
-                    Rombel Kelas yang Anda Ampu ({classes.length} Rombel)
-                  </h3>
+          {classes.length > 0 ? (
+            <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200 shadow-sm space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center">
+                    <BookOpen className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm sm:text-base text-slate-900">
+                      Rombel Kelas yang Anda Ampu
+                    </h3>
+                    <p className="text-xs text-slate-500">Penugasan resmi dan jenjang pendidikan ditentukan oleh Administrator Sekolah</p>
+                  </div>
                 </div>
                 <Link
                   href="/guru/siswa"
-                  className="text-xs font-bold text-teal-600 hover:underline flex items-center gap-1"
+                  className="text-xs font-bold text-teal-600 hover:text-teal-700 flex items-center gap-1 self-start sm:self-auto"
                 >
-                  <span>Kelola Siswa di Menu Siswa</span>
+                  <span>Kelola Siswa di Kelas Ini</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                {classes.map((cls) => {
-                  const studentCount = cls.students?.length || cls._count?.students || 0;
-                  return (
-                    <Link
-                      key={cls.id}
-                      href={`/guru/siswa`}
-                      className="p-3.5 bg-slate-50 hover:bg-teal-50/60 rounded-2xl border border-slate-200/80 hover:border-teal-300 transition-all flex items-center justify-between"
-                    >
-                      <div>
-                        <div className="font-bold text-xs text-slate-900">{cls.name}</div>
-                        <div className="text-[11px] text-teal-700 font-semibold mt-0.5">
-                          Jenjang {cls.jenjang}
-                        </div>
-                      </div>
-                      <span className="px-2.5 py-1 rounded-xl bg-teal-100/70 text-teal-800 text-xs font-bold">
-                        {studentCount} Siswa
-                      </span>
-                    </Link>
-                  );
-                })}
+              <div className="p-4 bg-gradient-to-r from-teal-50/80 to-slate-50 rounded-2xl border border-teal-200/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-black text-base text-teal-950">{classes[0]?.name}</span>
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-700 text-white">
+                      Jenjang {classes[0]?.jenjang}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-600">
+                    Wali Kelas / Pengampu Resmi: <strong>{classes[0]?.teacher?.name || "Guru"}</strong> • Terdaftar <strong>{students.length} siswa berkebutuhan khusus</strong>
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Link
+                    href="/guru/siswa"
+                    className="px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs rounded-xl shadow transition-colors"
+                  >
+                    Daftar Siswa Kelas ({students.length})
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-amber-50 border border-amber-200 p-5 rounded-3xl text-amber-800 text-xs flex items-center gap-3">
+              <span className="text-lg">⚠️</span>
+              <div>
+                <strong>Belum Memiliki Rombel Kelas Aktif:</strong> Akun Guru Anda belum ditugaskan ke kelas tertentu oleh Administrator. Silakan hubungi Admin Sekolah untuk penugasan kelas dan jenjang.
               </div>
             </div>
           )}
