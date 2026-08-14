@@ -26,7 +26,9 @@ import {
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import AspectRadarChart from "@/components/AspectRadarChart";
+import StudentProgressTrendChart from "@/components/StudentProgressTrendChart";
 import Footer from "@/components/Footer";
+
 
 
 export default function OrtuDashboard() {
@@ -203,59 +205,68 @@ export default function OrtuDashboard() {
             </div>
           </div>
 
-          {/* Radar Chart Kemandirian 5 Aspek Ananda */}
+          {/* Radar Chart & Grafik Tren Kemandirian Ananda */}
           {child && (
-            <AspectRadarChart
-              studentName={child.name}
-              aspectScores={[
-                {
-                  category: "Bina Diri (ADL)",
-                  label: "Bina Diri (ADL)",
-                  score: independenceRate,
-                  total: 4,
-                  mandiriCount: 3,
-                  denganBantuanCount: 1,
-                  belumMampuCount: 0,
-                },
-                {
-                  category: "Motorik Kasar & Halus",
-                  label: "Fisik & Motorik",
-                  score: Math.min(100, independenceRate + 5),
-                  total: 4,
-                  mandiriCount: 3,
-                  denganBantuanCount: 1,
-                  belumMampuCount: 0,
-                },
-                {
-                  category: "Bahasa & Komunikasi",
-                  label: "Bahasa & Komunikasi",
-                  score: Math.max(30, independenceRate - 10),
-                  total: 4,
-                  mandiriCount: 2,
-                  denganBantuanCount: 2,
-                  belumMampuCount: 0,
-                },
-                {
-                  category: "Kognitif / Akademik",
-                  label: "Kognitif & Akademik",
-                  score: Math.max(40, independenceRate - 5),
-                  total: 4,
-                  mandiriCount: 2,
-                  denganBantuanCount: 2,
-                  belumMampuCount: 0,
-                },
-                {
-                  category: "Sosial Emosional",
-                  label: "Sosial & Emosi",
-                  score: Math.min(100, independenceRate + 2),
-                  total: 4,
-                  mandiriCount: 3,
-                  denganBantuanCount: 1,
-                  belumMampuCount: 0,
-                },
-              ]}
-            />
+            <>
+              <AspectRadarChart
+                studentName={child.name}
+                aspectScores={[
+                  {
+                    category: "Bina Diri (ADL)",
+                    label: "Bina Diri (ADL)",
+                    score: independenceRate,
+                    total: 4,
+                    mandiriCount: 3,
+                    denganBantuanCount: 1,
+                    belumMampuCount: 0,
+                  },
+                  {
+                    category: "Motorik Kasar & Halus",
+                    label: "Fisik & Motorik",
+                    score: Math.min(100, independenceRate + 5),
+                    total: 4,
+                    mandiriCount: 3,
+                    denganBantuanCount: 1,
+                    belumMampuCount: 0,
+                  },
+                  {
+                    category: "Bahasa & Komunikasi",
+                    label: "Bahasa & Komunikasi",
+                    score: Math.max(30, independenceRate - 10),
+                    total: 4,
+                    mandiriCount: 2,
+                    denganBantuanCount: 2,
+                    belumMampuCount: 0,
+                  },
+                  {
+                    category: "Kognitif / Akademik",
+                    label: "Kognitif & Akademik",
+                    score: Math.max(40, independenceRate - 5),
+                    total: 4,
+                    mandiriCount: 2,
+                    denganBantuanCount: 2,
+                    belumMampuCount: 0,
+                  },
+                  {
+                    category: "Sosial Emosional",
+                    label: "Sosial & Emosi",
+                    score: Math.min(100, independenceRate + 2),
+                    total: 4,
+                    mandiriCount: 3,
+                    denganBantuanCount: 1,
+                    belumMampuCount: 0,
+                  },
+                ]}
+              />
+
+              {/* Grafik Tren Perkembangan Kemandirian Anak */}
+              <StudentProgressTrendChart
+                studentName={child.name}
+                ppiPlans={child.ppiPlans || []}
+              />
+            </>
           )}
+
 
           {/* Section: Buku Penghubung Harian (Digital Communication Log) */}
           <div className="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200 shadow-sm space-y-4">

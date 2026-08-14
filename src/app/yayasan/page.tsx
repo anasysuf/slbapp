@@ -17,13 +17,36 @@ import {
   Printer,
   ArrowRight,
   TrendingUp,
+  FileSpreadsheet,
+  Download,
 } from "lucide-react";
+
 import Footer from "@/components/Footer";
+import { exportComprehensiveAllDataToCsv } from "@/lib/exportUtils";
 
 
 export default function YayasanDashboard() {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [exportingAll, setExportingAll] = useState(false);
+
+  const handleExportAll = async () => {
+    try {
+      setExportingAll(true);
+      const res = await fetch("/api/rekap/all");
+      if (res.ok) {
+        const data = await res.json();
+        exportComprehensiveAllDataToCsv(data, "Yayasan_SLB");
+      } else {
+        alert("Gagal mengunduh rekap yayasan.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Terjadi kesalahan saat mengekspor data.");
+    } finally {
+      setExportingAll(false);
+    }
+  };
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -65,12 +88,22 @@ export default function YayasanDashboard() {
             </div>
 
             <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+              <button
+                onClick={handleExportAll}
+                disabled={exportingAll}
+                className="px-4 py-2.5 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black text-xs sm:text-sm rounded-xl shadow-lg transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                title="Unduh Seluruh Master Data & Rekapitulasi Yayasan"
+              >
+                <FileSpreadsheet className="w-4 h-4 text-slate-950" />
+                <span>{exportingAll ? "Mengekspor Semua..." : "Rekap Semuanya (All Data)"}</span>
+              </button>
+
               <Link
                 href="/guru/rekap"
                 className="px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-lg transition-all flex items-center gap-2"
               >
                 <BarChart3 className="w-4 h-4" />
-                <span>Lihat Rekapitulasi Semester</span>
+                <span>Rekapitulasi Semester</span>
               </Link>
 
               <button
@@ -82,6 +115,7 @@ export default function YayasanDashboard() {
               </button>
             </div>
           </div>
+
 
           {/* Metric Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

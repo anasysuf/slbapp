@@ -36,9 +36,19 @@ import {
   Eye,
   HeartHandshake,
   BarChart3,
+  Printer,
+  Download,
+  FileSpreadsheet,
 } from "lucide-react";
 import Footer from "@/components/Footer";
-
+import {
+  exportStudentsToCsv,
+  exportTeachersToCsv,
+  exportParentsToCsv,
+  exportClassesToCsv,
+  exportLogsToCsv,
+  exportComprehensiveAllDataToCsv,
+} from "@/lib/exportUtils";
 
 
 function AdminDashboardContent() {
@@ -50,6 +60,7 @@ function AdminDashboardContent() {
   const isYayasan = currentRole === "YAYASAN";
 
   const [activeTab, setActiveTab] = useState<"sekolah" | "siswa" | "guru" | "ortu" | "yayasan" | "admin" | "pengguna" | "kelas" | "mapel" | "logs">(tabFromUrl);
+  const [exportingAll, setExportingAll] = useState(false);
 
   const [foundations, setFoundations] = useState<any[]>([]);
   const [students, setStudents] = useState<any[]>([]);
@@ -58,6 +69,25 @@ function AdminDashboardContent() {
   const [subjects, setSubjects] = useState<any[]>([]);
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const handleExportAllData = async () => {
+    try {
+      setExportingAll(true);
+      const res = await fetch("/api/rekap/all");
+      if (res.ok) {
+        const data = await res.json();
+        exportComprehensiveAllDataToCsv(data, schoolName || "Sekolah_SLB");
+      } else {
+        alert("Gagal mengunduh rekap komprehensif.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Terjadi kesalahan saat mengekspor data.");
+    } finally {
+      setExportingAll(false);
+    }
+  };
+
 
   // Sync tab with URL
   useEffect(() => {
@@ -737,6 +767,16 @@ function AdminDashboardContent() {
                 <span>+ Tambah Mapel Khusus</span>
               </button>
             )}
+            <button
+              onClick={handleExportAllData}
+              disabled={exportingAll}
+              className="px-4 py-2.5 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black text-xs rounded-xl shadow-lg flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+              title="Ekspor Seluruh Database & Master Data SLB"
+            >
+              <FileSpreadsheet className="w-4 h-4 text-slate-950" />
+              <span>{exportingAll ? "Mengekspor Semua..." : "Rekap Semuanya (All Data)"}</span>
+            </button>
+
             <Link
               href="/guru/rekap"
               className="px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl shadow-lg flex items-center gap-2"
@@ -746,6 +786,7 @@ function AdminDashboardContent() {
             </Link>
           </div>
         </div>
+
 
 
         {/* Navigation Tabs (Synchronized with Sidebar) */}
@@ -1111,16 +1152,28 @@ function AdminDashboardContent() {
                 <p className="text-xs text-slate-500">Kelola mutasi kelas, data orang tua, dan jenjang pendidikan siswa</p>
               </div>
 
-              <div className="relative w-full sm:w-72">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-                <input
-                  type="text"
-                  placeholder="Cari nama, NISN, disabilitas..."
-                  value={searchStudent}
-                  onChange={(e) => setSearchStudent(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-purple-600"
-                />
+              <div className="flex flex-wrap items-center gap-2.5">
+                <button
+                  onClick={() => exportStudentsToCsv(filteredStudents, `Rekap_Data_Siswa_${schoolName || "SLB"}`)}
+                  className="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-900 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shrink-0 border border-indigo-200"
+                  title="Unduh Rekap Data Siswa ke CSV / Excel"
+                >
+                  <Download className="w-3.5 h-3.5 text-indigo-700" />
+                  <span>Unduh Rekap Siswa (CSV)</span>
+                </button>
+
+                <div className="relative w-full sm:w-64">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                  <input
+                    type="text"
+                    placeholder="Cari nama, NISN, disabilitas..."
+                    value={searchStudent}
+                    onChange={(e) => setSearchStudent(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                  />
+                </div>
               </div>
+
             </div>
 
             {loading ? (
@@ -1227,7 +1280,16 @@ function AdminDashboardContent() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2.5">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <button
+                  onClick={() => exportTeachersToCsv(teachers, `Rekap_Data_Guru_${schoolName || "SLB"}`)}
+                  className="px-3.5 py-2 bg-teal-50 hover:bg-teal-100 text-teal-900 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shrink-0 border border-teal-200"
+                  title="Unduh Rekap Data Guru ke CSV / Excel"
+                >
+                  <Download className="w-3.5 h-3.5 text-teal-700" />
+                  <span>Unduh Rekap Guru (CSV)</span>
+                </button>
+
                 <div className="relative w-full sm:w-64">
                   <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
                   <input
@@ -1249,6 +1311,7 @@ function AdminDashboardContent() {
                   </button>
                 )}
               </div>
+
             </div>
 
             {loading ? (
@@ -1368,7 +1431,16 @@ function AdminDashboardContent() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2.5">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <button
+                  onClick={() => exportParentsToCsv(parents, `Rekap_Data_Orang_Tua_${schoolName || "SLB"}`)}
+                  className="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-900 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shrink-0 border border-rose-200"
+                  title="Unduh Rekap Data Orang Tua ke CSV / Excel"
+                >
+                  <Download className="w-3.5 h-3.5 text-rose-700" />
+                  <span>Unduh Rekap Ortu (CSV)</span>
+                </button>
+
                 <div className="relative w-full sm:w-64">
                   <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
                   <input
@@ -1390,6 +1462,7 @@ function AdminDashboardContent() {
                   </button>
                 )}
               </div>
+
             </div>
 
             {loading ? (
@@ -1728,12 +1801,22 @@ function AdminDashboardContent() {
         {/* TAB 3: ROMBEL JENJANG */}
         {activeTab === "kelas" && (
           <div className="space-y-4 animate-fade-in">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h3 className="font-bold text-base text-slate-800">Rombongan Belajar per Jenjang</h3>
                 <p className="text-xs text-slate-500">Pemisahan kelas adaptif untuk jenjang TKLB, SDLB, SMPLB, dan SMALB</p>
               </div>
+
+              <button
+                onClick={() => exportClassesToCsv(classes, `Rekap_Data_Kelas_${schoolName || "SLB"}`)}
+                className="px-3.5 py-2 bg-purple-50 hover:bg-purple-100 text-purple-900 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shrink-0 border border-purple-200"
+                title="Unduh Rekap Data Rombel Kelas ke CSV / Excel"
+              >
+                <Download className="w-3.5 h-3.5 text-purple-700" />
+                <span>Unduh Rekap Rombel (CSV)</span>
+              </button>
             </div>
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {classes.map((c) => (
@@ -1862,22 +1945,34 @@ function AdminDashboardContent() {
                 <p className="text-xs text-slate-500">Rekam jejak setiap aksi mutasi data siswa, asesmen, PPI, dan akun pengguna pada yayasan Anda</p>
               </div>
 
-              <div className="flex items-center gap-2 text-xs">
-                <span className="font-bold text-slate-500">Filter Aksi:</span>
-                <select
-                  value={logActionFilter}
-                  onChange={(e) => setLogActionFilter(e.target.value)}
-                  className="px-3 py-1.5 rounded-xl border border-slate-200 font-semibold bg-slate-50 text-xs"
+              <div className="flex flex-wrap items-center gap-2.5 text-xs">
+                <button
+                  onClick={() => exportLogsToCsv(logs, `Rekap_Audit_Log_${schoolName || "SLB"}`)}
+                  className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl transition-all flex items-center gap-1.5 shrink-0 border border-slate-200"
+                  title="Unduh Catatan Log ke CSV / Excel"
                 >
-                  <option value="SEMUA">Semua Aksi</option>
-                  <option value="CREATE">CREATE (Tambah Data)</option>
-                  <option value="UPDATE">UPDATE (Perubahan Data)</option>
-                  <option value="DELETE">DELETE (Penghapusan)</option>
-                  <option value="ASSESSMENT">ASSESSMENT (Asesmen Guru)</option>
-                  <option value="EVALUATION">EVALUATION (Evaluasi PPI)</option>
-                  <option value="JOURNAL">JOURNAL (Buku Penghubung)</option>
-                </select>
+                  <Download className="w-3.5 h-3.5 text-slate-700" />
+                  <span>Unduh Log (CSV)</span>
+                </button>
+
+                <div className="flex items-center gap-1.5">
+                  <span className="font-bold text-slate-500">Filter Aksi:</span>
+                  <select
+                    value={logActionFilter}
+                    onChange={(e) => setLogActionFilter(e.target.value)}
+                    className="px-3 py-1.5 rounded-xl border border-slate-200 font-semibold bg-slate-50 text-xs"
+                  >
+                    <option value="SEMUA">Semua Aksi</option>
+                    <option value="CREATE">CREATE (Tambah Data)</option>
+                    <option value="UPDATE">UPDATE (Perubahan Data)</option>
+                    <option value="DELETE">DELETE (Penghapusan)</option>
+                    <option value="ASSESSMENT">ASSESSMENT (Asesmen Guru)</option>
+                    <option value="EVALUATION">EVALUATION (Evaluasi PPI)</option>
+                    <option value="JOURNAL">JOURNAL (Buku Penghubung)</option>
+                  </select>
+                </div>
               </div>
+
             </div>
 
             {loading ? (

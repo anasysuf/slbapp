@@ -20,8 +20,11 @@ import {
   BookOpen,
   Eye,
   UserCheck,
+  Download,
 } from "lucide-react";
 import Footer from "@/components/Footer";
+import { exportStudentsToCsv } from "@/lib/exportUtils";
+
 
 
 export default function GuruStudentManagementPage() {
@@ -265,11 +268,21 @@ export default function GuruStudentManagementPage() {
 
           {/* Students Grid / Table */}
           <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between">
+            <div className="p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
               <h3 className="font-bold text-base text-slate-800">
                 Daftar Peserta Didik ({filteredStudents.length} Siswa)
               </h3>
+
+              <button
+                onClick={() => exportStudentsToCsv(filteredStudents, "Rekap_Siswa_Kelas_Binaan")}
+                className="px-3.5 py-2 bg-teal-50 hover:bg-teal-100 text-teal-900 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shrink-0 border border-teal-200"
+                title="Unduh Rekap Siswa ke CSV / Excel"
+              >
+                <Download className="w-3.5 h-3.5 text-teal-700" />
+                <span>Unduh Rekap Siswa (CSV)</span>
+              </button>
             </div>
+
 
             {loading ? (
               <div className="p-12 text-center text-xs text-slate-400">Memuat data siswa...</div>

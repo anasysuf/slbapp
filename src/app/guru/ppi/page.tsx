@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
-import { Target, PlusCircle, Sparkles, Filter, Search, Calendar, CheckCircle2 } from "lucide-react";
+import { Target, PlusCircle, Sparkles, Filter, Search, Calendar, CheckCircle2, Download } from "lucide-react";
 import PpiModal from "@/components/PpiModal";
 import EvaluationModal from "@/components/EvaluationModal";
 import PpiProgressCard from "@/components/PpiProgressCard";
 import Footer from "@/components/Footer";
+import { exportPpiToCsv } from "@/lib/exportUtils";
+
 
 
 export default function GuruPpiPage() {
@@ -93,13 +95,25 @@ export default function GuruPpiPage() {
               </p>
             </div>
 
-            <button
-              onClick={() => setIsPpiModalOpen(true)}
-              className="px-5 py-2.5 bg-white text-indigo-900 hover:bg-indigo-50 font-bold text-xs sm:text-sm rounded-xl shadow-lg transition-all flex items-center gap-2 shrink-0"
-            >
-              <PlusCircle className="w-4 h-4 text-indigo-600" />
-              <span>+ Susun PPI Baru</span>
-            </button>
+            <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+              <button
+                onClick={() => exportPpiToCsv(filteredPpi, "Rekap_Program_PPI_Siswa")}
+                className="px-4 py-2.5 bg-white/15 hover:bg-white/25 text-white font-bold text-xs sm:text-sm rounded-xl transition-all flex items-center gap-2 border border-white/20"
+                title="Unduh Rekap Program PPI ke CSV / Excel"
+              >
+                <Download className="w-4 h-4 text-emerald-300" />
+                <span>Unduh Rekap PPI</span>
+              </button>
+
+              <button
+                onClick={() => setIsPpiModalOpen(true)}
+                className="px-5 py-2.5 bg-white text-indigo-900 hover:bg-indigo-50 font-bold text-xs sm:text-sm rounded-xl shadow-lg transition-all flex items-center gap-2 shrink-0"
+              >
+                <PlusCircle className="w-4 h-4 text-indigo-600" />
+                <span>+ Susun PPI Baru</span>
+              </button>
+            </div>
+
           </div>
 
           {/* Search Bar */}

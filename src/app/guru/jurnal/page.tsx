@@ -16,8 +16,11 @@ import {
   Send,
   Image as ImageIcon,
   Check,
+  Download,
 } from "lucide-react";
 import Footer from "@/components/Footer";
+import { exportJournalsToCsv } from "@/lib/exportUtils";
+
 
 
 export default function GuruJurnalPage() {
@@ -118,13 +121,25 @@ export default function GuruJurnalPage() {
               </p>
             </div>
 
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="px-5 py-2.5 bg-white text-teal-900 hover:bg-teal-50 font-bold text-xs sm:text-sm rounded-xl shadow-lg transition-all flex items-center gap-2 shrink-0"
-            >
-              <PlusCircle className="w-4 h-4 text-teal-600" />
-              <span>+ Tulis Catatan Hari Ini</span>
-            </button>
+            <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+              <button
+                onClick={() => exportJournalsToCsv(journals, "Rekap_Buku_Penghubung_Jurnal_SLB")}
+                className="px-4 py-2.5 bg-white/15 hover:bg-white/25 text-white font-bold text-xs sm:text-sm rounded-xl transition-all flex items-center gap-2 border border-white/20"
+                title="Unduh Rekap Jurnal ke CSV / Excel"
+              >
+                <Download className="w-4 h-4 text-emerald-300" />
+                <span>Unduh Rekap Jurnal</span>
+              </button>
+
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="px-5 py-2.5 bg-white text-teal-900 hover:bg-teal-50 font-bold text-xs sm:text-sm rounded-xl shadow-lg transition-all flex items-center gap-2 shrink-0"
+              >
+                <PlusCircle className="w-4 h-4 text-teal-600" />
+                <span>+ Tulis Catatan Hari Ini</span>
+              </button>
+            </div>
+
           </div>
 
           {/* Journal Entries List */}

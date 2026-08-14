@@ -30,8 +30,10 @@ import {
   Copy,
   Check,
 } from "lucide-react";
+
 import { exportToCsv } from "@/lib/exportUtils";
 import AspectRadarChart from "@/components/AspectRadarChart";
+import StudentProgressTrendChart from "@/components/StudentProgressTrendChart";
 import Footer from "@/components/Footer";
 
 
@@ -42,7 +44,8 @@ function RekapContent() {
   const [academicYear, setAcademicYear] = useState("2026/2027");
   const [semester, setSemester] = useState("Ganjil");
   const [selectedClassId, setSelectedClassId] = useState("SEMUA");
-  const [activeView, setActiveView] = useState<"table" | "radar" | "narasi">("table");
+  const [activeView, setActiveView] = useState<"table" | "radar" | "timeline" | "narasi">("table");
+
   const [rekapData, setRekapData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -321,6 +324,18 @@ function RekapContent() {
             </button>
 
             <button
+              onClick={() => setActiveView("timeline")}
+              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 shrink-0 ${
+                activeView === "timeline"
+                  ? "bg-teal-700 text-white shadow"
+                  : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+              }`}
+            >
+              <TrendingUp className="w-4 h-4" />
+              <span>Grafik Tren Progres</span>
+            </button>
+
+            <button
               onClick={() => setActiveView("narasi")}
               className={`px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 shrink-0 ${
                 activeView === "narasi"
@@ -332,6 +347,7 @@ function RekapContent() {
               <span>⚡ Generator Narasi Rapor</span>
             </button>
           </div>
+
 
           {/* Analytics Overview Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

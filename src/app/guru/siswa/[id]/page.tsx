@@ -24,7 +24,9 @@ import {
   MessageCircle,
 } from "lucide-react";
 import AspectRadarChart from "@/components/AspectRadarChart";
+import StudentProgressTrendChart from "@/components/StudentProgressTrendChart";
 import Footer from "@/components/Footer";
+
 
 
 export default function StudentDetailPage() {
@@ -248,7 +250,14 @@ export default function StudentDetailPage() {
                 ]}
               />
 
+              {/* Grafik Tren Perkembangan & Kemandirian Siswa */}
+              <StudentProgressTrendChart
+                studentName={student.name}
+                ppiPlans={ppiPlans}
+              />
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
                 <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
                   <h3 className="font-bold text-base text-slate-800 border-b pb-3">Informasi Peserta Didik</h3>
                   <div className="space-y-3 text-xs">
