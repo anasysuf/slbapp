@@ -5,6 +5,8 @@ import prisma from "@/lib/prisma";
 import { Jenjang } from "@prisma/client";
 import { logActivity } from "@/lib/activityLog";
 
+export const dynamic = "force-dynamic";
+
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   try {
     const session = await getServerSession(authOptions);

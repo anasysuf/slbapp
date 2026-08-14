@@ -5,6 +5,8 @@ import prisma from "@/lib/prisma";
 import { Score } from "@prisma/client";
 import { logActivity } from "@/lib/activityLog";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
