@@ -17,7 +17,18 @@ export async function POST(req: Request) {
       );
     }
 
+    // Feature is temporarily disabled by request
+    const IS_CHANGE_PASSWORD_ENABLED = false;
+    if (!IS_CHANGE_PASSWORD_ENABLED) {
+      return NextResponse.json(
+        { error: "Fitur ganti kata sandi mandiri sedang dinonaktifkan sementara oleh administrator sistem." },
+        { status: 403 }
+      );
+    }
+
+
     const userId = (session.user as any).id;
+
     const body = await req.json();
     const { oldPassword, newPassword } = body;
 

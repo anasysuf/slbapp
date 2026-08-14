@@ -91,18 +91,20 @@ export async function POST(req: Request) {
     }
 
     const role = (session.user as any).role;
-    if (role !== "GURU" && role !== "ADMIN") {
-      return NextResponse.json({ error: "Akses ditolak: Hanya Guru atau Admin yang dapat menulis catatan buku penghubung" }, { status: 403 });
+    const userId = (session.user as any).id;
+
+    if (role !== "GURU" && role !== "ADMIN" && role !== "ORANG_TUA") {
+      return NextResponse.json({ error: "Akses ditolak: Anda tidak memiliki izin untuk menulis catatan buku penghubung" }, { status: 403 });
     }
 
     const body = await req.json();
-    const { studentId, mood, healthCondition, eatingNote, learningActivity, photoUrl } = body;
+    const { studentId, mood, healthCondition, eatingNote, learningActivity, photoUrl, parentFeedback } = body;
 
-    if (!studentId || !mood || !learningActivity) {
-      return NextResponse.json({ error: "Siswa, suasana hati (mood), dan aktivitas wajib diisi" }, { status: 400 });
+    if (!studentId || !mood || (!learningActivity && !parentFeedback)) {
+      return NextResponse.json({ error: "Siswa, suasana hati (mood), dan catatan aktivitas/kabar wajib diisi" }, { status: 400 });
     }
 
-    const teacherId = (session.user as any).id;
+    let finalTeacherId = userId;
 
     if (role === "GURU") {
       const studentInClass = await prisma.student.findFirst({
@@ -111,7 +113,7 @@ export async function POST(req: Request) {
           classes: {
             some: {
               class: {
-                teacherId: teacherId,
+                teacherId: userId,
               },
             },
           },
@@ -120,17 +122,49 @@ export async function POST(req: Request) {
       if (!studentInClass) {
         return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat menulis buku penghubung untuk siswa pada kelas yang Anda ampu" }, { status: 403 });
       }
+    } else if (role === "ORANG_TUA") {
+      const parentStudent = await prisma.student.findFirst({
+        where: {
+          id: studentId,
+          parentId: userId,
+        },
+        include: {
+          classes: {
+            include: {
+              class: {
+                select: { teacherId: true },
+              },
+            },
+          },
+        },
+      });
+
+      if (!parentStudent) {
+        return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat menulis catatan untuk anak Anda sendiri" }, { status: 403 });
+      }
+
+      // Find assigned class teacher or fallback to any teacher
+      const classTeacher = parentStudent.classes?.[0]?.class?.teacherId;
+      if (classTeacher) {
+        finalTeacherId = classTeacher;
+      } else {
+        const fallbackTeacher = await prisma.user.findFirst({
+          where: { role: "GURU", foundationId: parentStudent.foundationId },
+        });
+        finalTeacherId = fallbackTeacher?.id || userId;
+      }
     }
 
     const journal = await prisma.dailyJournal.create({
       data: {
         studentId,
-        teacherId,
+        teacherId: finalTeacherId,
         mood: mood.trim(),
         healthCondition: healthCondition ? healthCondition.trim() : "Sehat bugar",
-        eatingNote: eatingNote ? eatingNote.trim() : "Makan bekal habis mandiri",
-        learningActivity: learningActivity.trim(),
+        eatingNote: eatingNote ? eatingNote.trim() : "Makan mandiri",
+        learningActivity: learningActivity ? learningActivity.trim() : `Kabar dan catatan aktivitas harian dari rumah oleh Orang Tua (${session.user.name || "Orang Tua"})`,
         photoUrl: photoUrl ? photoUrl.trim() : null,
+        parentFeedback: parentFeedback ? parentFeedback.trim() : (role === "ORANG_TUA" ? (learningActivity || "Kabar dari rumah telah dikirim.") : null),
       },
       include: {
         student: true,
@@ -140,13 +174,13 @@ export async function POST(req: Request) {
 
     // Log Activity
     await logActivity({
-      userId: teacherId,
-      userName: session.user.name || "Guru",
+      userId: userId,
+      userName: session.user.name || (role === "ORANG_TUA" ? "Orang Tua" : "Guru"),
       userRole: role,
       action: "JOURNAL",
       entity: "DailyJournal",
       entityId: journal.id,
-      description: `Menulis catatan buku penghubung untuk ${journal.student.name} (Mood: ${journal.mood})`,
+      description: `${role === "ORANG_TUA" ? "Orang tua" : "Guru"} menulis catatan buku penghubung untuk ${journal.student.name} (Mood: ${journal.mood})`,
       foundationId: journal.student.foundationId,
     });
 
@@ -157,7 +191,7 @@ export async function POST(req: Request) {
   }
 }
 
-// PATCH for Parent Feedback
+// PATCH for Parent Feedback / Editing Notes
 export async function PATCH(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -169,10 +203,10 @@ export async function PATCH(req: Request) {
     const userId = (session.user as any).id;
 
     const body = await req.json();
-    const { journalId, parentFeedback } = body;
+    const { journalId, parentFeedback, mood, healthCondition, eatingNote, learningActivity } = body;
 
-    if (!journalId || !parentFeedback || !parentFeedback.trim()) {
-      return NextResponse.json({ error: "ID jurnal dan respon orang tua wajib diisi" }, { status: 400 });
+    if (!journalId) {
+      return NextResponse.json({ error: "ID jurnal wajib diisi" }, { status: 400 });
     }
 
     const journal = await prisma.dailyJournal.findUnique({
@@ -189,26 +223,36 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat memberi tanggapan pada anak Anda sendiri" }, { status: 403 });
     }
 
+    const updateData: any = {};
+    if (parentFeedback !== undefined) updateData.parentFeedback = parentFeedback.trim();
+    if (mood !== undefined) updateData.mood = mood.trim();
+    if (healthCondition !== undefined) updateData.healthCondition = healthCondition.trim();
+    if (eatingNote !== undefined) updateData.eatingNote = eatingNote.trim();
+    if (learningActivity !== undefined && (role === "GURU" || role === "ADMIN")) {
+      updateData.learningActivity = learningActivity.trim();
+    }
+
     const updated = await prisma.dailyJournal.update({
       where: { id: journalId },
-      data: { parentFeedback: parentFeedback.trim() },
+      data: updateData,
     });
 
     // Log Activity
     await logActivity({
       userId: userId,
-      userName: session.user.name || "Orang Tua",
+      userName: session.user.name || "Pengguna",
       userRole: role,
       action: "UPDATE",
       entity: "DailyJournal",
       entityId: journalId,
-      description: `Orang tua mengirim respon balasan pada buku penghubung ${journal.student.name}`,
+      description: `Memperbarui catatan buku penghubung ${journal.student.name}`,
       foundationId: journal.student.foundationId,
     });
 
     return NextResponse.json(updated);
   } catch (error: any) {
     console.error("Error updating parent feedback:", error);
-    return NextResponse.json({ error: "Gagal menyimpan respon orang tua" }, { status: 500 });
+    return NextResponse.json({ error: "Gagal menyimpan respon orang tua: " + error.message }, { status: 500 });
   }
 }
+

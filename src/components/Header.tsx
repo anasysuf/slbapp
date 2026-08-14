@@ -342,10 +342,15 @@ export default function Header({ title, subtitle }: HeaderProps) {
                       setConfirmPassword("");
                       setIsChangePasswordModalOpen(true);
                     }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-slate-700 hover:text-teal-900 hover:bg-teal-50 rounded-xl transition-colors text-left cursor-pointer"
+                    className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold text-slate-700 hover:text-teal-900 hover:bg-teal-50 rounded-xl transition-colors text-left cursor-pointer"
                   >
-                    <KeyRound className="w-4 h-4 text-teal-700" />
-                    <span>Ganti Kata Sandi</span>
+                    <div className="flex items-center gap-2.5">
+                      <KeyRound className="w-4 h-4 text-teal-700" />
+                      <span>Ganti Kata Sandi</span>
+                    </div>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded-md border border-amber-200">
+                      Nonaktif
+                    </span>
                   </button>
 
                   <button
@@ -380,9 +385,15 @@ export default function Header({ title, subtitle }: HeaderProps) {
             </div>
 
             <form onSubmit={handleChangePassword} className="p-5 sm:p-6 space-y-4">
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Amankan akun Anda dengan mengganti kata sandi secara berkala.
-              </p>
+              <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-950 text-xs space-y-1">
+                <div className="font-bold flex items-center gap-1.5 text-amber-900">
+                  <Lock className="w-4 h-4 text-amber-700" />
+                  <span>Fitur Dinonaktifkan Sementara</span>
+                </div>
+                <p className="text-[11px] text-amber-800 leading-relaxed">
+                  Fitur perubahan kata sandi mandiri sedang dinonaktifkan sementara oleh administrator sistem. Silakan hubungi admin sekolah bila Anda membutuhkan bantuan pengaturan akun.
+                </p>
+              </div>
 
               {passwordError && (
                 <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold">
@@ -398,7 +409,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
               )}
 
               {/* Old Password */}
-              <div>
+              <div className="opacity-60">
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                   Kata Sandi Lama *
                 </label>
@@ -408,13 +419,13 @@ export default function Header({ title, subtitle }: HeaderProps) {
                     value={oldPassword}
                     onChange={(e) => setOldPassword(e.target.value)}
                     placeholder="Masukkan sandi saat ini..."
-                    className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-teal-600 focus:outline-none font-semibold bg-slate-50 focus:bg-white"
-                    required
+                    disabled
+                    className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border text-xs sm:text-sm font-semibold bg-slate-100 cursor-not-allowed text-slate-500"
                   />
                   <button
                     type="button"
-                    onClick={() => setShowOldPassword(!showOldPassword)}
-                    className="absolute right-3 top-3 text-slate-400 hover:text-slate-600"
+                    disabled
+                    className="absolute right-3 top-3 text-slate-400 cursor-not-allowed"
                   >
                     {showOldPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -422,7 +433,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
               </div>
 
               {/* New Password */}
-              <div>
+              <div className="opacity-60">
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                   Kata Sandi Baru * (Min. 6 Karakter)
                 </label>
@@ -432,13 +443,13 @@ export default function Header({ title, subtitle }: HeaderProps) {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="Ketik sandi baru yang aman..."
-                    className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-teal-600 focus:outline-none font-semibold bg-slate-50 focus:bg-white"
-                    required
+                    disabled
+                    className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border text-xs sm:text-sm font-semibold bg-slate-100 cursor-not-allowed text-slate-500"
                   />
                   <button
                     type="button"
-                    onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute right-3 top-3 text-slate-400 hover:text-slate-600"
+                    disabled
+                    className="absolute right-3 top-3 text-slate-400 cursor-not-allowed"
                   >
                     {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -446,7 +457,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
               </div>
 
               {/* Confirm New Password */}
-              <div>
+              <div className="opacity-60">
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                   Konfirmasi Kata Sandi Baru *
                 </label>
@@ -455,8 +466,8 @@ export default function Header({ title, subtitle }: HeaderProps) {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Ulangi kata sandi baru..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-teal-600 focus:outline-none font-semibold bg-slate-50 focus:bg-white"
-                  required
+                  disabled
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm font-semibold bg-slate-100 cursor-not-allowed text-slate-500"
                 />
               </div>
 
@@ -466,24 +477,19 @@ export default function Header({ title, subtitle }: HeaderProps) {
                   onClick={() => setIsChangePasswordModalOpen(false)}
                   className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
                 >
-                  Batal
+                  Tutup
                 </button>
                 <button
                   type="submit"
-                  disabled={passwordLoading}
-                  className="px-5 py-2.5 bg-teal-800 hover:bg-teal-900 text-white text-xs font-bold rounded-xl shadow-lg shadow-teal-800/20 transition-all disabled:opacity-50 flex items-center gap-2"
+                  disabled
+                  className="px-5 py-2.5 bg-slate-300 text-slate-500 text-xs font-bold rounded-xl transition-all cursor-not-allowed flex items-center gap-2"
                 >
-                  {passwordLoading ? (
-                    <span>Menyimpan...</span>
-                  ) : (
-                    <>
-                      <Check className="w-4 h-4" />
-                      <span>Perbarui Kata Sandi</span>
-                    </>
-                  )}
+                  <Lock className="w-4 h-4" />
+                  <span>Fitur Dinonaktifkan Sementara</span>
                 </button>
               </div>
             </form>
+
           </div>
         </div>
       )}
