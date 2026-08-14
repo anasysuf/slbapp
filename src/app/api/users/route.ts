@@ -51,6 +51,27 @@ export async function GET(req: Request) {
             code: true,
           },
         },
+        classesTaught: {
+          select: {
+            id: true,
+            name: true,
+            jenjang: true,
+            _count: {
+              select: {
+                students: true,
+              },
+            },
+          },
+        },
+        students: {
+          select: {
+            id: true,
+            name: true,
+            nisn: true,
+            disabilityType: true,
+            jenjang: true,
+          },
+        },
         createdAt: true,
         _count: {
           select: {
