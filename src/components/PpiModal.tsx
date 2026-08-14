@@ -8,6 +8,7 @@ interface Student {
   name: string;
   nisn: string;
   disabilityType: string;
+  classes?: Array<{ class: { id: string; name: string; jenjang: string } }>;
 }
 
 interface PpiModalProps {
@@ -111,11 +112,14 @@ export default function PpiModal({
                 className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none bg-slate-50"
                 required
               >
-                {students.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name} ({s.disabilityType})
-                  </option>
-                ))}
+                {students.map((s) => {
+                  const className = s.classes?.[0]?.class?.name;
+                  return (
+                    <option key={s.id} value={s.id}>
+                      {s.name} ({s.disabilityType}){className ? ` • ${className}` : ""}
+                    </option>
+                  );
+                })}
               </select>
             </div>
 

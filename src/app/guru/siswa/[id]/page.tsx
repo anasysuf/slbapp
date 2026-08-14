@@ -32,19 +32,23 @@ export default function StudentDetailPage() {
     const fetchStudent = async () => {
       try {
         setLoading(true);
-        const res = await fetch("/api/students");
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          const found = data.find((s) => s.id === params.id) || data[0];
-          setStudent(found);
+        const res = await fetch(`/api/students/${params.id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setStudent(data);
+        } else {
+          setStudent(null);
         }
       } catch (err) {
         console.error(err);
+        setStudent(null);
       } finally {
         setLoading(false);
       }
     };
-    fetchStudent();
+    if (params.id) {
+      fetchStudent();
+    }
   }, [params.id]);
 
   if (loading) {
@@ -60,7 +64,9 @@ export default function StudentDetailPage() {
     return (
       <div className="flex min-h-screen bg-slate-50">
         <Sidebar />
-        <main className="flex-1 p-8 text-center text-slate-400 text-sm">Data siswa tidak ditemukan.</main>
+        <main className="flex-1 p-8 text-center text-slate-500 text-sm">
+          Data siswa tidak ditemukan atau Anda tidak memiliki hak akses ke siswa pada kelas ini.
+        </main>
       </div>
     );
   }

@@ -30,6 +30,26 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Skor evaluasi tidak valid" }, { status: 400 });
     }
 
+    if (role === "GURU") {
+      const ppiPlan = await prisma.ppiPlan.findFirst({
+        where: {
+          id: ppiPlanId,
+          student: {
+            classes: {
+              some: {
+                class: {
+                  teacherId: (session.user as any).id,
+                },
+              },
+            },
+          },
+        },
+      });
+      if (!ppiPlan) {
+        return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat mengisi evaluasi untuk target PPI siswa pada kelas yang Anda ampu" }, { status: 403 });
+      }
+    }
+
     const evaluation = await prisma.ppiEvaluation.create({
       data: {
         ppiPlanId,

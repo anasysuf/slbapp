@@ -12,11 +12,26 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Akses ditolak: Anda belum terautentikasi" }, { status: 401 });
     }
 
+    const role = (session.user as any).role;
+    const userId = (session.user as any).id;
+
     const { searchParams } = new URL(req.url);
     const classId = searchParams.get("classId");
 
     const where: any = {};
-    if (classId) where.classId = classId;
+    if (role === "GURU") {
+      if (classId && classId !== "SEMUA") {
+        where.classId = classId;
+        where.class = { teacherId: userId };
+      } else {
+        where.OR = [
+          { class: { teacherId: userId } },
+          { createdById: userId },
+        ];
+      }
+    } else if (classId && classId !== "SEMUA") {
+      where.classId = classId;
+    }
 
     const materials = await prisma.material.findMany({
       where,
@@ -63,6 +78,18 @@ export async function POST(req: Request) {
     }
 
     const teacherId = (session.user as any).id;
+
+    if (role === "GURU") {
+      const teacherClass = await prisma.class.findFirst({
+        where: {
+          id: classId,
+          teacherId: teacherId,
+        },
+      });
+      if (!teacherClass) {
+        return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat mengunggah materi untuk rombel kelas yang Anda ampu" }, { status: 403 });
+      }
+    }
 
     const material = await prisma.material.create({
       data: {

@@ -14,10 +14,14 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       return NextResponse.json({ error: "Akses ditolak" }, { status: 401 });
     }
 
+    const role = (session.user as any).role;
+    const userId = (session.user as any).id;
+
     const student = await prisma.student.findUnique({
       where: { id: params.id },
       include: {
         parent: true,
+        foundation: true,
         classes: {
           include: {
             class: {
@@ -41,6 +45,18 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       return NextResponse.json({ error: "Siswa tidak ditemukan" }, { status: 404 });
     }
 
+    // Role-based access checks
+    if (role === "GURU") {
+      const isTeacherClass = student.classes.some((c) => c.class?.teacherId === userId);
+      if (!isTeacherClass) {
+        return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat mengakses siswa pada kelas yang Anda ampu" }, { status: 403 });
+      }
+    } else if (role === "ORANG_TUA") {
+      if (student.parentId !== userId) {
+        return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat mengakses data anak Anda sendiri" }, { status: 403 });
+      }
+    }
+
     return NextResponse.json(student);
   } catch (error: any) {
     return NextResponse.json({ error: "Gagal memuat data siswa" }, { status: 500 });
@@ -55,6 +71,8 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     }
 
     const role = (session.user as any).role;
+    const userId = (session.user as any).id;
+
     if (role !== "ADMIN" && role !== "GURU") {
       return NextResponse.json({ error: "Hanya Guru atau Admin yang dapat mengubah data siswa" }, { status: 403 });
     }
@@ -64,9 +82,33 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
     const existing = await prisma.student.findUnique({
       where: { id: params.id },
+      include: {
+        classes: {
+          include: {
+            class: true,
+          },
+        },
+      },
     });
     if (!existing) {
       return NextResponse.json({ error: "Siswa tidak ditemukan" }, { status: 404 });
+    }
+
+    // Validate that GURU only updates their own students and assigns to their own classes
+    if (role === "GURU") {
+      const isEnrolledInTeacherClass = existing.classes.some((c) => c.class?.teacherId === userId);
+      if (!isEnrolledInTeacherClass) {
+        return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat mengubah data siswa pada kelas yang Anda ampu" }, { status: 403 });
+      }
+
+      if (classId) {
+        const targetClass = await prisma.class.findUnique({
+          where: { id: classId },
+        });
+        if (!targetClass || targetClass.teacherId !== userId) {
+          return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat memindahkan siswa ke rombel kelas yang Anda ampu" }, { status: 403 });
+        }
+      }
     }
 
     // Update student data
@@ -122,16 +164,32 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     }
 
     const role = (session.user as any).role;
+    const userId = (session.user as any).id;
+
     if (role !== "ADMIN" && role !== "GURU") {
       return NextResponse.json({ error: "Hanya Guru atau Admin yang dapat menghapus data siswa" }, { status: 403 });
     }
 
     const student = await prisma.student.findUnique({
       where: { id: params.id },
+      include: {
+        classes: {
+          include: {
+            class: true,
+          },
+        },
+      },
     });
 
     if (!student) {
       return NextResponse.json({ error: "Siswa tidak ditemukan" }, { status: 404 });
+    }
+
+    if (role === "GURU") {
+      const isEnrolledInTeacherClass = student.classes.some((c) => c.class?.teacherId === userId);
+      if (!isEnrolledInTeacherClass) {
+        return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat menghapus data siswa pada kelas yang Anda ampu" }, { status: 403 });
+      }
     }
 
     await prisma.student.delete({

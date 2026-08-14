@@ -6,21 +6,42 @@ import Header from "@/components/Header";
 import { BookOpen, PlusCircle, FileText, Calendar, CheckCircle2, Clock, X } from "lucide-react";
 
 export default function GuruMateriPage() {
+  const [classes, setClasses] = useState<any[]>([]);
+  const [subjects, setSubjects] = useState<any[]>([]);
   const [materials, setMaterials] = useState<any[]>([]);
+  const [selectedClassId, setSelectedClassId] = useState("SEMUA");
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Form states
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [classId, setClassId] = useState("");
+  const [subjectId, setSubjectId] = useState("");
   const [assignmentInstructions, setAssignmentInstructions] = useState("");
 
   const fetchData = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/materials");
-      const data = await res.json();
-      setMaterials(Array.isArray(data) ? data : []);
+      const [resClasses, resSubjects, resMaterials] = await Promise.all([
+        fetch("/api/classes"),
+        fetch("/api/subjects"),
+        fetch("/api/materials"),
+      ]);
+      const dataClasses = await resClasses.json();
+      const dataSubjects = await resSubjects.json();
+      const dataMaterials = await resMaterials.json();
+
+      setClasses(Array.isArray(dataClasses) ? dataClasses : []);
+      setSubjects(Array.isArray(dataSubjects) ? dataSubjects : []);
+      setMaterials(Array.isArray(dataMaterials) ? dataMaterials : []);
+
+      if (Array.isArray(dataClasses) && dataClasses.length > 0 && !classId) {
+        setClassId(dataClasses[0].id);
+      }
+      if (Array.isArray(dataSubjects) && dataSubjects.length > 0 && !subjectId) {
+        setSubjectId(dataSubjects[0].id);
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -34,16 +55,23 @@ export default function GuruMateriPage() {
 
   const handleCreateMaterial = async (e: React.FormEvent) => {
     e.preventDefault();
+    const targetClassId = classId || classes[0]?.id;
+    const targetSubjectId = subjectId || subjects[0]?.id;
+
+    if (!title.trim() || !content.trim() || !targetClassId || !targetSubjectId) {
+      alert("Mohon lengkapi judul, deskripsi, kelas, dan mata pelajaran");
+      return;
+    }
+
     try {
-      // For demonstration, use first class/subject if available or create
       const res = await fetch("/api/materials", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title,
           content,
-          classId: materials[0]?.classId || "demo-class",
-          subjectId: materials[0]?.subjectId || "demo-subject",
+          classId: targetClassId,
+          subjectId: targetSubjectId,
           assignmentInstructions,
         }),
       });
@@ -53,11 +81,18 @@ export default function GuruMateriPage() {
         setContent("");
         setAssignmentInstructions("");
         fetchData();
+      } else {
+        const err = await res.json();
+        alert(err.error || "Gagal membuat materi");
       }
     } catch (err) {
       console.error(err);
     }
   };
+
+  const filteredMaterials = materials.filter((m) => {
+    return selectedClassId === "SEMUA" || m.classId === selectedClassId || m.class?.id === selectedClassId;
+  });
 
   return (
     <div className="flex min-h-screen bg-slate-50">
@@ -66,7 +101,7 @@ export default function GuruMateriPage() {
       <main className="flex-1 flex flex-col min-w-0">
         <Header
           title="Materi Pembelajaran & Tugas Khusus"
-          subtitle="Modul Adaptif, Panduan Bergambar, & Lembar Kerja Khusus Siswa SLB"
+          subtitle="Modul Adaptif, Panduan Bergambar, & Lembar Kerja Khusus Siswa Rombel Binaan"
         />
 
         <div className="p-4 sm:p-6 space-y-6 max-w-7xl">
@@ -77,7 +112,7 @@ export default function GuruMateriPage() {
               </div>
               <h2 className="text-xl sm:text-2xl font-black">Bank Materi & Panduan Belajar di Rumah</h2>
               <p className="text-teal-100 text-xs sm:text-sm mt-1 max-w-xl">
-                Bagikan panduan visual, video gerakan isyarat, dan panduan stimulasi mandiri agar orang tua dapat membimbing ananda di rumah.
+                Bagikan panduan visual, video gerakan isyarat, dan panduan stimulasi mandiri untuk rombel kelas yang Anda ampu.
               </p>
             </div>
 
@@ -90,14 +125,44 @@ export default function GuruMateriPage() {
             </button>
           </div>
 
+          {/* Class Filter */}
+          {classes.length > 1 && (
+            <div className="flex items-center gap-2 overflow-x-auto pb-1">
+              <span className="text-xs font-bold text-slate-500 shrink-0">Filter Rombel:</span>
+              <button
+                onClick={() => setSelectedClassId("SEMUA")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                  selectedClassId === "SEMUA"
+                    ? "bg-slate-900 text-white shadow"
+                    : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+                }`}
+              >
+                Semua Kelas ({classes.length})
+              </button>
+              {classes.map((cls) => (
+                <button
+                  key={cls.id}
+                  onClick={() => setSelectedClassId(cls.id)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                    selectedClassId === cls.id
+                      ? "bg-teal-700 text-white shadow"
+                      : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+                  }`}
+                >
+                  {cls.name} ({cls.jenjang})
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* Materials Cards */}
           {loading ? (
             <div className="bg-white rounded-3xl p-12 text-center text-xs text-slate-400">Memuat materi...</div>
-          ) : materials.length === 0 ? (
-            <div className="bg-white rounded-3xl p-12 text-center text-xs text-slate-400">Belum ada materi pembelajaran yang diunggah.</div>
+          ) : filteredMaterials.length === 0 ? (
+            <div className="bg-white rounded-3xl p-12 text-center text-xs text-slate-400">Belum ada materi pembelajaran yang diunggah untuk kelas ini.</div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {materials.map((m) => (
+              {filteredMaterials.map((m) => (
                 <div key={m.id} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
                   <div className="flex items-start justify-between">
                     <div>
@@ -105,7 +170,7 @@ export default function GuruMateriPage() {
                         {m.subject?.name || "Bina Diri"}
                       </span>
                       <h3 className="font-bold text-base text-slate-900 mt-1.5">{m.title}</h3>
-                      <p className="text-xs text-slate-500">{m.class?.name}</p>
+                      <p className="text-xs text-slate-500 font-medium">{m.class?.name || "Kelas Binaan"}</p>
                     </div>
                   </div>
 
@@ -153,6 +218,41 @@ export default function GuruMateriPage() {
                   required
                 />
               </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Rombel Kelas *</label>
+                  <select
+                    value={classId}
+                    onChange={(e) => setClassId(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
+                    required
+                  >
+                    {classes.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name} ({c.jenjang})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Mata Pelajaran / Bidang *</label>
+                  <select
+                    value={subjectId}
+                    onChange={(e) => setSubjectId(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
+                    required
+                  >
+                    {subjects.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
               <div>
                 <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Deskripsi & Langkah Instruksi *</label>
                 <textarea
@@ -164,6 +264,7 @@ export default function GuruMateriPage() {
                   required
                 />
               </div>
+
               <div>
                 <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Instruksi Tugas Praktik Orang Tua (Opsional)</label>
                 <textarea
@@ -174,6 +275,7 @@ export default function GuruMateriPage() {
                   className="w-full px-3 py-2 rounded-xl border text-sm"
                 />
               </div>
+
               <div className="flex justify-end gap-2 pt-2">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-xs font-bold text-slate-600">Batal</button>
                 <button type="submit" className="px-4 py-2 bg-teal-600 text-white text-xs font-bold rounded-xl">Simpan Materi</button>

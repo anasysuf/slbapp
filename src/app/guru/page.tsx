@@ -21,6 +21,7 @@ import AssessmentModal from "@/components/AssessmentModal";
 import PpiModal from "@/components/PpiModal";
 
 export default function GuruDashboard() {
+  const [classes, setClasses] = useState<any[]>([]);
   const [students, setStudents] = useState<any[]>([]);
   const [assessments, setAssessments] = useState<any[]>([]);
   const [ppiPlans, setPpiPlans] = useState<any[]>([]);
@@ -31,16 +32,19 @@ export default function GuruDashboard() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [resStudents, resAssessments, resPpi] = await Promise.all([
+      const [resClasses, resStudents, resAssessments, resPpi] = await Promise.all([
+        fetch("/api/classes"),
         fetch("/api/students"),
         fetch("/api/assessments"),
         fetch("/api/ppi"),
       ]);
 
+      const dataClasses = await resClasses.json();
       const dataStudents = await resStudents.json();
       const dataAssessments = await resAssessments.json();
       const dataPpi = await resPpi.json();
 
+      setClasses(Array.isArray(dataClasses) ? dataClasses : []);
       setStudents(Array.isArray(dataStudents) ? dataStudents : []);
       setAssessments(Array.isArray(dataAssessments) ? dataAssessments : []);
       setPpiPlans(Array.isArray(dataPpi) ? dataPpi : []);
@@ -70,13 +74,13 @@ export default function GuruDashboard() {
           <div className="p-6 rounded-3xl bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-600 text-white shadow-xl shadow-teal-700/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 backdrop-blur rounded-full text-xs font-semibold mb-2 text-teal-50">
-                <Sparkles className="w-3.5 h-3.5 text-amber-300" /> Kurikulum Pendidikan Khusus SLB
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" /> Portal Khusus Guru SLB
               </div>
               <h2 className="text-xl sm:text-2xl font-black tracking-tight">
                 Selamat Datang di Ruang Guru SLB
               </h2>
               <p className="text-teal-100 text-xs sm:text-sm mt-1 max-w-xl">
-                Mulai hari dengan melakukan <strong>Asesmen Diagnostik</strong> kemampuan awal atau menginput evaluasi capaian <strong>Target PPI</strong> anak didik Anda.
+                Akses terpisah untuk <strong>{classes.length} rombel kelas binaan</strong> dan <strong>{students.length} siswa</strong> yang Anda ampu secara langsung.
               </p>
             </div>
 
@@ -98,6 +102,50 @@ export default function GuruDashboard() {
               </button>
             </div>
           </div>
+
+          {/* Rombel Kelas Binaan Guru */}
+          {classes.length > 0 && (
+            <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-teal-600" />
+                  <h3 className="font-bold text-sm text-slate-800">
+                    Rombel Kelas yang Anda Ampu ({classes.length} Rombel)
+                  </h3>
+                </div>
+                <Link
+                  href="/guru/siswa"
+                  className="text-xs font-bold text-teal-600 hover:underline flex items-center gap-1"
+                >
+                  <span>Kelola Siswa di Menu Siswa</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {classes.map((cls) => {
+                  const studentCount = cls.students?.length || cls._count?.students || 0;
+                  return (
+                    <Link
+                      key={cls.id}
+                      href={`/guru/siswa`}
+                      className="p-3.5 bg-slate-50 hover:bg-teal-50/60 rounded-2xl border border-slate-200/80 hover:border-teal-300 transition-all flex items-center justify-between"
+                    >
+                      <div>
+                        <div className="font-bold text-xs text-slate-900">{cls.name}</div>
+                        <div className="text-[11px] text-teal-700 font-semibold mt-0.5">
+                          Jenjang {cls.jenjang}
+                        </div>
+                      </div>
+                      <span className="px-2.5 py-1 rounded-xl bg-teal-100/70 text-teal-800 text-xs font-bold">
+                        {studentCount} Siswa
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Quick Metrics */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -244,33 +292,36 @@ export default function GuruDashboard() {
               </div>
 
               <div className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
-                {students.map((s) => (
-                  <div
-                    key={s.id}
-                    className="p-3 bg-slate-50 rounded-2xl border border-slate-200/70 hover:bg-teal-50/50 transition-colors flex items-center justify-between"
-                  >
-                    <Link href={`/guru/siswa/${s.id}`} className="hover:underline flex-1 pr-2">
-                      <div className="font-bold text-xs text-slate-900">{s.name}</div>
-                      <div className="text-[11px] text-slate-500">
-                        {s.disabilityType} • NISN: {s.nisn}
+                {students.map((s) => {
+                  const className = s.classes?.[0]?.class?.name;
+                  return (
+                    <div
+                      key={s.id}
+                      className="p-3 bg-slate-50 rounded-2xl border border-slate-200/70 hover:bg-teal-50/50 transition-colors flex items-center justify-between"
+                    >
+                      <Link href={`/guru/siswa/${s.id}`} className="hover:underline flex-1 pr-2">
+                        <div className="font-bold text-xs text-slate-900">{s.name}</div>
+                        <div className="text-[11px] text-slate-500">
+                          {s.disabilityType} {className ? `• ${className}` : ""}
+                        </div>
+                      </Link>
+                      <div className="flex items-center gap-1">
+                        <Link
+                          href={`/guru/siswa/${s.id}`}
+                          className="px-2.5 py-1 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-[10px] font-bold transition-colors"
+                        >
+                          Profil
+                        </Link>
+                        <Link
+                          href={`/guru/asesmen?studentId=${s.id}`}
+                          className="px-2.5 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-[10px] font-bold transition-colors"
+                        >
+                          Asesmen
+                        </Link>
                       </div>
-                    </Link>
-                    <div className="flex items-center gap-1">
-                      <Link
-                        href={`/guru/siswa/${s.id}`}
-                        className="px-2.5 py-1 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-[10px] font-bold transition-colors"
-                      >
-                        Profil
-                      </Link>
-                      <Link
-                        href={`/guru/asesmen?studentId=${s.id}`}
-                        className="px-2.5 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-[10px] font-bold transition-colors"
-                      >
-                        Asesmen
-                      </Link>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>

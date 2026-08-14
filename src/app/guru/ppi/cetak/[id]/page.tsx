@@ -17,7 +17,7 @@ export default function CetakRaporPpiPage() {
         const res = await fetch("/api/ppi");
         const data = await res.json();
         if (Array.isArray(data)) {
-          const found = data.find((p) => p.id === params.id) || data[0];
+          const found = data.find((p) => p.id === params.id) || null;
           setPpi(found);
         }
       } catch (err) {

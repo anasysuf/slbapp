@@ -18,9 +18,32 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const studentId = searchParams.get("studentId");
+    const classId = searchParams.get("classId");
 
     const where: any = {};
     if (studentId) where.studentId = studentId;
+
+    // Data isolation for teachers
+    if (role === "GURU") {
+      where.student = {
+        classes: {
+          some: {
+            class: {
+              teacherId: userId,
+            },
+            ...(classId && classId !== "SEMUA" ? { classId } : {}),
+          },
+        },
+      };
+    } else if (classId && classId !== "SEMUA") {
+      where.student = {
+        classes: {
+          some: {
+            classId: classId,
+          },
+        },
+      };
+    }
 
     // Data isolation for parents
     if (role === "ORANG_TUA") {
@@ -95,6 +118,24 @@ export async function POST(req: Request) {
     }
 
     const teacherId = (session.user as any).id;
+
+    if (role === "GURU") {
+      const studentInClass = await prisma.student.findFirst({
+        where: {
+          id: studentId,
+          classes: {
+            some: {
+              class: {
+                teacherId: teacherId,
+              },
+            },
+          },
+        },
+      });
+      if (!studentInClass) {
+        return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat menyusun PPI untuk siswa pada kelas yang Anda ampu" }, { status: 403 });
+      }
+    }
 
     const ppiPlan = await prisma.ppiPlan.create({
       data: {

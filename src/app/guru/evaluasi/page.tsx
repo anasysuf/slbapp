@@ -7,7 +7,9 @@ import { FileCheck2, CheckCircle2, HelpCircle, AlertCircle, Calendar, Sparkles, 
 import EvaluationModal from "@/components/EvaluationModal";
 
 export default function GuruEvaluasiPage() {
+  const [classes, setClasses] = useState<any[]>([]);
   const [ppiPlans, setPpiPlans] = useState<any[]>([]);
+  const [selectedClassId, setSelectedClassId] = useState("SEMUA");
   const [loading, setLoading] = useState(true);
   const [evalModalState, setEvalModalState] = useState<{
     isOpen: boolean;
@@ -24,9 +26,14 @@ export default function GuruEvaluasiPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/ppi");
-      const data = await res.json();
-      setPpiPlans(Array.isArray(data) ? data : []);
+      const [resClasses, resPpi] = await Promise.all([
+        fetch("/api/classes"),
+        fetch("/api/ppi"),
+      ]);
+      const dataClasses = await resClasses.json();
+      const dataPpi = await resPpi.json();
+      setClasses(Array.isArray(dataClasses) ? dataClasses : []);
+      setPpiPlans(Array.isArray(dataPpi) ? dataPpi : []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -38,6 +45,13 @@ export default function GuruEvaluasiPage() {
     fetchData();
   }, []);
 
+  const filteredPlans = ppiPlans.filter((plan) => {
+    return (
+      selectedClassId === "SEMUA" ||
+      plan.student?.classes?.some((c: any) => c.classId === selectedClassId || c.class?.id === selectedClassId)
+    );
+  });
+
   return (
     <div className="flex min-h-screen bg-slate-50">
       <Sidebar />
@@ -45,7 +59,7 @@ export default function GuruEvaluasiPage() {
       <main className="flex-1 flex flex-col min-w-0">
         <Header
           title="Input Evaluasi Perkembangan PPI"
-          subtitle="Pencatatan Skor dan Catatan Observasi Sesi Belajar Harian/Mingguan"
+          subtitle="Pencatatan Skor dan Catatan Observasi Sesi Belajar Harian/Mingguan Siswa Binaan"
         />
 
         <div className="p-4 sm:p-6 space-y-6 max-w-7xl">
@@ -61,22 +75,53 @@ export default function GuruEvaluasiPage() {
             </div>
           </div>
 
+          {/* Class Filter */}
+          {classes.length > 1 && (
+            <div className="flex items-center gap-2 overflow-x-auto pb-1">
+              <span className="text-xs font-bold text-slate-500 shrink-0">Filter Rombel:</span>
+              <button
+                onClick={() => setSelectedClassId("SEMUA")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                  selectedClassId === "SEMUA"
+                    ? "bg-slate-900 text-white shadow"
+                    : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+                }`}
+              >
+                Semua Kelas ({classes.length})
+              </button>
+              {classes.map((cls) => (
+                <button
+                  key={cls.id}
+                  onClick={() => setSelectedClassId(cls.id)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                    selectedClassId === cls.id
+                      ? "bg-emerald-700 text-white shadow"
+                      : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+                  }`}
+                >
+                  {cls.name} ({cls.jenjang})
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* Table / List of PPI Plans to Evaluate */}
           <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="p-5 border-b border-slate-100 flex items-center justify-between">
               <h3 className="font-bold text-base text-slate-800">Daftar Target Siswa untuk Dievaluasi</h3>
-              <span className="text-xs font-bold text-slate-500">{ppiPlans.length} Siswa Terdaftar</span>
+              <span className="text-xs font-bold text-slate-500">{filteredPlans.length} Target Aktif</span>
             </div>
 
             {loading ? (
               <div className="p-12 text-center text-xs text-slate-400">Memuat target PPI...</div>
-            ) : ppiPlans.length === 0 ? (
+            ) : filteredPlans.length === 0 ? (
               <div className="p-12 text-center text-xs text-slate-400">Belum ada target PPI yang dapat dievaluasi.</div>
             ) : (
               <div className="divide-y divide-slate-100">
-                {ppiPlans.map((plan) => {
+                {filteredPlans.map((plan) => {
                   const evaluations = plan.evaluations || [];
                   const latest = evaluations[0];
+                  const className = plan.student?.classes?.[0]?.class?.name;
                   return (
                     <div key={plan.id} className="p-5 hover:bg-slate-50/70 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div className="space-y-1 max-w-xl">
@@ -85,6 +130,11 @@ export default function GuruEvaluasiPage() {
                           <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200">
                             {plan.student?.disabilityType}
                           </span>
+                          {className && (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                              {className}
+                            </span>
+                          )}
                         </div>
                         <div className="text-xs font-medium text-teal-950">
                           🎯 Target Pendek: {plan.shortTermGoal}

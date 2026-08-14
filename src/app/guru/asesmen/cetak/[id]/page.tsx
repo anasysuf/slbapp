@@ -17,7 +17,7 @@ export default function CetakAsesmenPage() {
         const res = await fetch("/api/assessments");
         const data = await res.json();
         if (Array.isArray(data)) {
-          const found = data.find((a) => a.id === params.id) || data[0];
+          const found = data.find((a) => a.id === params.id) || null;
           setAssessment(found);
         }
       } catch (err) {

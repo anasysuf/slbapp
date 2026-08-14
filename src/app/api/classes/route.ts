@@ -10,6 +10,8 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
+    const role = (session?.user as any)?.role;
+    const userId = (session?.user as any)?.id;
     const foundationId = (session?.user as any)?.foundationId;
 
     const { searchParams } = new URL(req.url);
@@ -18,7 +20,13 @@ export async function GET(req: Request) {
 
     const where: any = {};
     if (jenjang && jenjang !== "SEMUA") where.jenjang = jenjang as Jenjang;
-    if (teacherId) where.teacherId = teacherId;
+
+    // Data isolation for teachers: teachers only see classes they teach
+    if (role === "GURU") {
+      where.teacherId = userId;
+    } else if (teacherId) {
+      where.teacherId = teacherId;
+    }
 
     // Scope to Admin / User's Yayasan
     if (foundationId) {

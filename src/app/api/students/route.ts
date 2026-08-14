@@ -27,7 +27,28 @@ export async function GET(req: Request) {
     const where: any = {};
     if (disabilityType && disabilityType !== "SEMUA") where.disabilityType = disabilityType;
     if (jenjang && jenjang !== "SEMUA") where.jenjang = jenjang as Jenjang;
-    if (classId && classId !== "SEMUA") {
+
+    // Data isolation for teachers: only students in classes taught by this teacher
+    if (role === "GURU") {
+      if (classId && classId !== "SEMUA") {
+        where.classes = {
+          some: {
+            classId: classId,
+            class: {
+              teacherId: userId,
+            },
+          },
+        };
+      } else {
+        where.classes = {
+          some: {
+            class: {
+              teacherId: userId,
+            },
+          },
+        };
+      }
+    } else if (classId && classId !== "SEMUA") {
       where.classes = {
         some: {
           classId: classId,
@@ -134,6 +155,19 @@ export async function POST(req: Request) {
     });
     if (existing) {
       return NextResponse.json({ error: "NISN sudah terdaftar pada siswa lain" }, { status: 400 });
+    }
+
+    // For GURU: ensure they assign the student to their own class
+    if (role === "GURU") {
+      if (!classId) {
+        return NextResponse.json({ error: "Guru wajib memilih rombel kelas yang diampu untuk siswa baru" }, { status: 400 });
+      }
+      const targetClass = await prisma.class.findUnique({
+        where: { id: classId },
+      });
+      if (!targetClass || targetClass.teacherId !== (session.user as any).id) {
+        return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat mendaftarkan siswa ke kelas yang Anda ampu" }, { status: 403 });
+      }
     }
 
     const student = await prisma.student.create({

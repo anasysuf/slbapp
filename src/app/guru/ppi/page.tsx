@@ -9,9 +9,11 @@ import EvaluationModal from "@/components/EvaluationModal";
 import PpiProgressCard from "@/components/PpiProgressCard";
 
 export default function GuruPpiPage() {
+  const [classes, setClasses] = useState<any[]>([]);
   const [students, setStudents] = useState<any[]>([]);
   const [ppiPlans, setPpiPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedClassId, setSelectedClassId] = useState("SEMUA");
   const [searchQuery, setSearchQuery] = useState("");
 
   // Modals
@@ -31,12 +33,15 @@ export default function GuruPpiPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [resStudents, resPpi] = await Promise.all([
+      const [resClasses, resStudents, resPpi] = await Promise.all([
+        fetch("/api/classes"),
         fetch("/api/students"),
         fetch("/api/ppi"),
       ]);
+      const dataClasses = await resClasses.json();
       const dataStudents = await resStudents.json();
       const dataPpi = await resPpi.json();
+      setClasses(Array.isArray(dataClasses) ? dataClasses : []);
       setStudents(Array.isArray(dataStudents) ? dataStudents : []);
       setPpiPlans(Array.isArray(dataPpi) ? dataPpi : []);
     } catch (err) {
@@ -51,12 +56,16 @@ export default function GuruPpiPage() {
   }, []);
 
   const filteredPpi = ppiPlans.filter((p) => {
-    return (
+    const matchClass =
+      selectedClassId === "SEMUA" ||
+      p.student?.classes?.some((c: any) => c.classId === selectedClassId || c.class?.id === selectedClassId);
+    const matchSearch =
       searchQuery === "" ||
       p.student?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.shortTermGoal.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.longTermGoal.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+      p.longTermGoal.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return matchClass && matchSearch;
   });
 
   return (
@@ -77,7 +86,7 @@ export default function GuruPpiPage() {
                 <Target className="w-3.5 h-3.5 text-amber-300" /> Individualized Education Plan (IEP)
               </div>
               <h2 className="text-xl sm:text-2xl font-black tracking-tight">
-                Rencana & Target Kemandirian Siswa
+                Rencana & Target Kemandirian Siswa Binaan
               </h2>
               <p className="text-indigo-100 text-xs sm:text-sm mt-1 max-w-2xl">
                 Tentukan baseline kemampuan anak, target jangka panjang, serta target jangka pendek yang dapat dievaluasi secara berkala.
@@ -92,6 +101,36 @@ export default function GuruPpiPage() {
               <span>+ Susun PPI Baru</span>
             </button>
           </div>
+
+          {/* Class Filter Pills */}
+          {classes.length > 1 && (
+            <div className="flex items-center gap-2 overflow-x-auto pb-1">
+              <span className="text-xs font-bold text-slate-500 shrink-0">Filter Rombel:</span>
+              <button
+                onClick={() => setSelectedClassId("SEMUA")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                  selectedClassId === "SEMUA"
+                    ? "bg-slate-900 text-white shadow"
+                    : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+                }`}
+              >
+                Semua Kelas ({classes.length})
+              </button>
+              {classes.map((cls) => (
+                <button
+                  key={cls.id}
+                  onClick={() => setSelectedClassId(cls.id)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                    selectedClassId === cls.id
+                      ? "bg-indigo-700 text-white shadow"
+                      : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+                  }`}
+                >
+                  {cls.name} ({cls.jenjang})
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Search Bar */}
           <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
