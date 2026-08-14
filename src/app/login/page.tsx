@@ -199,62 +199,90 @@ export default function LoginPage() {
               {/* Quick Demo Logins */}
               <div className="mt-6 pt-5 border-t border-slate-100">
                 <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2.5 text-center">
-                  Akses Cepat 1-Klik (Akun Demo)
+                  Akses Cepat 1-Klik (Akun Demo Multi-Kelas)
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => handleDemoClick("guru@slb.sch.id", "guru123")}
-                    className="p-2.5 bg-teal-50 hover:bg-teal-100/80 border border-teal-200 rounded-xl text-left transition-colors flex items-center gap-2 group"
+                    className="p-2 bg-teal-50 hover:bg-teal-100/80 border border-teal-200 rounded-xl text-left transition-colors flex items-center gap-2 group"
                   >
                     <div className="w-7 h-7 rounded-lg bg-teal-600 text-white flex items-center justify-center text-xs">
                       👩‍🏫
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-teal-900 group-hover:text-teal-950">Guru SLB</div>
-                      <div className="text-[10px] text-teal-600">Asesmen & PPI</div>
+                      <div className="text-xs font-bold text-teal-900 group-hover:text-teal-950">Guru 1 (Dewi)</div>
+                      <div className="text-[10px] text-teal-600">Kelas 2 SDLB (Autis)</div>
                     </div>
                   </button>
 
                   <button
                     type="button"
-                    onClick={() => handleDemoClick("ortu@slb.sch.id", "ortu123")}
-                    className="p-2.5 bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200 rounded-xl text-left transition-colors flex items-center gap-2 group"
+                    onClick={() => handleDemoClick("guru2@slb.sch.id", "guru123")}
+                    className="p-2 bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-200 rounded-xl text-left transition-colors flex items-center gap-2 group"
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs">
+                      👨‍🏫
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-indigo-900 group-hover:text-indigo-950">Guru 2 (Ahmad)</div>
+                      <div className="text-[10px] text-indigo-600">Kelas 11 SMALB (Netra)</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleDemoClick("guru3@slb.sch.id", "guru123")}
+                    className="p-2 bg-sky-50 hover:bg-sky-100/80 border border-sky-200 rounded-xl text-left transition-colors flex items-center gap-2 group"
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-sky-600 text-white flex items-center justify-center text-xs">
+                      👩‍🏫
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-sky-900 group-hover:text-sky-950">Guru 3 (Siti)</div>
+                      <div className="text-[10px] text-sky-600">Kelas 8 SMPLB (Rungu)</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleDemoClick("guru4@slb.sch.id", "guru123")}
+                    className="p-2 bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200 rounded-xl text-left transition-colors flex items-center gap-2 group"
                   >
                     <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs">
-                      👨‍👩‍👦
+                      👨‍🏫
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-emerald-900 group-hover:text-emerald-950">Orang Tua</div>
-                      <div className="text-[10px] text-emerald-600">Progres Anak</div>
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleDemoClick("yayasan@slb.sch.id", "yayasan123")}
-                    className="p-2.5 bg-amber-50 hover:bg-amber-100/80 border border-amber-200 rounded-xl text-left transition-colors flex items-center gap-2 group"
-                  >
-                    <div className="w-7 h-7 rounded-lg bg-amber-600 text-white flex items-center justify-center text-xs">
-                      🏛️
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-amber-900 group-hover:text-amber-950">Yayasan</div>
-                      <div className="text-[10px] text-amber-600">Eksekutif</div>
+                      <div className="text-xs font-bold text-emerald-900 group-hover:text-emerald-950">Guru 4 (Agus)</div>
+                      <div className="text-[10px] text-emerald-600">Kelas TKLB (Sensori)</div>
                     </div>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => handleDemoClick("admin@slb.sch.id", "admin123")}
-                    className="p-2.5 bg-purple-50 hover:bg-purple-100/80 border border-purple-200 rounded-xl text-left transition-colors flex items-center gap-2 group"
+                    className="p-2 bg-purple-50 hover:bg-purple-100/80 border border-purple-200 rounded-xl text-left transition-colors flex items-center gap-2 group"
                   >
                     <div className="w-7 h-7 rounded-lg bg-purple-600 text-white flex items-center justify-center text-xs">
                       ⚙️
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-purple-900 group-hover:text-purple-950">Admin</div>
-                      <div className="text-[10px] text-purple-600">Master Data</div>
+                      <div className="text-xs font-bold text-purple-900 group-hover:text-purple-950">Admin SLB</div>
+                      <div className="text-[10px] text-purple-600">Semua Kelas & Siswa</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleDemoClick("ortu@slb.sch.id", "ortu123")}
+                    className="p-2 bg-rose-50 hover:bg-rose-100/80 border border-rose-200 rounded-xl text-left transition-colors flex items-center gap-2 group"
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-rose-600 text-white flex items-center justify-center text-xs">
+                      👨‍👩‍👦
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-rose-900 group-hover:text-rose-950">Orang Tua</div>
+                      <div className="text-[10px] text-rose-600">Buku Penghubung</div>
                     </div>
                   </button>
                 </div>
