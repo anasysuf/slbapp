@@ -16,8 +16,8 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     }
 
     const currentRole = (session.user as any).role;
-    if (currentRole !== "ADMIN") {
-      return NextResponse.json({ error: "Hanya Admin yang berwenang mengubah akun pengguna" }, { status: 403 });
+    if (currentRole !== "ADMIN" && currentRole !== "YAYASAN") {
+      return NextResponse.json({ error: "Hanya Admin dan Pengurus Yayasan yang berwenang mengubah akun pengguna" }, { status: 403 });
     }
 
     const body = await req.json();
@@ -31,15 +31,26 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       return NextResponse.json({ error: "Pengguna tidak ditemukan" }, { status: 404 });
     }
 
+    // Kebijakan Khusus Yayasan: Hanya boleh edit profil Guru, dan TIDAK BOLEH ubah password
+    if (currentRole === "YAYASAN") {
+      if (existing.role !== "GURU") {
+        return NextResponse.json({ error: "Yayasan hanya memiliki wewenang untuk mengedit data profil Guru" }, { status: 403 });
+      }
+      if (password && password.trim().length > 0) {
+        return NextResponse.json({ error: "Yayasan tidak memiliki hak akses untuk merubah kata sandi Guru. Perubahan kata sandi harus melalui Admin." }, { status: 403 });
+      }
+    }
+
     const updateData: any = {
       name: name ? name.trim() : existing.name,
       email: email ? email.toLowerCase().trim() : existing.email,
-      role: role ? (role as Role) : existing.role,
+      role: currentRole === "ADMIN" && role ? (role as Role) : existing.role,
       phone: phone !== undefined ? phone : existing.phone,
       foundationId: foundationId !== undefined ? (foundationId || null) : existing.foundationId,
     };
 
-    if (password && password.trim().length > 0) {
+    // Hanya Admin yang bisa mengubah password
+    if (currentRole === "ADMIN" && password && password.trim().length > 0) {
       updateData.passwordHash = await bcrypt.hash(password.trim(), 10);
     }
 
@@ -59,12 +70,12 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     // Log Activity
     await logActivity({
       userId: (session.user as any).id,
-      userName: session.user.name || "Admin",
+      userName: session.user.name || (currentRole === "YAYASAN" ? "Yayasan" : "Admin"),
       userRole: currentRole,
       action: "UPDATE",
       entity: "User",
       entityId: updated.id,
-      description: `Memperbarui akun pengguna: ${updated.name} (${updated.email} - Role: ${updated.role})`,
+      description: `${currentRole === "YAYASAN" ? "Yayasan" : "Admin"} memperbarui data akun guru: ${updated.name} (${updated.email})`,
       foundationId: updated.foundationId,
     });
 

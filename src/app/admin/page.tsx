@@ -35,8 +35,10 @@ import {
   ExternalLink,
   Eye,
   HeartHandshake,
+  BarChart3,
 } from "lucide-react";
 import Footer from "@/components/Footer";
+
 
 
 function AdminDashboardContent() {
@@ -44,8 +46,11 @@ function AdminDashboardContent() {
   const searchParams = useSearchParams();
   const tabFromUrl = (searchParams?.get("tab") as any) || "sekolah";
   const { data: session } = useSession();
+  const currentRole = (session?.user as any)?.role;
+  const isYayasan = currentRole === "YAYASAN";
 
   const [activeTab, setActiveTab] = useState<"sekolah" | "siswa" | "guru" | "ortu" | "yayasan" | "admin" | "pengguna" | "kelas" | "mapel" | "logs">(tabFromUrl);
+
   const [foundations, setFoundations] = useState<any[]>([]);
   const [students, setStudents] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
@@ -371,16 +376,23 @@ function AdminDashboardContent() {
     e.preventDefault();
     if (!editingUserId) return;
     try {
+      const updatePayload: any = {
+        name: userName,
+        email: userEmail,
+        phone: userPhone,
+      };
+
+      if (!isYayasan) {
+        updatePayload.role = userRole;
+        if (userPassword && userPassword.trim().length > 0) {
+          updatePayload.password = userPassword.trim();
+        }
+      }
+
       const res = await fetch(`/api/users/${editingUserId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: userName,
-          email: userEmail,
-          role: userRole,
-          phone: userPhone,
-          password: userPassword || undefined,
-        }),
+        body: JSON.stringify(updatePayload),
       });
 
       if (res.ok) {
@@ -395,6 +407,7 @@ function AdminDashboardContent() {
       console.error(err);
     }
   };
+
 
   const handleDeleteUser = async (id: string, name: string) => {
     if (!confirm(`Hapus akun pengguna "${name}"? Tindakan ini tidak dapat dibatalkan.`)) return;
@@ -607,8 +620,8 @@ function AdminDashboardContent() {
   return (
     <main className="flex-1 flex flex-col min-w-0">
       <Header
-        title={`Super Admin: ${schoolName || "Portal Sekolah SLB"}`}
-        subtitle="Pusat Kendali Otoritas Tertinggi: Kustomisasi Identitas Sekolah, Logo, Master Data, & Pengaturan Sistem"
+        title={isYayasan ? `Supervisi Yayasan: ${schoolName || "Portal Sekolah SLB"}` : `Super Admin: ${schoolName || "Portal Sekolah SLB"}`}
+        subtitle={isYayasan ? "Pusat Supervisi & Rekapitulasi: Pantau Master Data Siswa, Guru, Ortu, Rombel, & Capaian Belajar Siswa" : "Pusat Kendali Otoritas Tertinggi: Kustomisasi Identitas Sekolah, Logo, Master Data, & Pengaturan Sistem"}
       />
 
       <div className="p-4 sm:p-6 space-y-6 max-w-7xl">
@@ -630,17 +643,19 @@ function AdminDashboardContent() {
             )}
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/15 backdrop-blur rounded-full text-xs font-semibold mb-1 text-purple-200">
-                <ShieldCheck className="w-3.5 h-3.5" /> Super Admin Authority
+                <ShieldCheck className="w-3.5 h-3.5" /> {isYayasan ? "Yayasan Supervisory Portal" : "Super Admin Authority"}
               </div>
               <h2 className="text-xl sm:text-2xl font-black tracking-tight">{schoolName || "Sekolah Luar Biasa"}</h2>
               <p className="text-purple-200 text-xs sm:text-sm mt-0.5 max-w-xl">
-                Otoritas penuh untuk mengubah nama & logo sekolah, rombel kelas, data guru & siswa, serta audit trail.
+                {isYayasan
+                  ? "Mode Supervisi & Rekapitulasi Yayasan: Pantau seluruh peserta didik, rekap capaian semester, dan kelola data profil guru binaan."
+                  : "Otoritas penuh untuk mengubah nama & logo sekolah, rombel kelas, data guru & siswa, serta audit trail."}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            {activeTab === "sekolah" && (
+            {activeTab === "sekolah" && !isYayasan && (
               <button
                 onClick={handleSaveSchoolProfile}
                 disabled={savingSchool}
@@ -650,7 +665,7 @@ function AdminDashboardContent() {
                 <span>{savingSchool ? "Menyimpan..." : "Simpan Identitas Sekolah"}</span>
               </button>
             )}
-            {activeTab === "siswa" && (
+            {activeTab === "siswa" && !isYayasan && (
               <button
                 onClick={() => setIsStudentModalOpen(true)}
                 className="px-4 py-2.5 bg-white text-purple-950 hover:bg-purple-50 font-bold text-xs rounded-xl shadow-lg flex items-center gap-2"
@@ -659,7 +674,7 @@ function AdminDashboardContent() {
                 <span>+ Tambah Siswa Baru</span>
               </button>
             )}
-            {activeTab === "guru" && (
+            {activeTab === "guru" && !isYayasan && (
               <button
                 onClick={() => openAddUserWithRole("GURU")}
                 className="px-4 py-2.5 bg-white text-teal-950 hover:bg-teal-50 font-bold text-xs rounded-xl shadow-lg flex items-center gap-2"
@@ -668,7 +683,7 @@ function AdminDashboardContent() {
                 <span>+ Tambah Guru Baru</span>
               </button>
             )}
-            {activeTab === "ortu" && (
+            {activeTab === "ortu" && !isYayasan && (
               <button
                 onClick={() => openAddUserWithRole("ORANG_TUA")}
                 className="px-4 py-2.5 bg-white text-rose-950 hover:bg-rose-50 font-bold text-xs rounded-xl shadow-lg flex items-center gap-2"
@@ -677,7 +692,7 @@ function AdminDashboardContent() {
                 <span>+ Tambah Orang Tua Baru</span>
               </button>
             )}
-            {activeTab === "yayasan" && (
+            {activeTab === "yayasan" && !isYayasan && (
               <button
                 onClick={() => openAddUserWithRole("YAYASAN")}
                 className="px-4 py-2.5 bg-white text-amber-950 hover:bg-amber-50 font-bold text-xs rounded-xl shadow-lg flex items-center gap-2"
@@ -686,7 +701,7 @@ function AdminDashboardContent() {
                 <span>+ Tambah Pengurus Yayasan</span>
               </button>
             )}
-            {activeTab === "admin" && (
+            {activeTab === "admin" && !isYayasan && (
               <button
                 onClick={() => openAddUserWithRole("ADMIN")}
                 className="px-4 py-2.5 bg-white text-purple-950 hover:bg-purple-50 font-bold text-xs rounded-xl shadow-lg flex items-center gap-2"
@@ -695,7 +710,7 @@ function AdminDashboardContent() {
                 <span>+ Tambah Administrator Baru</span>
               </button>
             )}
-            {activeTab === "pengguna" && (
+            {activeTab === "pengguna" && !isYayasan && (
               <button
                 onClick={() => setIsUserModalOpen(true)}
                 className="px-4 py-2.5 bg-white text-purple-950 hover:bg-purple-50 font-bold text-xs rounded-xl shadow-lg flex items-center gap-2"
@@ -704,7 +719,7 @@ function AdminDashboardContent() {
                 <span>+ Tambah Pengguna Baru</span>
               </button>
             )}
-            {activeTab === "kelas" && (
+            {activeTab === "kelas" && !isYayasan && (
               <button
                 onClick={() => setIsClassModalOpen(true)}
                 className="px-4 py-2.5 bg-white text-purple-950 hover:bg-purple-50 font-bold text-xs rounded-xl shadow-lg flex items-center gap-2"
@@ -713,7 +728,7 @@ function AdminDashboardContent() {
                 <span>+ Tambah Rombel Kelas</span>
               </button>
             )}
-            {activeTab === "mapel" && (
+            {activeTab === "mapel" && !isYayasan && (
               <button
                 onClick={() => setIsSubjectModalOpen(true)}
                 className="px-4 py-2.5 bg-white text-purple-950 hover:bg-purple-50 font-bold text-xs rounded-xl shadow-lg flex items-center gap-2"
@@ -722,8 +737,16 @@ function AdminDashboardContent() {
                 <span>+ Tambah Mapel Khusus</span>
               </button>
             )}
+            <Link
+              href="/guru/rekap"
+              className="px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl shadow-lg flex items-center gap-2"
+            >
+              <BarChart3 className="w-4 h-4" />
+              <span>Rekapitulasi Semester</span>
+            </Link>
           </div>
         </div>
+
 
         {/* Navigation Tabs (Synchronized with Sidebar) */}
         <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto no-scrollbar">
@@ -1153,27 +1176,32 @@ function AdminDashboardContent() {
                           <div className="flex items-center justify-center gap-1.5">
                             <Link
                               href={`/guru/siswa/${s.id}`}
-                              className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors font-bold text-xs"
+                              className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors font-bold text-xs flex items-center gap-1"
                               title="Buka Profil Lengkap"
                             >
                               <Eye className="w-3.5 h-3.5" />
+                              <span>Profil</span>
                             </Link>
 
-                            <button
-                              onClick={() => openEditStudent(s)}
-                              className="p-1.5 bg-purple-50 hover:bg-purple-100 text-purple-900 rounded-lg transition-colors font-bold text-xs"
-                              title="Edit Data Siswa & Mutasi Kelas"
-                            >
-                              <Edit className="w-3.5 h-3.5" />
-                            </button>
+                            {!isYayasan && (
+                              <>
+                                <button
+                                  onClick={() => openEditStudent(s)}
+                                  className="p-1.5 bg-purple-50 hover:bg-purple-100 text-purple-900 rounded-lg transition-colors font-bold text-xs"
+                                  title="Edit Data Siswa & Mutasi Kelas"
+                                >
+                                  <Edit className="w-3.5 h-3.5" />
+                                </button>
 
-                            <button
-                              onClick={() => handleDeleteStudent(s.id, s.name)}
-                              className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg transition-colors"
-                              title="Hapus Siswa"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
+                                <button
+                                  onClick={() => handleDeleteStudent(s.id, s.name)}
+                                  className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg transition-colors"
+                                  title="Hapus Siswa"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -1211,13 +1239,15 @@ function AdminDashboardContent() {
                   />
                 </div>
 
-                <button
-                  onClick={() => openAddUserWithRole("GURU")}
-                  className="px-3.5 py-2 bg-teal-800 hover:bg-teal-900 text-white font-bold text-xs rounded-xl shadow transition-all flex items-center gap-1.5 shrink-0"
-                >
-                  <UserPlus className="w-3.5 h-3.5" />
-                  <span>+ Tambah Guru</span>
-                </button>
+                {!isYayasan && (
+                  <button
+                    onClick={() => openAddUserWithRole("GURU")}
+                    className="px-3.5 py-2 bg-teal-800 hover:bg-teal-900 text-white font-bold text-xs rounded-xl shadow transition-all flex items-center gap-1.5 shrink-0"
+                  >
+                    <UserPlus className="w-3.5 h-3.5" />
+                    <span>+ Tambah Guru</span>
+                  </button>
+                )}
               </div>
             </div>
 
@@ -1298,18 +1328,20 @@ function AdminDashboardContent() {
                               <button
                                 onClick={() => openEditUser(u)}
                                 className="p-2 bg-teal-50 hover:bg-teal-100 text-teal-800 rounded-lg transition-colors font-bold text-xs flex items-center gap-1"
-                                title="Edit Akun & Reset Password"
+                                title={isYayasan ? "Edit Data Profil Guru" : "Edit Akun & Reset Password"}
                               >
                                 <Edit className="w-3.5 h-3.5" />
-                                <span>Edit / Sandi</span>
+                                <span>{isYayasan ? "Edit Profil" : "Edit / Sandi"}</span>
                               </button>
-                              <button
-                                onClick={() => handleDeleteUser(u.id, u.name)}
-                                className="p-2 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg transition-colors"
-                                title="Hapus Akun Guru"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
+                              {!isYayasan && (
+                                <button
+                                  onClick={() => handleDeleteUser(u.id, u.name)}
+                                  className="p-2 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg transition-colors"
+                                  title="Hapus Akun Guru"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              )}
                             </div>
                           </td>
                         </tr>
@@ -1320,6 +1352,7 @@ function AdminDashboardContent() {
             )}
           </div>
         )}
+
 
         {/* TAB ORTU: MANAJEMEN ORANG TUA SISWA */}
         {activeTab === "ortu" && (
@@ -1347,13 +1380,15 @@ function AdminDashboardContent() {
                   />
                 </div>
 
-                <button
-                  onClick={() => openAddUserWithRole("ORANG_TUA")}
-                  className="px-3.5 py-2 bg-rose-800 hover:bg-rose-900 text-white font-bold text-xs rounded-xl shadow transition-all flex items-center gap-1.5 shrink-0"
-                >
-                  <UserPlus className="w-3.5 h-3.5" />
-                  <span>+ Tambah Orang Tua</span>
-                </button>
+                {!isYayasan && (
+                  <button
+                    onClick={() => openAddUserWithRole("ORANG_TUA")}
+                    className="px-3.5 py-2 bg-rose-800 hover:bg-rose-900 text-white font-bold text-xs rounded-xl shadow transition-all flex items-center gap-1.5 shrink-0"
+                  >
+                    <UserPlus className="w-3.5 h-3.5" />
+                    <span>+ Tambah Orang Tua</span>
+                  </button>
+                )}
               </div>
             </div>
 
@@ -1425,28 +1460,33 @@ function AdminDashboardContent() {
                             {new Date(u.createdAt).toLocaleDateString("id-ID")}
                           </td>
 
-                          <td className="px-6 py-4">
-                            <div className="flex items-center justify-center gap-2">
-                              <button
-                                onClick={() => openEditUser(u)}
-                                className="p-2 bg-rose-50 hover:bg-rose-100 text-rose-800 rounded-lg transition-colors font-bold text-xs flex items-center gap-1"
-                                title="Edit Akun & Reset Password"
-                              >
-                                <Edit className="w-3.5 h-3.5" />
-                                <span>Edit / Sandi</span>
-                              </button>
-                              <button
-                                onClick={() => handleDeleteUser(u.id, u.name)}
-                                className="p-2 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg transition-colors"
-                                title="Hapus Akun Orang Tua"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
+                          <td className="px-6 py-4 text-center">
+                            {!isYayasan ? (
+                              <div className="flex items-center justify-center gap-2">
+                                <button
+                                  onClick={() => openEditUser(u)}
+                                  className="p-2 bg-rose-50 hover:bg-rose-100 text-rose-800 rounded-lg transition-colors font-bold text-xs flex items-center gap-1"
+                                  title="Edit Akun & Reset Password"
+                                >
+                                  <Edit className="w-3.5 h-3.5" />
+                                  <span>Edit / Sandi</span>
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteUser(u.id, u.name)}
+                                  className="p-2 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg transition-colors"
+                                  title="Hapus Akun Orang Tua"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            ) : (
+                              <span className="text-slate-400 text-[11px] italic">Mode Pantau</span>
+                            )}
                           </td>
                         </tr>
                       ))}
                   </tbody>
+
                 </table>
               </div>
             )}
@@ -1734,20 +1774,26 @@ function AdminDashboardContent() {
                   </div>
 
                   <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                    <button
-                      onClick={() => openEditClass(c)}
-                      className="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-900 text-xs font-bold rounded-lg flex items-center gap-1"
-                    >
-                      <Edit className="w-3.5 h-3.5" />
-                      <span>Ubah Kelas / Wali</span>
-                    </button>
-                    <button
-                      onClick={() => handleDeleteClass(c.id, c.name)}
-                      className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs rounded-lg"
-                      title="Hapus Kelas"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                    {!isYayasan ? (
+                      <>
+                        <button
+                          onClick={() => openEditClass(c)}
+                          className="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-900 text-xs font-bold rounded-lg flex items-center gap-1"
+                        >
+                          <Edit className="w-3.5 h-3.5" />
+                          <span>Ubah Kelas / Wali</span>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClass(c.id, c.name)}
+                          className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs rounded-lg"
+                          title="Hapus Kelas"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </>
+                    ) : (
+                      <span className="text-slate-400 text-[11px] italic">Mode Pantau Rombel</span>
+                    )}
                   </div>
                 </div>
               ))}
@@ -1779,26 +1825,33 @@ function AdminDashboardContent() {
                   </div>
 
                   <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                    <button
-                      onClick={() => openEditSubject(sub)}
-                      className="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-900 text-xs font-bold rounded-lg flex items-center gap-1"
-                    >
-                      <Edit className="w-3.5 h-3.5" />
-                      <span>Edit</span>
-                    </button>
-                    <button
-                      onClick={() => handleDeleteSubject(sub.id, sub.name)}
-                      className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs rounded-lg"
-                      title="Hapus Mapel"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                    {!isYayasan ? (
+                      <>
+                        <button
+                          onClick={() => openEditSubject(sub)}
+                          className="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-900 text-xs font-bold rounded-lg flex items-center gap-1"
+                        >
+                          <Edit className="w-3.5 h-3.5" />
+                          <span>Edit</span>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteSubject(sub.id, sub.name)}
+                          className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs rounded-lg"
+                          title="Hapus Mapel"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </>
+                    ) : (
+                      <span className="text-slate-400 text-[11px] italic">Mode Pantau Mapel</span>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
           </div>
         )}
+
 
         {/* TAB 5: LOG AKTIVITAS (AUDIT TRAIL) */}
         {activeTab === "logs" && (
@@ -2208,8 +2261,10 @@ function AdminDashboardContent() {
       {isEditUserModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/65 backdrop-blur-sm animate-fade-in">
           <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
-            <div className="bg-gradient-to-r from-purple-900 to-indigo-900 px-6 py-4 flex items-center justify-between text-white shrink-0">
-              <h2 className="font-bold text-base sm:text-lg">Edit Akun Pengguna & Reset Password</h2>
+            <div className={`px-6 py-4 flex items-center justify-between text-white shrink-0 ${isYayasan ? "bg-gradient-to-r from-teal-800 to-emerald-800" : "bg-gradient-to-r from-purple-900 to-indigo-900"}`}>
+              <h2 className="font-bold text-base sm:text-lg">
+                {isYayasan ? "Edit Profil Guru (Akses Yayasan)" : "Edit Akun Pengguna & Reset Password"}
+              </h2>
               <button onClick={() => setIsEditUserModalOpen(false)} className="p-1 hover:bg-white/20 rounded-lg transition-colors">
                 <X className="w-5 h-5" />
               </button>
@@ -2221,7 +2276,7 @@ function AdminDashboardContent() {
                   type="text"
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-teal-600 focus:outline-none font-semibold"
                   required
                 />
               </div>
@@ -2232,37 +2287,50 @@ function AdminDashboardContent() {
                   type="email"
                   value={userEmail}
                   onChange={(e) => setUserEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-teal-600 focus:outline-none font-semibold"
                   required
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Role / Peran *</label>
-                <select
-                  value={userRole}
-                  onChange={(e) => setUserRole(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
-                >
-                  <option value="GURU">Guru Khusus SLB</option>
-                  <option value="ORANG_TUA">Orang Tua Siswa</option>
-                  <option value="YAYASAN">Pengurus Yayasan</option>
-                  <option value="ADMIN">Super Admin Yayasan</option>
-                </select>
-              </div>
+              {!isYayasan ? (
+                <>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Role / Peran *</label>
+                    <select
+                      value={userRole}
+                      onChange={(e) => setUserRole(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
+                    >
+                      <option value="GURU">Guru Khusus SLB</option>
+                      <option value="ORANG_TUA">Orang Tua Siswa</option>
+                      <option value="YAYASAN">Pengurus Yayasan</option>
+                      <option value="ADMIN">Super Admin Yayasan</option>
+                    </select>
+                  </div>
 
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                  Reset Kata Sandi (Kosongkan jika tidak diubah)
-                </label>
-                <input
-                  type="password"
-                  value={userPassword}
-                  onChange={(e) => setUserPassword(e.target.value)}
-                  placeholder="Ketik password baru jika ingin mereset..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
-                />
-              </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                      Reset Kata Sandi (Kosongkan jika tidak diubah)
+                    </label>
+                    <input
+                      type="password"
+                      value={userPassword}
+                      onChange={(e) => setUserPassword(e.target.value)}
+                      placeholder="Ketik password baru jika ingin mereset..."
+                      className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
+                    />
+                  </div>
+                </>
+              ) : (
+                <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-[11px] text-amber-900 leading-relaxed space-y-1">
+                  <div className="font-bold flex items-center gap-1.5 text-amber-950">
+                    <span>🔒 Kebijakan Keamanan Kata Sandi</span>
+                  </div>
+                  <p>
+                    Yayasan berwenang memperbarui Nama, Email, dan No. Telepon Guru. Kata sandi akun guru bersifat rahasia dan perubahan sandi hanya dapat dilakukan oleh Administrator Sekolah.
+                  </p>
+                </div>
+              )}
 
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">No. WhatsApp</label>
@@ -2270,13 +2338,14 @@ function AdminDashboardContent() {
                   type="text"
                   value={userPhone}
                   onChange={(e) => setUserPhone(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
+                  placeholder="081234567890"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-teal-600 focus:outline-none font-semibold"
                 />
               </div>
 
               <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
                 <button type="button" onClick={() => setIsEditUserModalOpen(false)} className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Batal</button>
-                <button type="submit" className="px-5 py-2.5 bg-purple-900 hover:bg-purple-950 text-white text-xs font-bold rounded-xl shadow-lg shadow-purple-900/20 transition-all">Simpan Perubahan</button>
+                <button type="submit" className={`px-5 py-2.5 text-white text-xs font-bold rounded-xl shadow-lg transition-all ${isYayasan ? "bg-teal-800 hover:bg-teal-900 shadow-teal-800/20" : "bg-purple-900 hover:bg-purple-950 shadow-purple-900/20"}`}>Simpan Perubahan</button>
               </div>
             </form>
           </div>
