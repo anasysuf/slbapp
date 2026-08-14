@@ -106,16 +106,16 @@ export default function OrtuDashboard() {
           subtitle="Pemantauan Terpadu Progres PPI, Catatan Asesmen, & Buku Penghubung Harian SLB"
         />
 
-        <div className="p-6 space-y-6 max-w-7xl">
+        <div className="p-4 sm:p-6 space-y-6 max-w-7xl">
           {/* Multi-child selector if parent has more than 1 child */}
           {students.length > 1 && (
-            <div className="flex items-center gap-2 overflow-x-auto pb-1">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
               <span className="text-xs font-bold text-slate-500 whitespace-nowrap">Pilih Ananda:</span>
               {students.map((s) => (
                 <button
                   key={s.id}
                   onClick={() => setSelectedStudentId(s.id)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                  className={`px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                     child?.id === s.id
                       ? "bg-emerald-700 text-white shadow-md shadow-emerald-700/20"
                       : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50"
@@ -128,29 +128,29 @@ export default function OrtuDashboard() {
           )}
 
           {/* Child Identity Banner */}
-          <div className="p-6 rounded-3xl bg-gradient-to-r from-emerald-700 via-teal-700 to-teal-800 text-white shadow-xl shadow-teal-800/10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-emerald-700 via-teal-700 to-teal-800 text-white shadow-xl shadow-teal-800/10 flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-3xl shadow-inner border border-white/30">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-2xl sm:text-3xl shadow-inner border border-white/30 shrink-0">
                 👦
               </div>
               <div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 bg-white/20 rounded-full text-xs font-semibold mb-1 text-emerald-100">
+                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 bg-white/20 rounded-full text-[11px] sm:text-xs font-semibold mb-1 text-emerald-100">
                   <Sparkles className="w-3.5 h-3.5 text-amber-300" /> Profil Ananda Tercinta
                 </div>
                 <h2 className="text-xl sm:text-2xl font-black">{child?.name || "Memuat Ananda..."}</h2>
                 <p className="text-emerald-100 text-xs sm:text-sm">
-                  NISN: {child?.nisn || "-"} • Jenjang: <strong>{child?.jenjang || "SDLB"}</strong> • Jenis Disabilitas:{" "}
+                  NISN: {child?.nisn || "-"} • Jenjang: <strong>{child?.jenjang || "SDLB"}</strong> • Disabilitas:{" "}
                   <strong>{child?.disabilityType || "Autisme"}</strong>
                 </p>
               </div>
             </div>
 
             {/* Quick Actions (Cetak Rapor PPI, Cetak Asesmen & WA Guru) */}
-            <div className="flex flex-wrap items-center gap-2.5">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
               {latestPpi ? (
                 <Link
                   href={`/guru/ppi/cetak/${latestPpi.id}`}
-                  className="px-4 py-2.5 bg-white text-emerald-900 hover:bg-emerald-50 font-bold text-xs rounded-xl shadow-lg transition-all flex items-center gap-1.5"
+                  className="px-3.5 py-2 sm:px-4 sm:py-2.5 bg-white text-emerald-900 hover:bg-emerald-50 font-bold text-xs rounded-xl shadow-lg transition-all flex items-center gap-1.5"
                 >
                   <Printer className="w-4 h-4 text-emerald-700" />
                   <span>Cetak Rapor PPI</span>
@@ -158,7 +158,7 @@ export default function OrtuDashboard() {
               ) : (
                 <button
                   disabled
-                  className="px-3.5 py-2.5 bg-white/20 text-emerald-100/70 font-semibold text-xs rounded-xl flex items-center gap-1.5 cursor-not-allowed"
+                  className="px-3 py-2 sm:px-3.5 sm:py-2.5 bg-white/20 text-emerald-100/70 font-semibold text-xs rounded-xl flex items-center gap-1.5 cursor-not-allowed"
                 >
                   <Printer className="w-4 h-4 opacity-50" />
                   <span>PPI Belum Disusun</span>
@@ -168,15 +168,15 @@ export default function OrtuDashboard() {
               {assessments.length > 0 && (
                 <Link
                   href={`/guru/asesmen/cetak/${assessments[0].id}`}
-                  className="px-4 py-2.5 bg-emerald-800/80 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-md border border-white/20 transition-all flex items-center gap-1.5"
+                  className="px-3.5 py-2 sm:px-4 sm:py-2.5 bg-emerald-800/80 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-md border border-white/20 transition-all flex items-center gap-1.5"
                 >
                   <ClipboardCheck className="w-4 h-4 text-emerald-200" />
                   <span>Cetak Asesmen</span>
                 </Link>
               )}
 
-              <div className="bg-white/10 backdrop-blur-md p-2.5 rounded-2xl border border-white/20 flex items-center gap-2.5 shrink-0">
-                <div className="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center shadow">
+              <div className="bg-white/10 backdrop-blur-md p-2 sm:p-2.5 rounded-2xl border border-white/20 flex items-center gap-2.5 shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center shadow shrink-0">
                   <MessageCircle className="w-4 h-4" />
                 </div>
                 <div>
@@ -195,15 +195,15 @@ export default function OrtuDashboard() {
           </div>
 
           {/* Section: Buku Penghubung Harian (Digital Communication Log) */}
-          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+          <div className="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200 shadow-sm space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
-                <HeartHandshake className="w-5 h-5 text-teal-600" />
-                <h3 className="font-bold text-base text-slate-800">
+                <HeartHandshake className="w-5 h-5 text-teal-600 shrink-0" />
+                <h3 className="font-bold text-sm sm:text-base text-slate-800">
                   Buku Penghubung Harian (Kabar dari Sekolah)
                 </h3>
               </div>
-              <span className="text-xs text-slate-400">Update Terkini</span>
+              <span className="text-[10px] sm:text-xs text-slate-400">Update Terkini</span>
             </div>
 
             {studentJournals.length === 0 ? (
@@ -215,11 +215,11 @@ export default function OrtuDashboard() {
                 {studentJournals.map((j) => (
                   <div
                     key={j.id}
-                    className="p-5 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-3"
+                    className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-3"
                   >
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-slate-400" />
+                        <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
                         <span className="font-bold text-xs text-slate-800">
                           {new Date(j.date).toLocaleDateString("id-ID", {
                             weekday: "long",
@@ -229,12 +229,12 @@ export default function OrtuDashboard() {
                           })}
                         </span>
                       </div>
-                      <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full border border-emerald-200">
+                      <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 bg-emerald-100 text-emerald-800 text-[11px] sm:text-xs font-bold rounded-full border border-emerald-200 shrink-0">
                         {j.mood}
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                       <div className="p-2.5 bg-white rounded-xl border border-slate-100 flex items-center gap-2">
                         <Activity className="w-4 h-4 text-teal-600 shrink-0" />
                         <span>Kondisi Kesehatan: <strong>{j.healthCondition}</strong></span>

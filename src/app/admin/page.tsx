@@ -300,7 +300,7 @@ function AdminDashboardContent() {
         subtitle="Pusat Kendali Manajemen Data Siswa, Pengguna, Rombel Jenjang & Log Aktivitas"
       />
 
-      <div className="p-6 space-y-6 max-w-7xl">
+      <div className="p-4 sm:p-6 space-y-6 max-w-7xl">
         {/* Header Action Banner */}
         <div className="p-6 rounded-3xl bg-gradient-to-r from-purple-950 via-indigo-950 to-slate-900 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>

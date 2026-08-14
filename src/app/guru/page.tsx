@@ -65,7 +65,7 @@ export default function GuruDashboard() {
           subtitle="Manajemen Asesmen Diagnostik, Program Pembelajaran Individual (PPI) & Pembelajaran Adaptif"
         />
 
-        <div className="p-6 space-y-6 max-w-7xl">
+        <div className="p-4 sm:p-6 space-y-6 max-w-7xl">
           {/* Welcome Banner */}
           <div className="p-6 rounded-3xl bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-600 text-white shadow-xl shadow-teal-700/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>

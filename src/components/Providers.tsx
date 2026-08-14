@@ -1,8 +1,9 @@
 "use client";
 
-import { SessionProvider, useSession } from "next-auth/react";
+import { SessionProvider } from "next-auth/react";
 import React, { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { SidebarProvider } from "@/context/SidebarContext";
 
 function BfCacheProtection() {
   const router = useRouter();
@@ -27,8 +28,10 @@ function BfCacheProtection() {
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
-      <BfCacheProtection />
-      {children}
+      <SidebarProvider>
+        <BfCacheProtection />
+        {children}
+      </SidebarProvider>
     </SessionProvider>
   );
 }

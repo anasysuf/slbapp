@@ -195,7 +195,7 @@ export default function GuruStudentManagementPage() {
           subtitle="Kelola Data Rombel Siswa, Jenjang Pendidikan, Asesmen & Identitas Khusus"
         />
 
-        <div className="p-6 space-y-6 max-w-7xl">
+        <div className="p-4 sm:p-6 space-y-6 max-w-7xl">
           {/* Action & Stats Banner */}
           <div className="p-6 rounded-3xl bg-gradient-to-r from-teal-900 via-emerald-900 to-slate-900 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>

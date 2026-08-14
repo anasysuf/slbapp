@@ -89,7 +89,7 @@ export default function LoginPage() {
             <GraduationCap className="w-9 h-9" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            SLB Harapan Mulia
+            SLB Portal
           </h1>
           <p className="text-sm text-teal-300 font-medium mt-1 flex items-center justify-center gap-1.5">
             <Sparkles className="w-4 h-4" /> Sistem Manajemen PPI & Asesmen Khusus
@@ -265,7 +265,7 @@ export default function LoginPage() {
 
         {/* Footer info */}
         <p className="text-center text-xs text-slate-400 mt-6">
-          © 2026 SLB Harapan Mulia. Sistem Pendidikan Inklusif & Kebutuhan Khusus.
+          © 2026 SLB Portal. Sistem Pendidikan Inklusif & Kebutuhan Khusus.
         </p>
       </div>
     </div>

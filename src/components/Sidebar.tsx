@@ -19,9 +19,11 @@ import {
   ShieldCheck,
   Activity,
   UserCheck,
+  X,
 } from "lucide-react";
+import { useSidebar } from "@/context/SidebarContext";
 
-function SidebarNavList() {
+function SidebarNavList({ onItemClick }: { onItemClick?: () => void }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const activeTabParam = searchParams ? searchParams.get("tab") || "siswa" : "siswa";
@@ -78,6 +80,7 @@ function SidebarNavList() {
           <Link
             key={item.href}
             href={item.href}
+            onClick={onItemClick}
             className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
               isActive
                 ? "bg-teal-600 text-white shadow-md shadow-teal-600/30"
@@ -98,6 +101,7 @@ function SidebarNavList() {
 
 export default function Sidebar() {
   const { data: session } = useSession();
+  const { isOpen, closeSidebar } = useSidebar();
   const role = (session?.user as any)?.role;
   const foundationName = (session?.user as any)?.foundationName;
 
@@ -106,32 +110,43 @@ export default function Sidebar() {
     window.location.href = "/login";
   };
 
-  return (
-    <aside className="w-64 bg-slate-900 text-slate-100 flex flex-col border-r border-slate-800 shrink-0 min-h-screen">
+  const sidebarContent = (
+    <div className="flex flex-col h-full bg-slate-900 text-slate-100">
       {/* Brand Header */}
-      <div className="p-5 flex items-center gap-3 border-b border-slate-800/80 bg-slate-950/40">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500 to-emerald-400 flex items-center justify-center text-white shadow-lg shadow-teal-500/20">
-          <GraduationCap className="w-6 h-6" />
+      <div className="p-5 flex items-center justify-between border-b border-slate-800/80 bg-slate-950/40">
+        <div className="flex items-center gap-3 overflow-hidden">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500 to-emerald-400 flex items-center justify-center text-white shadow-lg shadow-teal-500/20 shrink-0">
+            <GraduationCap className="w-6 h-6" />
+          </div>
+          <div className="overflow-hidden">
+            <h1 className="font-extrabold text-sm tracking-tight text-white truncate">SLB Portal</h1>
+            <p className="text-[11px] text-teal-400 font-medium truncate">
+              {foundationName || "Sistem Inklusi & PPI"}
+            </p>
+          </div>
         </div>
-        <div className="overflow-hidden">
-          <h1 className="font-extrabold text-sm tracking-tight text-white truncate">SLB Harapan</h1>
-          <p className="text-[11px] text-teal-400 font-medium truncate">
-            {foundationName || "Sistem Inklusi & PPI"}
-          </p>
-        </div>
+
+        {/* Mobile close button */}
+        <button
+          onClick={closeSidebar}
+          className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+          aria-label="Tutup Menu"
+        >
+          <X className="w-5 h-5" />
+        </button>
       </div>
 
       {/* Navigation with Suspense boundary for useSearchParams */}
       <div className="flex-1 px-3 py-4 overflow-y-auto">
         <Suspense fallback={<div className="px-3 py-2 text-xs text-slate-500">Memuat menu...</div>}>
-          <SidebarNavList />
+          <SidebarNavList onItemClick={closeSidebar} />
         </Suspense>
       </div>
 
       {/* User Info & Sign Out */}
       <div className="p-4 border-t border-slate-800 bg-slate-950/60">
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-8 h-8 rounded-full bg-teal-800/60 border border-teal-500/40 text-teal-300 flex items-center justify-center font-bold text-xs">
+          <div className="w-8 h-8 rounded-full bg-teal-800/60 border border-teal-500/40 text-teal-300 flex items-center justify-center font-bold text-xs shrink-0">
             {session?.user?.name ? session.user.name.charAt(0) : "U"}
           </div>
           <div className="overflow-hidden">
@@ -153,6 +168,31 @@ export default function Sidebar() {
           <span>Keluar dari Akun</span>
         </button>
       </div>
-    </aside>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar (Always visible on large screens) */}
+      <aside className="hidden lg:flex lg:flex-col lg:w-64 border-r border-slate-800 shrink-0 min-h-screen">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile Drawer (Slide-in on small screens) */}
+      {isOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden flex">
+          {/* Backdrop Overlay */}
+          <div
+            className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity"
+            onClick={closeSidebar}
+          />
+
+          {/* Drawer Sheet */}
+          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-slate-900 shadow-2xl z-50">
+            {sidebarContent}
+          </div>
+        </div>
+      )}
+    </>
   );
 }

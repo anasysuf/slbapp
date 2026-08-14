@@ -48,7 +48,7 @@ export default function GuruEvaluasiPage() {
           subtitle="Pencatatan Skor dan Catatan Observasi Sesi Belajar Harian/Mingguan"
         />
 
-        <div className="p-6 space-y-6 max-w-7xl">
+        <div className="p-4 sm:p-6 space-y-6 max-w-7xl">
           <div className="p-6 rounded-3xl bg-gradient-to-r from-emerald-800 to-teal-800 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/15 backdrop-blur rounded-full text-xs font-semibold mb-2">

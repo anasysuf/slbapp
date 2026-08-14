@@ -69,7 +69,7 @@ export default function GuruMateriPage() {
           subtitle="Modul Adaptif, Panduan Bergambar, & Lembar Kerja Khusus Siswa SLB"
         />
 
-        <div className="p-6 space-y-6 max-w-7xl">
+        <div className="p-4 sm:p-6 space-y-6 max-w-7xl">
           <div className="p-6 rounded-3xl bg-gradient-to-r from-teal-800 to-indigo-900 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/15 backdrop-blur rounded-full text-xs font-semibold mb-2">

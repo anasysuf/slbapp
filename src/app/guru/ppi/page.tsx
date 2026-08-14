@@ -69,7 +69,7 @@ export default function GuruPpiPage() {
           subtitle="Target Kurikulum Khusus Individualisasi Peserta Didik Berkebutuhan Khusus"
         />
 
-        <div className="p-6 space-y-6 max-w-7xl">
+        <div className="p-4 sm:p-6 space-y-6 max-w-7xl">
           {/* Header Action Banner */}
           <div className="p-6 rounded-3xl bg-gradient-to-r from-teal-800 via-indigo-900 to-indigo-800 text-white shadow-xl shadow-indigo-900/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>

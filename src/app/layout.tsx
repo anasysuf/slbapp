@@ -6,7 +6,7 @@ import Providers from "@/components/Providers";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "SLB Portal & PPI - Sistem Informasi Sekolah Luar Biasa",
+  title: "SLB Portal - Sistem Informasi Sekolah Luar Biasa",
   description: "Sistem Manajemen Pembelajaran Khusus, Program Pembelajaran Individual (PPI), dan Asesmen Perkembangan Siswa SLB",
 };
 

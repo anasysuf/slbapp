@@ -100,7 +100,7 @@ export default function GuruAsesmenPage() {
           subtitle="Instrumen Diagnostik Kemampuan Awal, Pemetaan Potensi, dan Evaluasi Perkembangan Adaptif"
         />
 
-        <div className="p-6 space-y-6 max-w-7xl">
+        <div className="p-4 sm:p-6 space-y-6 max-w-7xl">
           {/* Action Header Card */}
           <div className="p-6 rounded-3xl bg-gradient-to-r from-teal-800 via-teal-700 to-emerald-700 text-white shadow-xl shadow-teal-800/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
