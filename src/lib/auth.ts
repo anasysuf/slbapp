@@ -53,6 +53,13 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith("/")) return url;
+      try {
+        if (new URL(url).origin === baseUrl) return url;
+      } catch {}
+      return baseUrl || "/";
+    },
     async jwt({ token, user }) {
       if (user) {
         token.role = (user as any).role as Role;

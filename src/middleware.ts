@@ -37,6 +37,9 @@ export default withAuth(
     return response;
   },
   {
+    pages: {
+      signIn: "/login",
+    },
     callbacks: {
       authorized: ({ token, req }) => {
         // Izinkan publik mengakses /login

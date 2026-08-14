@@ -123,7 +123,7 @@ export default function LoginPage() {
                 <button
                   onClick={async () => {
                     await signOut({ redirect: false });
-                    router.refresh();
+                    window.location.href = "/login";
                   }}
                   className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition-colors flex items-center justify-center gap-2"
                 >

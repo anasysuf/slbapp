@@ -101,6 +101,11 @@ export default function Sidebar() {
   const role = (session?.user as any)?.role;
   const foundationName = (session?.user as any)?.foundationName;
 
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    window.location.href = "/login";
+  };
+
   return (
     <aside className="w-64 bg-slate-900 text-slate-100 flex flex-col border-r border-slate-800 shrink-0 min-h-screen">
       {/* Brand Header */}
@@ -141,8 +146,8 @@ export default function Sidebar() {
         </div>
 
         <button
-          onClick={() => signOut({ callbackUrl: "/login" })}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-rose-400 hover:bg-rose-950/40 hover:text-rose-300 rounded-lg transition-colors border border-rose-900/30"
+          onClick={handleLogout}
+          className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-rose-400 hover:bg-rose-950/40 hover:text-rose-300 rounded-lg transition-colors border border-rose-900/30 cursor-pointer"
         >
           <LogOut className="w-3.5 h-3.5" />
           <span>Keluar dari Akun</span>
