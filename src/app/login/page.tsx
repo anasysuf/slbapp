@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   GraduationCap,
   Sparkles,
@@ -16,10 +16,13 @@ import {
   CheckCircle2,
   LogOut,
   UserCheck,
+  Clock,
 } from "lucide-react";
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isSessionExpired = searchParams.get("sessionExpired") === "true";
   const { data: session, status } = useSession();
   const [email, setEmail] = useState("guru@slb.sch.id");
   const [password, setPassword] = useState("guru123");
@@ -138,6 +141,16 @@ export default function LoginPage() {
               <p className="text-xs text-slate-500 mb-6">
                 Silakan masukkan kredensial atau klik salah satu akun demo
               </p>
+
+              {isSessionExpired && (
+                <div className="mb-4 p-3.5 bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold rounded-2xl flex items-start gap-2.5 shadow-sm animate-fade-in">
+                  <Clock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold block text-amber-950">Sesi Berakhir Otomatis</span>
+                    Sesi Anda telah berakhir secara otomatis karena tidak ada aktivitas selama 1 jam demi menjaga privasi dan keamanan data sekolah. Silakan masuk kembali.
+                  </div>
+                </div>
+              )}
 
               {error && (
                 <div className="mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold rounded-xl">
@@ -297,5 +310,13 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-900 flex items-center justify-center text-white text-xs">Memuat halaman login...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }

@@ -4,6 +4,7 @@ import { SessionProvider } from "next-auth/react";
 import React, { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { SidebarProvider } from "@/context/SidebarContext";
+import IdleTimeoutHandler from "@/components/IdleTimeoutHandler";
 
 function BfCacheProtection() {
   const router = useRouter();
@@ -30,6 +31,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     <SessionProvider>
       <SidebarProvider>
         <BfCacheProtection />
+        <IdleTimeoutHandler />
         {children}
       </SidebarProvider>
     </SessionProvider>

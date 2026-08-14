@@ -7,6 +7,10 @@ import bcrypt from "bcryptjs";
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
+    maxAge: 60 * 60, // Maksimal 1 jam (3600 detik)
+  },
+  jwt: {
+    maxAge: 60 * 60, // Maksimal 1 jam
   },
   pages: {
     signIn: "/login",
