@@ -84,9 +84,42 @@ export default function StudentDetailPage() {
   const journals = student.dailyJournals || [];
 
   const mandiriAssessments = assessments.filter((a: any) => a.score === "MANDIRI").length;
-  const independenceRate = assessments.length > 0 ? Math.round((mandiriAssessments / assessments.length) * 100) : 75;
+  const independenceRate = assessments.length > 0 ? Math.round((mandiriAssessments / assessments.length) * 100) : 0;
+
+  // Real 5-Aspect Scores calculated directly from student's assessments
+  const standardAspects = [
+    { category: "Bina Diri (ADL)", label: "Bina Diri (ADL)" },
+    { category: "Motorik Kasar & Halus", label: "Fisik & Motorik" },
+    { category: "Bahasa & Komunikasi", label: "Bahasa & Komunikasi" },
+    { category: "Kognitif / Akademik", label: "Kognitif & Akademik" },
+    { category: "Sosial Emosional", label: "Sosial & Emosi" },
+  ];
+
+  const studentAspectScores = standardAspects.map((asp) => {
+    const matched = assessments.filter(
+      (a: any) =>
+        a.category.toLowerCase().includes(asp.category.toLowerCase().split(" ")[0]) ||
+        asp.category.toLowerCase().includes(a.category.toLowerCase().split(" ")[0])
+    );
+    const mandiri = matched.filter((a: any) => a.score === "MANDIRI").length;
+    const bantuan = matched.filter((a: any) => a.score === "DENGAN_BANTUAN").length;
+    const belum = matched.filter((a: any) => a.score === "BELUM_MAMPU").length;
+    const total = matched.length;
+    const score = total > 0 ? Math.round((mandiri * 100 + bantuan * 50) / total) : 0;
+
+    return {
+      category: asp.category,
+      label: asp.label,
+      score,
+      total,
+      mandiriCount: mandiri,
+      denganBantuanCount: bantuan,
+      belumMampuCount: belum,
+    };
+  });
 
   return (
+
     <div className="flex min-h-screen bg-slate-50">
       <Sidebar />
 
@@ -201,54 +234,9 @@ export default function StudentDetailPage() {
               {/* Radar Chart 5 Aspek */}
               <AspectRadarChart
                 studentName={student.name}
-                aspectScores={[
-                  {
-                    category: "Bina Diri (ADL)",
-                    label: "Bina Diri (ADL)",
-                    score: independenceRate,
-                    total: 4,
-                    mandiriCount: 3,
-                    denganBantuanCount: 1,
-                    belumMampuCount: 0,
-                  },
-                  {
-                    category: "Motorik Kasar & Halus",
-                    label: "Fisik & Motorik",
-                    score: Math.min(100, independenceRate + 5),
-                    total: 4,
-                    mandiriCount: 3,
-                    denganBantuanCount: 1,
-                    belumMampuCount: 0,
-                  },
-                  {
-                    category: "Bahasa & Komunikasi",
-                    label: "Bahasa & Komunikasi",
-                    score: Math.max(30, independenceRate - 10),
-                    total: 4,
-                    mandiriCount: 2,
-                    denganBantuanCount: 2,
-                    belumMampuCount: 0,
-                  },
-                  {
-                    category: "Kognitif / Akademik",
-                    label: "Kognitif & Akademik",
-                    score: Math.max(40, independenceRate - 5),
-                    total: 4,
-                    mandiriCount: 2,
-                    denganBantuanCount: 2,
-                    belumMampuCount: 0,
-                  },
-                  {
-                    category: "Sosial Emosional",
-                    label: "Sosial & Emosi",
-                    score: Math.min(100, independenceRate + 2),
-                    total: 4,
-                    mandiriCount: 3,
-                    denganBantuanCount: 1,
-                    belumMampuCount: 0,
-                  },
-                ]}
+                aspectScores={studentAspectScores}
               />
+
 
               {/* Grafik Tren Perkembangan & Kemandirian Siswa */}
               <StudentProgressTrendChart

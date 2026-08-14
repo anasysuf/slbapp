@@ -147,6 +147,42 @@ export async function GET(req: Request) {
       });
       const topMood = Object.keys(moodCounts).sort((a, b) => moodCounts[b] - moodCounts[a])[0] || "Belum ada catatan";
 
+      const standardAspects = [
+        { category: "Bina Diri (ADL)", label: "Bina Diri (ADL)" },
+        { category: "Motorik Kasar & Halus", label: "Fisik & Motorik" },
+        { category: "Bahasa & Komunikasi", label: "Bahasa & Komunikasi" },
+        { category: "Kognitif / Akademik", label: "Kognitif & Akademik" },
+        { category: "Sosial Emosional", label: "Sosial & Emosi" },
+      ];
+
+      const studentAspectScores = standardAspects.map((asp) => {
+        const matched = assessments.filter(
+          (a) =>
+            a.category.toLowerCase().includes(asp.category.toLowerCase().split(" ")[0]) ||
+            asp.category.toLowerCase().includes(a.category.toLowerCase().split(" ")[0])
+        );
+
+        const mandiri = matched.filter((a) => a.score === "MANDIRI").length;
+        const bantuan = matched.filter((a) => a.score === "DENGAN_BANTUAN").length;
+        const belum = matched.filter((a) => a.score === "BELUM_MAMPU").length;
+        const total = matched.length;
+
+        const score =
+          total > 0
+            ? Math.round((mandiri * 100 + bantuan * 50) / total)
+            : 0;
+
+        return {
+          category: asp.category,
+          label: asp.label,
+          score,
+          total,
+          mandiriCount: mandiri,
+          denganBantuanCount: bantuan,
+          belumMampuCount: belum,
+        };
+      });
+
       return {
         id: s.id,
         name: s.name,
@@ -169,6 +205,7 @@ export async function GET(req: Request) {
           belumMampu: studentBelumTotal,
           total: totalStudentScores,
         },
+        aspectScores: studentAspectScores,
         independenceRate,
         topMood,
         activePpi: ppiPlans[0] || null,
@@ -180,6 +217,45 @@ export async function GET(req: Request) {
     const totalOverallScores = totalMandiriCount + totalBantuanCount + totalBelumMampuCount;
     const overallIndependenceRate =
       totalOverallScores > 0 ? Math.round((totalMandiriCount / totalOverallScores) * 100) : 0;
+
+    // Standard 5-Aspect Agregat across all students
+    const standardAspects = [
+      { category: "Bina Diri (ADL)", label: "Bina Diri (ADL)" },
+      { category: "Motorik Kasar & Halus", label: "Fisik & Motorik" },
+      { category: "Bahasa & Komunikasi", label: "Bahasa & Komunikasi" },
+      { category: "Kognitif / Akademik", label: "Kognitif & Akademik" },
+      { category: "Sosial Emosional", label: "Sosial & Emosi" },
+    ];
+
+    const allAssessments = students.flatMap((s) => s.assessments || []);
+
+    const aspectSummary = standardAspects.map((asp) => {
+      const matched = allAssessments.filter(
+        (a) =>
+          a.category.toLowerCase().includes(asp.category.toLowerCase().split(" ")[0]) ||
+          asp.category.toLowerCase().includes(a.category.toLowerCase().split(" ")[0])
+      );
+
+      const mandiri = matched.filter((a) => a.score === "MANDIRI").length;
+      const bantuan = matched.filter((a) => a.score === "DENGAN_BANTUAN").length;
+      const belum = matched.filter((a) => a.score === "BELUM_MAMPU").length;
+      const total = matched.length;
+
+      const score =
+        total > 0
+          ? Math.round((mandiri * 100 + bantuan * 50) / total)
+          : 0;
+
+      return {
+        category: asp.category,
+        label: asp.label,
+        score,
+        total,
+        mandiriCount: mandiri,
+        denganBantuanCount: bantuan,
+        belumMampuCount: belum,
+      };
+    });
 
     // Available academic years and semesters in system
     const availableAcademicYears = ["2026/2027", "2025/2026", "2024/2025"];
@@ -216,12 +292,14 @@ export async function GET(req: Request) {
         belumMampuCount: totalBelumMampuCount,
         totalScores: totalOverallScores,
         overallIndependenceRate,
+        aspectSummary,
       },
       students: studentRecapList,
       availableAcademicYears,
       availableSemesters,
       classes: allClasses,
     });
+
   } catch (error: any) {
     console.error("Error generating semester recap:", error);
     return NextResponse.json({ error: "Gagal menyusun rekapitulasi semester: " + error.message }, { status: 500 });

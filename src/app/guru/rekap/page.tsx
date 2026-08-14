@@ -421,56 +421,11 @@ function RekapContent() {
           {activeView === "radar" && (
             <div className="animate-fade-in space-y-6">
               <AspectRadarChart
-                aspectScores={[
-                  {
-                    category: "Bina Diri (ADL)",
-                    label: "Bina Diri (ADL)",
-                    score: summary?.overallIndependenceRate || 78,
-                    total: 10,
-                    mandiriCount: 8,
-                    denganBantuanCount: 2,
-                    belumMampuCount: 0,
-                  },
-                  {
-                    category: "Motorik Kasar & Halus",
-                    label: "Fisik & Motorik",
-                    score: Math.min(100, (summary?.overallIndependenceRate || 70) + 5),
-                    total: 10,
-                    mandiriCount: 7,
-                    denganBantuanCount: 2,
-                    belumMampuCount: 1,
-                  },
-                  {
-                    category: "Bahasa & Komunikasi",
-                    label: "Bahasa & Komunikasi",
-                    score: Math.max(40, (summary?.overallIndependenceRate || 65) - 8),
-                    total: 10,
-                    mandiriCount: 6,
-                    denganBantuanCount: 3,
-                    belumMampuCount: 1,
-                  },
-                  {
-                    category: "Kognitif / Akademik",
-                    label: "Kognitif & Akademik",
-                    score: Math.max(45, (summary?.overallIndependenceRate || 72) - 4),
-                    total: 10,
-                    mandiriCount: 7,
-                    denganBantuanCount: 2,
-                    belumMampuCount: 1,
-                  },
-                  {
-                    category: "Sosial Emosional",
-                    label: "Sosial & Emosi",
-                    score: Math.min(100, (summary?.overallIndependenceRate || 75) + 3),
-                    total: 10,
-                    mandiriCount: 8,
-                    denganBantuanCount: 1,
-                    belumMampuCount: 1,
-                  },
-                ]}
+                aspectScores={summary?.aspectSummary || []}
               />
             </div>
           )}
+
 
           {/* VIEW: GENERATOR NARASI RAPOR OTOMATIS */}
           {activeView === "narasi" && (

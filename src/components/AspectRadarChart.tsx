@@ -30,21 +30,24 @@ export default function AspectRadarChart({ aspectScores, studentName }: AspectRa
 
   const processedData = defaultCategories.map((def) => {
     const existing = aspectScores.find(
-      (a) => a.category.toLowerCase().includes(def.category.toLowerCase().split(" ")[0]) ||
-             def.category.toLowerCase().includes(a.category.toLowerCase().split(" ")[0])
+      (a) =>
+        a.category.toLowerCase().includes(def.category.toLowerCase().split(" ")[0]) ||
+        def.category.toLowerCase().includes(a.category.toLowerCase().split(" ")[0]) ||
+        (a.label && def.label && a.label.toLowerCase().includes(def.label.toLowerCase().split(" ")[0]))
     );
     return {
       category: def.category,
       label: def.label,
       icon: def.icon,
       color: def.color,
-      score: existing ? existing.score : Math.floor(Math.random() * 30 + 60), // fallback reasonable score if no data
-      total: existing ? existing.total : 1,
-      mandiriCount: existing ? existing.mandiriCount : 1,
+      score: existing ? existing.score : 0,
+      total: existing ? existing.total : 0,
+      mandiriCount: existing ? existing.mandiriCount : 0,
       denganBantuanCount: existing ? existing.denganBantuanCount : 0,
       belumMampuCount: existing ? existing.belumMampuCount : 0,
     };
   });
+
 
   // Calculate radar polygon points (radius = 100, center = 150, 150)
   const size = 300;
