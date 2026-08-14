@@ -97,7 +97,7 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    const { id, name, code, address, phone, logo } = body;
+    const { id, name, code, address, phone, logo, academicYear, semester } = body;
 
     // Find the foundation to update (either by passed ID or user's foundationId or first foundation)
     let targetId = id || (session.user as any).foundationId;
@@ -118,6 +118,8 @@ export async function PUT(req: Request) {
         address: address !== undefined ? (address ? address.trim() : null) : undefined,
         phone: phone !== undefined ? (phone ? phone.trim() : null) : undefined,
         logo: logo !== undefined ? (logo ? logo.trim() : null) : undefined,
+        academicYear: academicYear !== undefined ? (academicYear ? academicYear.trim() : null) : undefined,
+        semester: semester !== undefined ? (semester ? semester.trim() : null) : undefined,
       },
     });
 

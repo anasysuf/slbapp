@@ -20,6 +20,7 @@ import {
   Activity,
   UserCheck,
   X,
+  BarChart3,
 } from "lucide-react";
 import { useSidebar } from "@/context/SidebarContext";
 
@@ -38,6 +39,7 @@ function SidebarNavList({ onItemClick }: { onItemClick?: () => void }) {
     { href: "/guru/evaluasi", label: "Input Evaluasi", icon: FileCheck },
     { href: "/guru/jurnal", label: "Buku Penghubung", icon: HeartHandshake },
     { href: "/guru/materi", label: "Materi & Tugas", icon: BookOpen },
+    { href: "/guru/rekap", label: "Rekap Semester", icon: BarChart3 },
   ];
 
   const ortuLinks = [
@@ -46,12 +48,14 @@ function SidebarNavList({ onItemClick }: { onItemClick?: () => void }) {
 
   const yayasanLinks = [
     { href: "/yayasan", label: "Dashboard Eksekutif", icon: Building2 },
+    { href: "/guru/rekap", label: "Rekapitulasi Semester", icon: BarChart3 },
     { href: "/admin?tab=siswa", label: "Data Siswa Yayasan", icon: Users, tab: "siswa" },
     { href: "/admin?tab=logs", label: "Log Aktivitas", icon: Activity, tab: "logs" },
   ];
 
   const adminLinks = [
     { href: "/admin?tab=sekolah", label: "Profil & Logo Sekolah", icon: Building2, tab: "sekolah" },
+    { href: "/guru/rekap", label: "Rekapitulasi Semester", icon: BarChart3 },
     { href: "/admin?tab=siswa", label: "Master Data Siswa", icon: Users, tab: "siswa" },
     { href: "/admin?tab=pengguna", label: "Manajemen Pengguna", icon: UserCheck, tab: "pengguna" },
     { href: "/admin?tab=kelas", label: "Rombel & Jenjang", icon: GraduationCap, tab: "kelas" },

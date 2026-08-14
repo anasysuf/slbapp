@@ -28,19 +28,21 @@ enum Jenjang {
 }
 
 model Foundation {
-  id          String        @id @default(cuid())
-  name        String        // e.g. "Yayasan Pendidikan Harapan Mulia"
-  code        String        @unique // e.g. "YAYASAN-HARAPAN"
-  address     String?
-  phone       String?
-  logo        String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id           String        @id @default(cuid())
+  name         String        // e.g. "Yayasan Pendidikan Harapan Mulia"
+  code         String        @unique // e.g. "YAYASAN-HARAPAN"
+  address      String?
+  phone        String?
+  logo         String?
+  academicYear String?       @default("2026/2027")
+  semester     String?       @default("Ganjil")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
-  users       User[]
-  students    Student[]
-  classes     Class[]
-  logs        ActivityLog[]
+  users        User[]
+  students     Student[]
+  classes      Class[]
+  logs         ActivityLog[]
 }
 
 model User {
@@ -153,6 +155,8 @@ model Assessment {
   score          Score     // MANDIRI, DENGAN_BANTUAN, BELUM_MAMPU
   findings       String    // Hasil observasi guru
   recommendation String?   // Rekomendasi program tindak lanjut / PPI
+  academicYear   String?   @default("2026/2027")
+  semester       String?   @default("Ganjil")
   assessmentDate DateTime  @default(now())
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
@@ -163,7 +167,8 @@ model Assessment {
 
 model PpiPlan {
   id                String          @id @default(cuid())
-  academicYear      String
+  academicYear      String          @default("2026/2027")
+  semester          String?         @default("Ganjil")
   currentCapability String
   longTermGoal      String
   shortTermGoal     String
@@ -192,6 +197,8 @@ model DailyJournal {
   studentId        String
   teacherId        String
   date             DateTime  @default(now())
+  academicYear     String?   @default("2026/2027")
+  semester         String?   @default("Ganjil")
   mood             String    // "Gembira & Fokus", "Tenang", "Gelisah", "Tantrum"
   healthCondition  String?   // "Sehat bugar", "Flu", dll
   eatingNote       String?   // "Makan bekal habis mandiri"

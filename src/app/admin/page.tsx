@@ -70,6 +70,8 @@ function AdminDashboardContent() {
   const [schoolAddress, setSchoolAddress] = useState("");
   const [schoolPhone, setSchoolPhone] = useState("");
   const [schoolLogo, setSchoolLogo] = useState("");
+  const [schoolAcademicYear, setSchoolAcademicYear] = useState("2026/2027");
+  const [schoolSemester, setSchoolSemester] = useState("Ganjil");
   const [savingSchool, setSavingSchool] = useState(false);
   const [schoolSavedSuccess, setSchoolSavedSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -153,6 +155,8 @@ function AdminDashboardContent() {
         setSchoolAddress(f.address || "");
         setSchoolPhone(f.phone || "");
         setSchoolLogo(f.logo || "");
+        setSchoolAcademicYear(f.academicYear || "2026/2027");
+        setSchoolSemester(f.semester || "Ganjil");
       }
 
       setStudents(Array.isArray(dataStudents) ? dataStudents : []);
@@ -207,6 +211,8 @@ function AdminDashboardContent() {
           address: schoolAddress,
           phone: schoolPhone,
           logo: schoolLogo,
+          academicYear: schoolAcademicYear,
+          semester: schoolSemester,
         }),
       });
 
@@ -816,6 +822,37 @@ function AdminDashboardContent() {
                         placeholder="Contoh: 021-77889900 / 081234567890"
                         className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-900 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-purple-600 focus:outline-none"
                       />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        Tahun Ajaran Aktif Sekolah *
+                      </label>
+                      <select
+                        value={schoolAcademicYear}
+                        onChange={(e) => setSchoolAcademicYear(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-900 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                      >
+                        <option value="2026/2027">2026/2027</option>
+                        <option value="2025/2026">2025/2026</option>
+                        <option value="2024/2025">2024/2025</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        Semester Aktif Sekolah *
+                      </label>
+                      <select
+                        value={schoolSemester}
+                        onChange={(e) => setSchoolSemester(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-900 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                      >
+                        <option value="Ganjil">Semester Ganjil</option>
+                        <option value="Genap">Semester Genap</option>
+                      </select>
                     </div>
                   </div>
 

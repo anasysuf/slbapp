@@ -34,6 +34,8 @@ async function main() {
       address: "Jl. Pendidikan Inklusi No. 45, Kota Bandung, Jawa Barat",
       phone: "022-78901234 / 0812-3456-7890",
       logo: "🏫",
+      academicYear: "2026/2027",
+      semester: "Ganjil",
     },
   });
 
@@ -44,6 +46,8 @@ async function main() {
       address: "Jl. Raya Inklusif No. 12, Jakarta Selatan, DKI Jakarta",
       phone: "021-88990011",
       logo: "🌟",
+      academicYear: "2026/2027",
+      semester: "Ganjil",
     },
   });
 
