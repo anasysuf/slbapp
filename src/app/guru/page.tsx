@@ -16,6 +16,9 @@ import {
   HelpCircle,
   AlertCircle,
   PlusCircle,
+  HeartHandshake,
+  BarChart3,
+  Calendar,
 } from "lucide-react";
 import AssessmentModal from "@/components/AssessmentModal";
 import PpiModal from "@/components/PpiModal";
@@ -59,6 +62,9 @@ export default function GuruDashboard() {
     fetchData();
   }, []);
 
+  const mandiriCount = assessments.filter((a) => a.score === "MANDIRI").length;
+  const mandiriPercent = assessments.length > 0 ? Math.round((mandiriCount / assessments.length) * 100) : 0;
+
   return (
     <div className="flex min-h-screen bg-slate-50">
       <Sidebar />
@@ -66,40 +72,91 @@ export default function GuruDashboard() {
       <main className="flex-1 flex flex-col min-w-0">
         <Header
           title="Dashboard Guru Khusus SLB"
-          subtitle="Manajemen Asesmen Diagnostik, Program Pembelajaran Individual (PPI) & Pembelajaran Adaptif"
+          subtitle="Pusat Asesmen Diagnostik, Program Pembelajaran Individual (PPI), & Pemantauan Kemandirian Siswa"
         />
 
         <div className="p-4 sm:p-6 space-y-6 max-w-7xl">
           {/* Welcome Banner */}
-          <div className="p-6 rounded-3xl bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-600 text-white shadow-xl shadow-teal-700/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 backdrop-blur rounded-full text-xs font-semibold mb-2 text-teal-50">
-                <Sparkles className="w-3.5 h-3.5 text-amber-300" /> Portal Khusus Guru SLB
+          <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-teal-800 via-teal-700 to-emerald-700 text-white shadow-xl shadow-teal-900/10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/15 backdrop-blur rounded-full text-xs font-semibold text-teal-100">
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" /> Portal Pembelajaran Khusus
               </div>
-              <h2 className="text-xl sm:text-2xl font-black tracking-tight">
+              <h2 className="text-xl sm:text-3xl font-black tracking-tight">
                 Selamat Datang di Ruang Guru SLB
               </h2>
-              <p className="text-teal-100 text-xs sm:text-sm mt-1 max-w-xl">
-                Akses terpisah untuk <strong>{classes.length} rombel kelas binaan</strong> dan <strong>{students.length} siswa</strong> yang Anda ampu secara langsung.
+              <p className="text-teal-100 text-xs sm:text-sm max-w-xl leading-relaxed">
+                Kelola rombel binaan Anda, input hasil asesmen diagnostik 5 aspek, dan susun target individualisasi peserta didik secara praktis dan terintegrasi.
               </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-2.5 shrink-0">
               <button
                 onClick={() => setIsAssessmentModalOpen(true)}
-                className="px-4 py-2.5 bg-white text-teal-800 hover:bg-teal-50 font-bold text-xs sm:text-sm rounded-xl shadow-lg transition-all flex items-center gap-2"
+                className="px-4 py-2.5 bg-white text-teal-900 hover:bg-teal-50 font-bold text-xs sm:text-sm rounded-xl shadow-lg transition-all flex items-center gap-2"
               >
                 <ClipboardCheck className="w-4 h-4 text-teal-600" />
-                <span>+ Input Asesmen Baru</span>
+                <span>+ Input Asesmen</span>
               </button>
 
               <button
                 onClick={() => setIsPpiModalOpen(true)}
-                className="px-4 py-2.5 bg-teal-900/80 hover:bg-teal-900 text-white font-bold text-xs sm:text-sm rounded-xl border border-teal-400/30 transition-all flex items-center gap-2"
+                className="px-4 py-2.5 bg-teal-950/80 hover:bg-teal-950 text-white font-bold text-xs sm:text-sm rounded-xl border border-teal-400/30 transition-all flex items-center gap-2"
               >
                 <Target className="w-4 h-4 text-amber-300" />
-                <span>+ Buat PPI Baru</span>
+                <span>+ Susun PPI Baru</span>
               </button>
+            </div>
+          </div>
+
+          {/* Quick Metrics */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
+              <div>
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Siswa Binaan</div>
+                <div className="text-2xl font-black text-slate-900 mt-1">{students.length}</div>
+                <div className="text-[11px] text-teal-600 font-semibold mt-0.5">Siswa Berkebutuhan Khusus</div>
+              </div>
+              <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center">
+                <Users className="w-6 h-6" />
+              </div>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
+              <div>
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Asesmen Terdata</div>
+                <div className="text-2xl font-black text-teal-700 mt-1">{assessments.length}</div>
+                <Link href="/guru/asesmen" className="text-[11px] text-teal-600 hover:underline font-semibold mt-0.5 block">
+                  Lihat Menu Asesmen →
+                </Link>
+              </div>
+              <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center">
+                <ClipboardCheck className="w-6 h-6" />
+              </div>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
+              <div>
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Rencana PPI Aktif</div>
+                <div className="text-2xl font-black text-indigo-700 mt-1">{ppiPlans.length}</div>
+                <Link href="/guru/ppi" className="text-[11px] text-indigo-600 hover:underline font-semibold mt-0.5 block">
+                  Kelola PPI Siswa →
+                </Link>
+              </div>
+              <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                <Target className="w-6 h-6" />
+              </div>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
+              <div>
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Tingkat Kemandirian</div>
+                <div className="text-2xl font-black text-emerald-600 mt-1">{mandiriPercent}%</div>
+                <div className="text-[11px] text-slate-500 font-medium mt-0.5">Rasio Skor Mandiri</div>
+              </div>
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <CheckCircle2 className="w-6 h-6" />
+              </div>
             </div>
           </div>
 
@@ -113,7 +170,7 @@ export default function GuruDashboard() {
                   </div>
                   <div>
                     <h3 className="font-bold text-sm sm:text-base text-slate-900">
-                      Rombel Kelas yang Anda Ampu
+                      Rombel Kelas Binaan Anda
                     </h3>
                     <p className="text-xs text-slate-500">Penugasan resmi dan jenjang pendidikan ditentukan oleh Administrator Sekolah</p>
                   </div>
@@ -136,7 +193,7 @@ export default function GuruDashboard() {
                     </span>
                   </div>
                   <p className="text-xs text-slate-600">
-                    Wali Kelas / Pengampu Resmi: <strong>{classes[0]?.teacher?.name || "Guru"}</strong> • Terdaftar <strong>{students.length} siswa berkebutuhan khusus</strong>
+                    Wali Kelas: <strong>{classes[0]?.teacher?.name || "Guru"}</strong> • Terdaftar <strong>{students.length} peserta didik</strong>
                   </p>
                 </div>
 
@@ -145,72 +202,19 @@ export default function GuruDashboard() {
                     href="/guru/siswa"
                     className="px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs rounded-xl shadow transition-colors"
                   >
-                    Daftar Siswa Kelas ({students.length})
+                    Daftar Siswa ({students.length})
                   </Link>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="bg-amber-50 border border-amber-200 p-5 rounded-3xl text-amber-800 text-xs flex items-center gap-3">
+            <div className="bg-amber-50 border border-amber-200 p-5 rounded-3xl text-amber-900 text-xs flex items-center gap-3">
               <span className="text-lg">⚠️</span>
               <div>
                 <strong>Belum Memiliki Rombel Kelas Aktif:</strong> Akun Guru Anda belum ditugaskan ke kelas tertentu oleh Administrator. Silakan hubungi Admin Sekolah untuk penugasan kelas dan jenjang.
               </div>
             </div>
           )}
-
-          {/* Quick Metrics */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-              <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Siswa Binaan</div>
-                <div className="text-2xl font-black text-slate-800 mt-1">{students.length}</div>
-                <div className="text-[11px] text-teal-600 font-medium mt-0.5">Siswa Berkebutuhan Khusus</div>
-              </div>
-              <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center">
-                <Users className="w-6 h-6" />
-              </div>
-            </div>
-
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-              <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Data Asesmen Masuk</div>
-                <div className="text-2xl font-black text-teal-700 mt-1">{assessments.length}</div>
-                <Link href="/guru/asesmen" className="text-[11px] text-teal-600 hover:underline font-semibold mt-0.5 block">
-                  Lihat Menu Asesmen →
-                </Link>
-              </div>
-              <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center">
-                <ClipboardCheck className="w-6 h-6" />
-              </div>
-            </div>
-
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-              <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Rencana PPI Aktif</div>
-                <div className="text-2xl font-black text-indigo-700 mt-1">{ppiPlans.length}</div>
-                <Link href="/guru/ppi" className="text-[11px] text-indigo-600 hover:underline font-semibold mt-0.5 block">
-                  Kelola PPI Siswa →
-                </Link>
-              </div>
-              <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                <Target className="w-6 h-6" />
-              </div>
-            </div>
-
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-              <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Tingkat Kemandirian</div>
-                <div className="text-2xl font-black text-emerald-600 mt-1">
-                  {Math.round((assessments.filter((a) => a.score === "MANDIRI").length / (assessments.length || 1)) * 100)}%
-                </div>
-                <div className="text-[11px] text-slate-500 font-medium mt-0.5">Rasio Skor Mandiri</div>
-              </div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                <CheckCircle2 className="w-6 h-6" />
-              </div>
-            </div>
-          </div>
 
           {/* Section: Asesmen Terbaru & Daftar Siswa */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -220,14 +224,14 @@ export default function GuruDashboard() {
                 <div className="flex items-center gap-2">
                   <ClipboardCheck className="w-5 h-5 text-teal-600" />
                   <h3 className="font-bold text-base text-slate-800">
-                    Asesmen Diagnostik & Perkembangan Terakhir
+                    Asesmen Diagnostik Terkini
                   </h3>
                 </div>
                 <Link
                   href="/guru/asesmen"
                   className="text-xs font-bold text-teal-600 hover:text-teal-700 flex items-center gap-1"
                 >
-                  <span>Buka Menu Asesmen Lengkap</span>
+                  <span>Buka Asesmen Lengkap</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
@@ -236,7 +240,7 @@ export default function GuruDashboard() {
                 <div className="py-8 text-center text-xs text-slate-400">Memuat data asesmen...</div>
               ) : assessments.length === 0 ? (
                 <div className="py-8 text-center text-xs text-slate-400">
-                  Belum ada asesmen yang dicatat. Klik "+ Input Asesmen Baru".
+                  Belum ada asesmen yang dicatat. Klik "+ Input Asesmen".
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -301,6 +305,9 @@ export default function GuruDashboard() {
                   <Users className="w-5 h-5 text-teal-600" />
                   <h3 className="font-bold text-base text-slate-800">Daftar Siswa Binaan</h3>
                 </div>
+                <Link href="/guru/siswa" className="text-xs font-bold text-teal-600 hover:underline">
+                  Semua Siswa →
+                </Link>
               </div>
 
               <div className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
