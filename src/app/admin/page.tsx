@@ -724,7 +724,7 @@ function AdminDashboardContent() {
         </div>
 
         {/* Navigation Tabs (Synchronized with Sidebar) */}
-        <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto">
+        <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto no-scrollbar">
           <button
             onClick={() => changeTab("sekolah")}
             className={`px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 shrink-0 ${
@@ -1879,46 +1879,46 @@ function AdminDashboardContent() {
 
       {/* Modal 1: Tambah Siswa */}
       {isStudentModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden">
-            <div className="bg-purple-900 px-6 py-4 flex items-center justify-between text-white">
-              <h2 className="font-bold text-lg">Tambah Siswa SLB Baru</h2>
-              <button onClick={() => setIsStudentModalOpen(false)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/65 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
+            <div className="bg-gradient-to-r from-purple-900 to-indigo-900 px-6 py-4 flex items-center justify-between text-white shrink-0">
+              <h2 className="font-bold text-base sm:text-lg">Tambah Siswa SLB Baru</h2>
+              <button onClick={() => setIsStudentModalOpen(false)} className="p-1 hover:bg-white/20 rounded-lg transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <form onSubmit={handleCreateStudent} className="p-6 space-y-4">
+            <form onSubmit={handleCreateStudent} className="p-5 sm:p-6 space-y-4 overflow-y-auto">
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Nama Lengkap *</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Nama Lengkap *</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Contoh: Muhammad Farhan"
-                  className="w-full px-3 py-2 rounded-xl border text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none"
                   required
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-700 mb-1">NISN *</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">NISN *</label>
                   <input
                     type="text"
                     value={nisn}
                     onChange={(e) => setNisn(e.target.value)}
                     placeholder="0081234509"
-                    className="w-full px-3 py-2 rounded-xl border text-sm"
+                    className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Jenis Kelamin</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Jenis Kelamin</label>
                   <select
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
+                    className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                   >
                     <option value="L">Laki-laki</option>
                     <option value="P">Perempuan</option>
@@ -1926,13 +1926,13 @@ function AdminDashboardContent() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Jenjang SLB *</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Jenjang SLB *</label>
                   <select
                     value={jenjang}
                     onChange={(e) => setJenjang(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
+                    className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                   >
                     <option value="TKLB">TKLB</option>
                     <option value="SDLB">SDLB</option>
@@ -1942,11 +1942,11 @@ function AdminDashboardContent() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Disabilitas *</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Disabilitas *</label>
                   <select
                     value={disabilityType}
                     onChange={(e) => setDisabilityType(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
+                    className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                   >
                     <option value="Autisme">Autisme</option>
                     <option value="Tunarungu">Tunarungu</option>
@@ -1960,11 +1960,11 @@ function AdminDashboardContent() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Penugasan Rombel Kelas</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Penugasan Rombel Kelas</label>
                 <select
                   value={studentClassId}
                   onChange={(e) => setStudentClassId(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                 >
                   <option value="">-- Pilih Rombel Kelas (Opsional) --</option>
                   {classes.map((c) => (
@@ -1976,11 +1976,11 @@ function AdminDashboardContent() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Tautkan Orang Tua</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Tautkan Orang Tua</label>
                 <select
                   value={parentId}
                   onChange={(e) => setParentId(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                 >
                   <option value="">-- Pilih Orang Tua (Opsional) --</option>
                   {parents.map((p) => (
@@ -1991,9 +1991,9 @@ function AdminDashboardContent() {
                 </select>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
-                <button type="button" onClick={() => setIsStudentModalOpen(false)} className="px-4 py-2 text-xs font-bold text-slate-600">Batal</button>
-                <button type="submit" className="px-4 py-2 bg-purple-700 text-white text-xs font-bold rounded-xl">Simpan Siswa</button>
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+                <button type="button" onClick={() => setIsStudentModalOpen(false)} className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Batal</button>
+                <button type="submit" className="px-5 py-2.5 bg-purple-900 hover:bg-purple-950 text-white text-xs font-bold rounded-xl shadow-lg shadow-purple-900/20 transition-all">Simpan Siswa</button>
               </div>
             </form>
           </div>
@@ -2002,44 +2002,44 @@ function AdminDashboardContent() {
 
       {/* Modal 1B: Edit Siswa (Admin) */}
       {isEditStudentModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden">
-            <div className="bg-purple-900 px-6 py-4 flex items-center justify-between text-white">
-              <h2 className="font-bold text-lg">Edit Data Siswa & Mutasi Kelas</h2>
-              <button onClick={() => setIsEditStudentModalOpen(false)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/65 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
+            <div className="bg-gradient-to-r from-purple-900 to-indigo-900 px-6 py-4 flex items-center justify-between text-white shrink-0">
+              <h2 className="font-bold text-base sm:text-lg">Edit Data Siswa & Mutasi Kelas</h2>
+              <button onClick={() => setIsEditStudentModalOpen(false)} className="p-1 hover:bg-white/20 rounded-lg transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <form onSubmit={handleUpdateStudent} className="p-6 space-y-4">
+            <form onSubmit={handleUpdateStudent} className="p-5 sm:p-6 space-y-4 overflow-y-auto">
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Nama Lengkap *</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Nama Lengkap *</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                   required
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-700 mb-1">NISN *</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">NISN *</label>
                   <input
                     type="text"
                     value={nisn}
                     onChange={(e) => setNisn(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border text-sm"
+                    className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Jenis Kelamin</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Jenis Kelamin</label>
                   <select
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
+                    className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                   >
                     <option value="L">Laki-laki</option>
                     <option value="P">Perempuan</option>
@@ -2047,13 +2047,13 @@ function AdminDashboardContent() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Jenjang SLB *</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Jenjang SLB *</label>
                   <select
                     value={jenjang}
                     onChange={(e) => setJenjang(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
+                    className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                   >
                     <option value="TKLB">TKLB</option>
                     <option value="SDLB">SDLB</option>
@@ -2063,11 +2063,11 @@ function AdminDashboardContent() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Disabilitas *</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Disabilitas *</label>
                   <select
                     value={disabilityType}
                     onChange={(e) => setDisabilityType(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
+                    className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                   >
                     <option value="Autisme">Autisme</option>
                     <option value="Tunarungu">Tunarungu</option>
@@ -2081,11 +2081,11 @@ function AdminDashboardContent() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Penugasan Rombel Kelas</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Mutasi / Penugasan Rombel Kelas</label>
                 <select
                   value={studentClassId}
                   onChange={(e) => setStudentClassId(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                 >
                   <option value="">-- Pilih Rombel Kelas (Opsional) --</option>
                   {classes.map((c) => (
@@ -2097,11 +2097,11 @@ function AdminDashboardContent() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Tautkan Orang Tua</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Tautkan Orang Tua</label>
                 <select
                   value={parentId}
                   onChange={(e) => setParentId(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                 >
                   <option value="">-- Pilih Orang Tua (Opsional) --</option>
                   {parents.map((p) => (
@@ -2112,9 +2112,9 @@ function AdminDashboardContent() {
                 </select>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
-                <button type="button" onClick={() => setIsEditStudentModalOpen(false)} className="px-4 py-2 text-xs font-bold text-slate-600">Batal</button>
-                <button type="submit" className="px-4 py-2 bg-purple-700 text-white text-xs font-bold rounded-xl">Simpan Perubahan</button>
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+                <button type="button" onClick={() => setIsEditStudentModalOpen(false)} className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Batal</button>
+                <button type="submit" className="px-5 py-2.5 bg-purple-900 hover:bg-purple-950 text-white text-xs font-bold rounded-xl shadow-lg shadow-purple-900/20 transition-all">Simpan Perubahan</button>
               </div>
             </form>
           </div>
@@ -2123,79 +2123,79 @@ function AdminDashboardContent() {
 
       {/* Modal 2: Tambah Pengguna */}
       {isUserModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden">
-            <div className="bg-purple-900 px-6 py-4 flex items-center justify-between text-white">
-              <h2 className="font-bold text-lg">Tambah Akun Pengguna Baru</h2>
-              <button onClick={() => setIsUserModalOpen(false)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/65 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
+            <div className="bg-gradient-to-r from-purple-900 to-indigo-900 px-6 py-4 flex items-center justify-between text-white shrink-0">
+              <h2 className="font-bold text-base sm:text-lg">Tambah Akun Pengguna Baru</h2>
+              <button onClick={() => setIsUserModalOpen(false)} className="p-1 hover:bg-white/20 rounded-lg transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <form onSubmit={handleCreateUser} className="p-6 space-y-4">
+            <form onSubmit={handleCreateUser} className="p-5 sm:p-6 space-y-4 overflow-y-auto">
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Nama Lengkap *</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Nama Lengkap *</label>
                 <input
                   type="text"
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
                   placeholder="Ibu Rina Marlina, S.Pd"
-                  className="w-full px-3 py-2 rounded-xl border text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Email *</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Email *</label>
                 <input
                   type="email"
                   value={userEmail}
                   onChange={(e) => setUserEmail(e.target.value)}
                   placeholder="rina@slb.sch.id"
-                  className="w-full px-3 py-2 rounded-xl border text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Kata Sandi Awal *</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Kata Sandi Awal *</label>
                 <input
                   type="password"
                   value={userPassword}
                   onChange={(e) => setUserPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-3 py-2 rounded-xl border text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Role / Peran *</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Role / Peran *</label>
                 <select
                   value={userRole}
                   onChange={(e) => setUserRole(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                 >
                   <option value="GURU">Guru Khusus SLB</option>
                   <option value="ORANG_TUA">Orang Tua Siswa</option>
                   <option value="YAYASAN">Pengurus Yayasan</option>
-                  <option value="ADMIN">Admin Yayasan</option>
+                  <option value="ADMIN">Super Admin Yayasan</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">No. WhatsApp</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">No. WhatsApp</label>
                 <input
                   type="text"
                   value={userPhone}
                   onChange={(e) => setUserPhone(e.target.value)}
                   placeholder="081234567890"
-                  className="w-full px-3 py-2 rounded-xl border text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
-                <button type="button" onClick={() => setIsUserModalOpen(false)} className="px-4 py-2 text-xs font-bold text-slate-600">Batal</button>
-                <button type="submit" className="px-4 py-2 bg-purple-700 text-white text-xs font-bold rounded-xl">Simpan Akun</button>
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+                <button type="button" onClick={() => setIsUserModalOpen(false)} className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Batal</button>
+                <button type="submit" className="px-5 py-2.5 bg-purple-900 hover:bg-purple-950 text-white text-xs font-bold rounded-xl shadow-lg shadow-purple-900/20 transition-all">Simpan Akun</button>
               </div>
             </form>
           </div>
@@ -2204,77 +2204,77 @@ function AdminDashboardContent() {
 
       {/* Modal 3: Edit Pengguna */}
       {isEditUserModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden">
-            <div className="bg-purple-900 px-6 py-4 flex items-center justify-between text-white">
-              <h2 className="font-bold text-lg">Edit Akun Pengguna</h2>
-              <button onClick={() => setIsEditUserModalOpen(false)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/65 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
+            <div className="bg-gradient-to-r from-purple-900 to-indigo-900 px-6 py-4 flex items-center justify-between text-white shrink-0">
+              <h2 className="font-bold text-base sm:text-lg">Edit Akun Pengguna & Reset Password</h2>
+              <button onClick={() => setIsEditUserModalOpen(false)} className="p-1 hover:bg-white/20 rounded-lg transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <form onSubmit={handleUpdateUser} className="p-6 space-y-4">
+            <form onSubmit={handleUpdateUser} className="p-5 sm:p-6 space-y-4 overflow-y-auto">
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Nama Lengkap *</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Nama Lengkap *</label>
                 <input
                   type="text"
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Email *</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Email *</label>
                 <input
                   type="email"
                   value={userEmail}
                   onChange={(e) => setUserEmail(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Role / Peran *</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Role / Peran *</label>
                 <select
                   value={userRole}
                   onChange={(e) => setUserRole(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                 >
                   <option value="GURU">Guru Khusus SLB</option>
                   <option value="ORANG_TUA">Orang Tua Siswa</option>
                   <option value="YAYASAN">Pengurus Yayasan</option>
-                  <option value="ADMIN">Admin Yayasan</option>
+                  <option value="ADMIN">Super Admin Yayasan</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                   Reset Kata Sandi (Kosongkan jika tidak diubah)
                 </label>
                 <input
                   type="password"
                   value={userPassword}
                   onChange={(e) => setUserPassword(e.target.value)}
-                  placeholder="Ketik password baru..."
-                  className="w-full px-3 py-2 rounded-xl border text-sm"
+                  placeholder="Ketik password baru jika ingin mereset..."
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">No. WhatsApp</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">No. WhatsApp</label>
                 <input
                   type="text"
                   value={userPhone}
                   onChange={(e) => setUserPhone(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
-                <button type="button" onClick={() => setIsEditUserModalOpen(false)} className="px-4 py-2 text-xs font-bold text-slate-600">Batal</button>
-                <button type="submit" className="px-4 py-2 bg-purple-700 text-white text-xs font-bold rounded-xl">Simpan Perubahan</button>
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+                <button type="button" onClick={() => setIsEditUserModalOpen(false)} className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Batal</button>
+                <button type="submit" className="px-5 py-2.5 bg-purple-900 hover:bg-purple-950 text-white text-xs font-bold rounded-xl shadow-lg shadow-purple-900/20 transition-all">Simpan Perubahan</button>
               </div>
             </form>
           </div>
@@ -2283,33 +2283,33 @@ function AdminDashboardContent() {
 
       {/* Modal 4: Tambah Kelas */}
       {isClassModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden">
-            <div className="bg-purple-900 px-6 py-4 flex items-center justify-between text-white">
-              <h2 className="font-bold text-lg">Tambah Rombel Kelas</h2>
-              <button onClick={() => setIsClassModalOpen(false)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/65 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
+            <div className="bg-gradient-to-r from-purple-900 to-indigo-900 px-6 py-4 flex items-center justify-between text-white shrink-0">
+              <h2 className="font-bold text-base sm:text-lg">Tambah Rombel Kelas Baru</h2>
+              <button onClick={() => setIsClassModalOpen(false)} className="p-1 hover:bg-white/20 rounded-lg transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <form onSubmit={handleCreateClass} className="p-6 space-y-4">
+            <form onSubmit={handleCreateClass} className="p-5 sm:p-6 space-y-4 overflow-y-auto">
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Nama Rombel Kelas *</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Nama Rombel Kelas *</label>
                 <input
                   type="text"
                   value={className}
                   onChange={(e) => setClassName(e.target.value)}
                   placeholder="Kelas 3 SDLB - Autisme & Sensori"
-                  className="w-full px-3 py-2 rounded-xl border text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Jenjang SLB *</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Jenjang SLB *</label>
                 <select
                   value={classJenjang}
                   onChange={(e) => setClassJenjang(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                 >
                   <option value="TKLB">TKLB</option>
                   <option value="SDLB">SDLB</option>
@@ -2319,11 +2319,11 @@ function AdminDashboardContent() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Guru Wali Kelas</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Guru Wali Kelas</label>
                 <select
                   value={teacherId}
                   onChange={(e) => setTeacherId(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                 >
                   <option value="">-- Pilih Guru Wali (Opsional) --</option>
                   {teachers.map((t) => (
@@ -2334,9 +2334,9 @@ function AdminDashboardContent() {
                 </select>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
-                <button type="button" onClick={() => setIsClassModalOpen(false)} className="px-4 py-2 text-xs font-bold text-slate-600">Batal</button>
-                <button type="submit" className="px-4 py-2 bg-purple-700 text-white text-xs font-bold rounded-xl">Simpan Kelas</button>
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+                <button type="button" onClick={() => setIsClassModalOpen(false)} className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Batal</button>
+                <button type="submit" className="px-5 py-2.5 bg-purple-900 hover:bg-purple-950 text-white text-xs font-bold rounded-xl shadow-lg shadow-purple-900/20 transition-all">Simpan Kelas</button>
               </div>
             </form>
           </div>
@@ -2345,32 +2345,32 @@ function AdminDashboardContent() {
 
       {/* Modal 4B: Edit Kelas */}
       {isEditClassModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden">
-            <div className="bg-purple-900 px-6 py-4 flex items-center justify-between text-white">
-              <h2 className="font-bold text-lg">Edit Rombel Kelas & Guru Wali</h2>
-              <button onClick={() => setIsEditClassModalOpen(false)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/65 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
+            <div className="bg-gradient-to-r from-purple-900 to-indigo-900 px-6 py-4 flex items-center justify-between text-white shrink-0">
+              <h2 className="font-bold text-base sm:text-lg">Edit Rombel Kelas & Guru Wali</h2>
+              <button onClick={() => setIsEditClassModalOpen(false)} className="p-1 hover:bg-white/20 rounded-lg transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <form onSubmit={handleUpdateClass} className="p-6 space-y-4">
+            <form onSubmit={handleUpdateClass} className="p-5 sm:p-6 space-y-4 overflow-y-auto">
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Nama Rombel Kelas *</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Nama Rombel Kelas *</label>
                 <input
                   type="text"
                   value={className}
                   onChange={(e) => setClassName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Jenjang SLB *</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Jenjang SLB *</label>
                 <select
                   value={classJenjang}
                   onChange={(e) => setClassJenjang(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                 >
                   <option value="TKLB">TKLB</option>
                   <option value="SDLB">SDLB</option>
@@ -2380,11 +2380,11 @@ function AdminDashboardContent() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Guru Wali Kelas</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Guru Wali Kelas</label>
                 <select
                   value={teacherId}
                   onChange={(e) => setTeacherId(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border text-sm bg-slate-50"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                 >
                   <option value="">-- Pilih Guru Wali (Opsional) --</option>
                   {teachers.map((t) => (
@@ -2395,9 +2395,9 @@ function AdminDashboardContent() {
                 </select>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
-                <button type="button" onClick={() => setIsEditClassModalOpen(false)} className="px-4 py-2 text-xs font-bold text-slate-600">Batal</button>
-                <button type="submit" className="px-4 py-2 bg-purple-700 text-white text-xs font-bold rounded-xl">Simpan Perubahan</button>
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+                <button type="button" onClick={() => setIsEditClassModalOpen(false)} className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Batal</button>
+                <button type="submit" className="px-5 py-2.5 bg-purple-900 hover:bg-purple-950 text-white text-xs font-bold rounded-xl shadow-lg shadow-purple-900/20 transition-all">Simpan Perubahan</button>
               </div>
             </form>
           </div>
@@ -2406,41 +2406,41 @@ function AdminDashboardContent() {
 
       {/* Modal 5: Tambah Mapel */}
       {isSubjectModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden">
-            <div className="bg-purple-900 px-6 py-4 flex items-center justify-between text-white">
-              <h2 className="font-bold text-lg">Tambah Mata Pelajaran Khusus</h2>
-              <button onClick={() => setIsSubjectModalOpen(false)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/65 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
+            <div className="bg-gradient-to-r from-purple-900 to-indigo-900 px-6 py-4 flex items-center justify-between text-white shrink-0">
+              <h2 className="font-bold text-base sm:text-lg">Tambah Mata Pelajaran Khusus</h2>
+              <button onClick={() => setIsSubjectModalOpen(false)} className="p-1 hover:bg-white/20 rounded-lg transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <form onSubmit={handleCreateSubject} className="p-6 space-y-4">
+            <form onSubmit={handleCreateSubject} className="p-5 sm:p-6 space-y-4 overflow-y-auto">
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Nama Mata Pelajaran *</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Nama Mata Pelajaran *</label>
                 <input
                   type="text"
                   value={subjectName}
                   onChange={(e) => setSubjectName(e.target.value)}
                   placeholder="Terapi Okupasi & Kemandirian"
-                  className="w-full px-3 py-2 rounded-xl border text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Deskripsi Mapel</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Deskripsi Mapel</label>
                 <textarea
                   rows={3}
                   value={subjectDesc}
                   onChange={(e) => setSubjectDesc(e.target.value)}
                   placeholder="Deskripsikan program mapel ini..."
-                  className="w-full px-3 py-2 rounded-xl border text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
-                <button type="button" onClick={() => setIsSubjectModalOpen(false)} className="px-4 py-2 text-xs font-bold text-slate-600">Batal</button>
-                <button type="submit" className="px-4 py-2 bg-purple-700 text-white text-xs font-bold rounded-xl">Simpan Mapel</button>
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+                <button type="button" onClick={() => setIsSubjectModalOpen(false)} className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Batal</button>
+                <button type="submit" className="px-5 py-2.5 bg-purple-900 hover:bg-purple-950 text-white text-xs font-bold rounded-xl shadow-lg shadow-purple-900/20 transition-all">Simpan Mapel</button>
               </div>
             </form>
           </div>
@@ -2449,39 +2449,39 @@ function AdminDashboardContent() {
 
       {/* Modal 5B: Edit Mapel */}
       {isEditSubjectModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden">
-            <div className="bg-purple-900 px-6 py-4 flex items-center justify-between text-white">
-              <h2 className="font-bold text-lg">Edit Mata Pelajaran Khusus</h2>
-              <button onClick={() => setIsEditSubjectModalOpen(false)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/65 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
+            <div className="bg-gradient-to-r from-purple-900 to-indigo-900 px-6 py-4 flex items-center justify-between text-white shrink-0">
+              <h2 className="font-bold text-base sm:text-lg">Edit Mata Pelajaran Khusus</h2>
+              <button onClick={() => setIsEditSubjectModalOpen(false)} className="p-1 hover:bg-white/20 rounded-lg transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <form onSubmit={handleUpdateSubject} className="p-6 space-y-4">
+            <form onSubmit={handleUpdateSubject} className="p-5 sm:p-6 space-y-4 overflow-y-auto">
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Nama Mata Pelajaran *</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Nama Mata Pelajaran *</label>
                 <input
                   type="text"
                   value={subjectName}
                   onChange={(e) => setSubjectName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Deskripsi Mapel</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Deskripsi Mapel</label>
                 <textarea
                   rows={3}
                   value={subjectDesc}
                   onChange={(e) => setSubjectDesc(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
-                <button type="button" onClick={() => setIsEditSubjectModalOpen(false)} className="px-4 py-2 text-xs font-bold text-slate-600">Batal</button>
-                <button type="submit" className="px-4 py-2 bg-purple-700 text-white text-xs font-bold rounded-xl">Simpan Perubahan</button>
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+                <button type="button" onClick={() => setIsEditSubjectModalOpen(false)} className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Batal</button>
+                <button type="submit" className="px-5 py-2.5 bg-purple-900 hover:bg-purple-950 text-white text-xs font-bold rounded-xl shadow-lg shadow-purple-900/20 transition-all">Simpan Perubahan</button>
               </div>
             </form>
           </div>
