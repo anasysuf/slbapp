@@ -96,7 +96,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { studentId, mood, healthCondition, eatingNote, learningActivity } = body;
+    const { studentId, mood, healthCondition, eatingNote, learningActivity, photoUrl } = body;
 
     if (!studentId || !mood || !learningActivity) {
       return NextResponse.json({ error: "Siswa, suasana hati (mood), dan aktivitas wajib diisi" }, { status: 400 });
@@ -130,6 +130,7 @@ export async function POST(req: Request) {
         healthCondition: healthCondition ? healthCondition.trim() : "Sehat bugar",
         eatingNote: eatingNote ? eatingNote.trim() : "Makan bekal habis mandiri",
         learningActivity: learningActivity.trim(),
+        photoUrl: photoUrl ? photoUrl.trim() : null,
       },
       include: {
         student: true,

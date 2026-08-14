@@ -203,6 +203,7 @@ model DailyJournal {
   healthCondition  String?   // "Sehat bugar", "Flu", dll
   eatingNote       String?   // "Makan bekal habis mandiri"
   learningActivity String    // Aktivitas terapi / belajar hari ini
+  photoUrl         String?   // Foto dokumentasi terapi / karya siswa
   parentFeedback   String?   // Catatan respon dari orang tua di rumah
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
