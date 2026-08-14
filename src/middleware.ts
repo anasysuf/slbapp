@@ -21,16 +21,17 @@ export default withAuth(
       return response;
     }
 
-    if (path.startsWith("/admin") && token?.role !== "ADMIN") {
+    // Yayasan & Admin memiliki akses supervisi ke modul /admin, /yayasan, /guru, dan /ortu
+    if (path.startsWith("/admin") && token?.role !== "ADMIN" && token?.role !== "YAYASAN") {
       return NextResponse.redirect(new URL("/unauthorized", req.url));
     }
     if (path.startsWith("/yayasan") && token?.role !== "YAYASAN" && token?.role !== "ADMIN") {
       return NextResponse.redirect(new URL("/unauthorized", req.url));
     }
-    if (path.startsWith("/guru") && token?.role !== "GURU" && token?.role !== "ADMIN") {
+    if (path.startsWith("/guru") && token?.role !== "GURU" && token?.role !== "ADMIN" && token?.role !== "YAYASAN") {
       return NextResponse.redirect(new URL("/unauthorized", req.url));
     }
-    if (path.startsWith("/ortu") && token?.role !== "ORANG_TUA" && token?.role !== "ADMIN") {
+    if (path.startsWith("/ortu") && token?.role !== "ORANG_TUA" && token?.role !== "ADMIN" && token?.role !== "YAYASAN") {
       return NextResponse.redirect(new URL("/unauthorized", req.url));
     }
 

@@ -49,9 +49,18 @@ function SidebarNavList({ onItemClick }: { onItemClick?: () => void }) {
   const yayasanLinks = [
     { href: "/yayasan", label: "Dashboard Eksekutif", icon: Building2 },
     { href: "/guru/rekap", label: "Rekapitulasi Semester", icon: BarChart3 },
+    { href: "/admin?tab=sekolah", label: "Profil & Logo Sekolah", icon: Building2, tab: "sekolah" },
     { href: "/admin?tab=siswa", label: "Data Siswa Yayasan", icon: Users, tab: "siswa" },
-    { href: "/admin?tab=logs", label: "Log Aktivitas", icon: Activity, tab: "logs" },
+    { href: "/admin?tab=guru", label: "Data Guru & Pengampu", icon: GraduationCap, tab: "guru" },
+    { href: "/admin?tab=ortu", label: "Data Orang Tua", icon: HeartHandshake, tab: "ortu" },
+    { href: "/admin?tab=kelas", label: "Rombel & Jenjang", icon: GraduationCap, tab: "kelas" },
+    { href: "/guru/asesmen", label: "Pantau Asesmen Khusus", icon: ClipboardList },
+    { href: "/guru/ppi", label: "Pantau Rencana PPI", icon: Target },
+    { href: "/guru/jurnal", label: "Pantau Buku Penghubung", icon: HeartHandshake },
+    { href: "/guru/materi", label: "Materi & Tugas Adaptif", icon: BookOpen },
+    { href: "/admin?tab=logs", label: "Log Aktivitas Sistem", icon: Activity, tab: "logs" },
   ];
+
 
   const adminLinks = [
     { href: "/admin?tab=sekolah", label: "Profil & Logo Sekolah", icon: Building2, tab: "sekolah" },
