@@ -93,7 +93,7 @@ function SidebarNavList({ onItemClick }: { onItemClick?: () => void }) {
             onClick={onItemClick}
             className={`flex items-center justify-between w-full h-10 px-3.5 rounded-xl text-xs font-semibold transition-all ${
               isActive
-                ? "bg-teal-600 text-white shadow-md shadow-teal-600/30"
+                ? "bg-teal-600 text-white shadow-md shadow-teal-600/30 font-bold"
                 : "text-slate-300 hover:bg-slate-800/60 hover:text-white"
             }`}
           >
@@ -121,9 +121,9 @@ export default function Sidebar() {
   };
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-slate-900 text-slate-100">
+    <div className="flex flex-col h-full min-h-screen bg-slate-900 text-slate-100">
       {/* Brand Header */}
-      <div className="p-5 flex items-center justify-between border-b border-slate-800/80 bg-slate-950/40">
+      <div className="p-5 flex items-center justify-between border-b border-slate-800/80 bg-slate-950/40 shrink-0">
         <div className="flex items-center gap-3 overflow-hidden">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500 to-emerald-400 flex items-center justify-center text-white shadow-lg shadow-teal-500/20 shrink-0">
             <GraduationCap className="w-6 h-6" />
@@ -154,7 +154,7 @@ export default function Sidebar() {
       </div>
 
       {/* User Info & Sign Out */}
-      <div className="p-4 border-t border-slate-800 bg-slate-950/60">
+      <div className="p-4 border-t border-slate-800 bg-slate-950/60 shrink-0 mt-auto">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-8 h-8 rounded-full bg-teal-800/60 border border-teal-500/40 text-teal-300 flex items-center justify-center font-bold text-xs shrink-0">
             {session?.user?.name ? session.user.name.charAt(0) : "U"}
@@ -184,13 +184,13 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop Sidebar (Always visible on large screens) */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-64 border-r border-slate-800 shrink-0 min-h-screen">
+      <aside className="hidden lg:flex lg:flex-col lg:w-64 border-r border-slate-800 shrink-0 min-h-screen bg-slate-900 self-stretch print:hidden">
         {sidebarContent}
       </aside>
 
       {/* Mobile Drawer (Slide-in on small screens) */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden flex">
+        <div className="fixed inset-0 z-50 lg:hidden flex print:hidden">
           {/* Backdrop Overlay */}
           <div
             className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity"
@@ -198,7 +198,7 @@ export default function Sidebar() {
           />
 
           {/* Drawer Sheet */}
-          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-slate-900 shadow-2xl z-50">
+          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-slate-900 shadow-2xl z-50 min-h-screen">
             {sidebarContent}
           </div>
         </div>

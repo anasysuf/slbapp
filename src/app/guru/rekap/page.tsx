@@ -150,9 +150,7 @@ function RekapContent() {
 
   return (
     <div className="flex min-h-screen bg-slate-50">
-      <div className="print:hidden">
-        <Sidebar />
-      </div>
+      <Sidebar />
 
       <main className="flex-1 flex flex-col min-w-0">
         <div className="print:hidden">
