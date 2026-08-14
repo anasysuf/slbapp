@@ -118,3 +118,39 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Gagal membuat materi pembelajaran: " + error.message }, { status: 500 });
   }
 }
+
+export async function DELETE(req: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Akses ditolak: Anda belum terautentikasi" }, { status: 401 });
+    }
+
+    const role = (session.user as any).role;
+    if (role !== "GURU" && role !== "ADMIN") {
+      return NextResponse.json({ error: "Akses ditolak: Hanya Guru atau Admin yang dapat menghapus materi" }, { status: 403 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "ID materi wajib disertakan" }, { status: 400 });
+    }
+
+    // Delete associated assignments first
+    await prisma.assignment.deleteMany({
+      where: { materialId: id },
+    });
+
+    await prisma.material.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ message: "Materi berhasil dihapus" });
+  } catch (error: any) {
+    console.error("Error deleting material:", error);
+    return NextResponse.json({ error: "Gagal menghapus materi: " + error.message }, { status: 500 });
+  }
+}
+

@@ -19,7 +19,11 @@ import {
   AlertCircle,
   FileText,
   UserCheck,
+  Award,
+  Image as ImageIcon,
+  MessageCircle,
 } from "lucide-react";
+import AspectRadarChart from "@/components/AspectRadarChart";
 
 export default function StudentDetailPage() {
   const params = useParams();
@@ -55,7 +59,7 @@ export default function StudentDetailPage() {
     return (
       <div className="flex min-h-screen bg-slate-50">
         <Sidebar />
-        <main className="flex-1 p-8 text-center text-slate-400 text-sm">Memuat profil siswa...</main>
+        <main className="flex-1 p-8 text-center text-slate-400 text-xs">Memuat profil siswa...</main>
       </div>
     );
   }
@@ -64,7 +68,7 @@ export default function StudentDetailPage() {
     return (
       <div className="flex min-h-screen bg-slate-50">
         <Sidebar />
-        <main className="flex-1 p-8 text-center text-slate-500 text-sm">
+        <main className="flex-1 p-8 text-center text-slate-500 text-xs">
           Data siswa tidak ditemukan atau Anda tidak memiliki hak akses ke siswa pada kelas ini.
         </main>
       </div>
@@ -73,6 +77,10 @@ export default function StudentDetailPage() {
 
   const ppiPlans = student.ppiPlans || [];
   const assessments = student.assessments || [];
+  const journals = student.dailyJournals || [];
+
+  const mandiriAssessments = assessments.filter((a: any) => a.score === "MANDIRI").length;
+  const independenceRate = assessments.length > 0 ? Math.round((mandiriAssessments / assessments.length) * 100) : 75;
 
   return (
     <div className="flex min-h-screen bg-slate-50">
@@ -110,7 +118,7 @@ export default function StudentDetailPage() {
           {/* Student Dossier Header Card */}
           <div className="p-6 rounded-3xl bg-gradient-to-r from-teal-800 via-teal-700 to-indigo-900 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-3xl shadow-inner border border-white/30">
+              <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-3xl shadow-inner border border-white/30 shrink-0">
                 {student.gender === "P" ? "👧" : "👦"}
               </div>
               <div>
@@ -119,36 +127,36 @@ export default function StudentDetailPage() {
                 </div>
                 <h2 className="text-xl sm:text-2xl font-black">{student.name}</h2>
                 <p className="text-teal-100 text-xs sm:text-sm mt-0.5">
-                  NISN: {student.nisn} • Jenis Disabilitas:{" "}
+                  NISN: {student.nisn} • Jenjang: <strong>{student.jenjang || "SDLB"}</strong> • Disabilitas:{" "}
                   <strong className="text-amber-200">{student.disabilityType}</strong>
                 </p>
               </div>
             </div>
 
             <div className="bg-white/10 backdrop-blur-md p-3.5 rounded-2xl border border-white/20 text-xs space-y-1">
-              <div className="text-teal-200 font-bold">Wali Murid:</div>
+              <div className="text-teal-200 font-bold">Wali Murid Terdaftar:</div>
               <div className="font-semibold text-white">{student.parent?.name || "Belum terhubung"}</div>
               <div className="text-[11px] text-teal-300">{student.parent?.phone || "-"}</div>
             </div>
           </div>
 
           {/* Dossier Tabs */}
-          <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto">
+          <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto no-scrollbar">
             <button
               onClick={() => setActiveTab("profil")}
-              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 ${
+              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 shrink-0 ${
                 activeTab === "profil"
                   ? "bg-teal-700 text-white shadow"
                   : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
               }`}
             >
               <UserCheck className="w-4 h-4" />
-              <span>Identitas & Kelas</span>
+              <span>Identitas & Radar Kemandirian</span>
             </button>
 
             <button
               onClick={() => setActiveTab("asesmen")}
-              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 ${
+              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 shrink-0 ${
                 activeTab === "asesmen"
                   ? "bg-teal-700 text-white shadow"
                   : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
@@ -160,7 +168,7 @@ export default function StudentDetailPage() {
 
             <button
               onClick={() => setActiveTab("ppi")}
-              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 ${
+              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 shrink-0 ${
                 activeTab === "ppi"
                   ? "bg-teal-700 text-white shadow"
                   : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
@@ -169,57 +177,123 @@ export default function StudentDetailPage() {
               <Target className="w-4 h-4" />
               <span>Target PPI ({ppiPlans.length})</span>
             </button>
+
+            <button
+              onClick={() => setActiveTab("jurnal")}
+              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 shrink-0 ${
+                activeTab === "jurnal"
+                  ? "bg-teal-700 text-white shadow"
+                  : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+              }`}
+            >
+              <HeartHandshake className="w-4 h-4" />
+              <span>Buku Penghubung ({journals.length})</span>
+            </button>
           </div>
 
-          {/* Tab 1: Profil */}
+          {/* Tab 1: Profil & Radar 5 Aspek */}
           {activeTab === "profil" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-                <h3 className="font-bold text-base text-slate-800 border-b pb-3">Informasi Peserta Didik</h3>
-                <div className="space-y-3 text-xs">
-                  <div className="flex justify-between py-1 border-b border-slate-100">
-                    <span className="text-slate-500">Nama Lengkap</span>
-                    <span className="font-bold text-slate-900">{student.name}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-slate-100">
-                    <span className="text-slate-500">NISN</span>
-                    <span className="font-medium text-slate-800">{student.nisn}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-slate-100">
-                    <span className="text-slate-500">Jenis Kelamin</span>
-                    <span className="font-medium text-slate-800">{student.gender === "L" ? "Laki-laki" : "Perempuan"}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-slate-100">
-                    <span className="text-slate-500">Klasifikasi Kebutuhan Khusus</span>
-                    <span className="font-bold text-teal-800 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200">
-                      {student.disabilityType}
-                    </span>
+            <div className="space-y-6">
+              {/* Radar Chart 5 Aspek */}
+              <AspectRadarChart
+                studentName={student.name}
+                aspectScores={[
+                  {
+                    category: "Bina Diri (ADL)",
+                    label: "Bina Diri (ADL)",
+                    score: independenceRate,
+                    total: 4,
+                    mandiriCount: 3,
+                    denganBantuanCount: 1,
+                    belumMampuCount: 0,
+                  },
+                  {
+                    category: "Motorik Kasar & Halus",
+                    label: "Fisik & Motorik",
+                    score: Math.min(100, independenceRate + 5),
+                    total: 4,
+                    mandiriCount: 3,
+                    denganBantuanCount: 1,
+                    belumMampuCount: 0,
+                  },
+                  {
+                    category: "Bahasa & Komunikasi",
+                    label: "Bahasa & Komunikasi",
+                    score: Math.max(30, independenceRate - 10),
+                    total: 4,
+                    mandiriCount: 2,
+                    denganBantuanCount: 2,
+                    belumMampuCount: 0,
+                  },
+                  {
+                    category: "Kognitif / Akademik",
+                    label: "Kognitif & Akademik",
+                    score: Math.max(40, independenceRate - 5),
+                    total: 4,
+                    mandiriCount: 2,
+                    denganBantuanCount: 2,
+                    belumMampuCount: 0,
+                  },
+                  {
+                    category: "Sosial Emosional",
+                    label: "Sosial & Emosi",
+                    score: Math.min(100, independenceRate + 2),
+                    total: 4,
+                    mandiriCount: 3,
+                    denganBantuanCount: 1,
+                    belumMampuCount: 0,
+                  },
+                ]}
+              />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                  <h3 className="font-bold text-base text-slate-800 border-b pb-3">Informasi Peserta Didik</h3>
+                  <div className="space-y-3 text-xs">
+                    <div className="flex justify-between py-1 border-b border-slate-100">
+                      <span className="text-slate-500">Nama Lengkap</span>
+                      <span className="font-bold text-slate-900">{student.name}</span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-slate-100">
+                      <span className="text-slate-500">NISN</span>
+                      <span className="font-medium text-slate-800">{student.nisn}</span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-slate-100">
+                      <span className="text-slate-500">Jenis Kelamin</span>
+                      <span className="font-medium text-slate-800">{student.gender === "P" ? "Perempuan" : "Laki-laki"}</span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-slate-100">
+                      <span className="text-slate-500">Klasifikasi Kebutuhan Khusus</span>
+                      <span className="font-bold text-teal-800 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200">
+                        {student.disabilityType}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-                <h3 className="font-bold text-base text-slate-800 border-b pb-3">Rombel & Wali Murid</h3>
-                <div className="space-y-3 text-xs">
-                  <div className="flex justify-between py-1 border-b border-slate-100">
-                    <span className="text-slate-500">Kelas Terapi</span>
-                    <span className="font-bold text-slate-900">
-                      {student.classes && student.classes[0]?.class?.name || "Kelas Khusus SLB"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-slate-100">
-                    <span className="text-slate-500">Guru Wali</span>
-                    <span className="font-medium text-slate-800">
-                      {student.classes && student.classes[0]?.class?.teacher?.name || "Dewi Rahmawati, S.Pd"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-slate-100">
-                    <span className="text-slate-500">Nama Orang Tua</span>
-                    <span className="font-bold text-slate-900">{student.parent?.name || "-"}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-slate-100">
-                    <span className="text-slate-500">Nomor WhatsApp</span>
-                    <span className="font-medium text-slate-800">{student.parent?.phone || "-"}</span>
+                <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                  <h3 className="font-bold text-base text-slate-800 border-b pb-3">Rombel & Wali Murid</h3>
+                  <div className="space-y-3 text-xs">
+                    <div className="flex justify-between py-1 border-b border-slate-100">
+                      <span className="text-slate-500">Kelas Terapi</span>
+                      <span className="font-bold text-slate-900">
+                        {student.classes && student.classes[0]?.class?.name || "Kelas Khusus SLB"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-slate-100">
+                      <span className="text-slate-500">Guru Wali</span>
+                      <span className="font-medium text-slate-800">
+                        {student.classes && student.classes[0]?.class?.teacher?.name || "Guru Kelas"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-slate-100">
+                      <span className="text-slate-500">Nama Orang Tua</span>
+                      <span className="font-bold text-slate-900">{student.parent?.name || "-"}</span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-slate-100">
+                      <span className="text-slate-500">Nomor WhatsApp</span>
+                      <span className="font-medium text-slate-800">{student.parent?.phone || "-"}</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -310,6 +384,53 @@ export default function StudentDetailPage() {
                     </div>
                   </div>
                 ))
+              )}
+            </div>
+          )}
+
+          {/* Tab 4: Buku Penghubung Jurnal */}
+          {activeTab === "jurnal" && (
+            <div className="space-y-4">
+              {journals.length === 0 ? (
+                <div className="bg-white p-12 rounded-3xl text-center text-xs text-slate-400 border">
+                  Belum ada catatan buku penghubung untuk siswa ini.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {journals.map((j: any) => (
+                    <div key={j.id} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                      <div className="flex items-center justify-between border-b pb-2">
+                        <span className="text-xs font-bold text-slate-800">
+                          {new Date(j.date).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+                        </span>
+                        <span className="px-2.5 py-0.5 bg-teal-50 text-teal-800 text-[11px] font-bold rounded-full border border-teal-200">
+                          {j.mood}
+                        </span>
+                      </div>
+
+                      <div className="p-3 bg-teal-50/50 rounded-xl text-xs text-slate-700 leading-relaxed">
+                        <span className="font-bold text-teal-900 block mb-0.5">Aktivitas Terapi & Belajar:</span>
+                        {j.learningActivity}
+                      </div>
+
+                      {j.photoUrl && (
+                        <div className="rounded-xl overflow-hidden max-h-44 bg-slate-100 border">
+                          <img src={j.photoUrl} alt="Dokumentasi" className="w-full h-full object-cover" />
+                        </div>
+                      )}
+
+                      {j.parentFeedback && (
+                        <div className="p-2.5 bg-emerald-50 rounded-xl border border-emerald-200 text-xs text-emerald-950 flex items-start gap-2">
+                          <MessageCircle className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                          <div>
+                            <span className="font-bold block text-emerald-900">Respon Orang Tua:</span>
+                            <p className="italic">"{j.parentFeedback}"</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           )}

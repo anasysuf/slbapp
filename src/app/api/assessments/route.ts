@@ -174,3 +174,55 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Gagal menyimpan asesmen: " + error.message }, { status: 500 });
   }
 }
+
+export async function DELETE(req: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Akses ditolak: Anda belum terautentikasi" }, { status: 401 });
+    }
+
+    const role = (session.user as any).role;
+    if (role !== "GURU" && role !== "ADMIN") {
+      return NextResponse.json({ error: "Akses ditolak: Hanya Guru atau Admin yang dapat menghapus asesmen" }, { status: 403 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "ID asesmen wajib disertakan" }, { status: 400 });
+    }
+
+    const assessment = await prisma.assessment.findUnique({
+      where: { id },
+      include: { student: true },
+    });
+
+    if (!assessment) {
+      return NextResponse.json({ error: "Data asesmen tidak ditemukan" }, { status: 404 });
+    }
+
+    await prisma.assessment.delete({
+      where: { id },
+    });
+
+    // Log Activity
+    await logActivity({
+      userId: (session.user as any).id,
+      userName: session.user.name || "Guru",
+      userRole: role,
+      action: "DELETE",
+      entity: "Assessment",
+      entityId: id,
+      description: `Menghapus data asesmen [${assessment.category} - ${assessment.aspect}] untuk siswa ${assessment.student.name}`,
+      foundationId: assessment.student.foundationId,
+    });
+
+    return NextResponse.json({ message: "Asesmen berhasil dihapus" });
+  } catch (error: any) {
+    console.error("Error deleting assessment:", error);
+    return NextResponse.json({ error: "Gagal menghapus asesmen: " + error.message }, { status: 500 });
+  }
+}
+
