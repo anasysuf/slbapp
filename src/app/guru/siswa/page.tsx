@@ -292,7 +292,8 @@ export default function GuruStudentManagementPage() {
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full min-w-[680px] text-left text-xs">
+
                   <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider font-bold border-b border-slate-200">
                     <tr>
                       <th className="px-6 py-3.5">Nama & NISN</th>

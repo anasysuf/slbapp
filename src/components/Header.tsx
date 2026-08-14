@@ -209,8 +209,8 @@ export default function Header({ title, subtitle }: HeaderProps) {
 
   return (
     <>
-      <header className="bg-white border-b border-slate-200/80 sticky top-0 z-20 px-4 sm:px-6 py-3 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm">
-        <div className="flex items-center gap-3">
+      <header className="bg-white border-b border-slate-200/80 sticky top-0 z-20 px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-3 shadow-sm">
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
           {/* Mobile Hamburger Toggle */}
           <button
             onClick={openSidebar}
@@ -220,17 +220,18 @@ export default function Header({ title, subtitle }: HeaderProps) {
             <Menu className="w-5 h-5 text-teal-700" />
           </button>
 
-          <div>
-            <h1 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+          <div className="min-w-0">
+            <h1 className="text-base sm:text-lg md:text-xl font-black text-slate-900 tracking-tight truncate flex items-center gap-2">
               {title}
             </h1>
             {subtitle && (
-              <p className="text-xs text-slate-500 mt-0.5 line-clamp-1 sm:line-clamp-none font-medium">
+              <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 line-clamp-1 font-medium">
                 {subtitle}
               </p>
             )}
           </div>
         </div>
+
 
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 shrink-0">
           {/* SLB Accessibility Bar */}

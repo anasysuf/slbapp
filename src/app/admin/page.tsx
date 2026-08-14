@@ -684,7 +684,8 @@ function AdminDashboardContent() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+
             {activeTab === "sekolah" && !isYayasan && (
               <button
                 onClick={handleSaveSchoolProfile}
@@ -1182,7 +1183,8 @@ function AdminDashboardContent() {
               <div className="p-12 text-center text-xs text-slate-500">Tidak ada data siswa yang sesuai.</div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full min-w-[700px] text-left text-xs">
+
                   <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider font-bold border-b border-slate-200">
                     <tr>
                       <th className="px-6 py-3.5">Nama & NISN</th>
@@ -1320,7 +1322,8 @@ function AdminDashboardContent() {
               <div className="p-12 text-center text-xs text-slate-500">Belum ada akun guru yang terdaftar.</div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full min-w-[650px] text-left text-xs">
+
                   <thead className="bg-slate-50 text-slate-600 uppercase tracking-wider font-bold border-b border-slate-200">
                     <tr>
                       <th className="px-6 py-3.5">Nama & Kontak Guru</th>
@@ -1471,7 +1474,7 @@ function AdminDashboardContent() {
               <div className="p-12 text-center text-xs text-slate-500">Belum ada akun orang tua yang terdaftar.</div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full min-w-[650px] text-left text-xs">
                   <thead className="bg-slate-50 text-slate-600 uppercase tracking-wider font-bold border-b border-slate-200">
                     <tr>
                       <th className="px-6 py-3.5">Nama & Kontak Orang Tua</th>
@@ -1608,7 +1611,7 @@ function AdminDashboardContent() {
               <div className="p-12 text-center text-xs text-slate-500">Belum ada akun yayasan yang terdaftar.</div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full min-w-[650px] text-left text-xs">
                   <thead className="bg-slate-50 text-slate-600 uppercase tracking-wider font-bold border-b border-slate-200">
                     <tr>
                       <th className="px-6 py-3.5">Nama & Kontak Pengurus</th>
@@ -1724,7 +1727,7 @@ function AdminDashboardContent() {
               <div className="p-12 text-center text-xs text-slate-500">Belum ada akun admin yang terdaftar.</div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full min-w-[650px] text-left text-xs">
                   <thead className="bg-slate-50 text-slate-600 uppercase tracking-wider font-bold border-b border-slate-200">
                     <tr>
                       <th className="px-6 py-3.5">Nama & Kontak Administrator</th>

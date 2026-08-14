@@ -44,21 +44,21 @@ export default function AccessibilityBar() {
   };
 
   return (
-    <div className="flex items-center gap-1.5 bg-slate-100/80 p-1 rounded-xl border border-slate-200 text-xs">
+    <div className="flex items-center gap-1 sm:gap-1.5 bg-slate-100/80 p-1 rounded-xl border border-slate-200 text-xs shrink-0">
       <button
         onClick={toggleFontSize}
-        className="px-2.5 py-1 bg-white hover:bg-teal-50 hover:text-teal-700 font-bold rounded-lg border border-slate-200 transition-colors flex items-center gap-1"
+        className="px-2 sm:px-2.5 py-1 bg-white hover:bg-teal-50 hover:text-teal-700 font-bold rounded-lg border border-slate-200 transition-colors flex items-center gap-1 shrink-0"
         title="Ubah Ukuran Teks (Aksesibilitas)"
       >
-        <Type className="w-3.5 h-3.5" />
-        <span className="text-[10px]">
+        <Type className="w-3.5 h-3.5 text-teal-700" />
+        <span className="hidden sm:inline text-[10px]">
           {fontSize === "normal" ? "Teks: Normal" : fontSize === "large" ? "Teks: Besar" : "Teks: Ekstra"}
         </span>
       </button>
 
       <button
         onClick={toggleHighContrast}
-        className={`px-2.5 py-1 rounded-lg border transition-colors flex items-center gap-1 font-bold ${
+        className={`px-2 sm:px-2.5 py-1 rounded-lg border transition-colors flex items-center gap-1 font-bold shrink-0 ${
           highContrast
             ? "bg-slate-900 text-yellow-300 border-slate-900"
             : "bg-white hover:bg-teal-50 text-slate-700 border-slate-200"
@@ -66,17 +66,18 @@ export default function AccessibilityBar() {
         title="Mode Kontras Tinggi"
       >
         <Eye className="w-3.5 h-3.5" />
-        <span className="text-[10px]">{highContrast ? "Kontras: ON" : "Kontras"}</span>
+        <span className="hidden sm:inline text-[10px]">{highContrast ? "Kontras: ON" : "Kontras"}</span>
       </button>
 
       <button
         onClick={handleSpeak}
-        className="px-2.5 py-1 bg-white hover:bg-teal-50 hover:text-teal-700 text-slate-700 font-bold rounded-lg border border-slate-200 transition-colors flex items-center gap-1"
+        className="px-2 sm:px-2.5 py-1 bg-white hover:bg-teal-50 hover:text-teal-700 text-slate-700 font-bold rounded-lg border border-slate-200 transition-colors flex items-center gap-1 shrink-0"
         title="Suara Audio Ringkasan (Screen Reader Friendly)"
       >
         <Volume2 className="w-3.5 h-3.5 text-teal-600" />
-        <span className="text-[10px]">Audio</span>
+        <span className="hidden sm:inline text-[10px]">Audio</span>
       </button>
     </div>
+
   );
 }

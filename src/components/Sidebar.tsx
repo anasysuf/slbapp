@@ -100,11 +100,10 @@ function SidebarNavList({ onItemClick }: { onItemClick?: () => void }) {
             key={item.href}
             href={item.href}
             onClick={onItemClick}
-            className={`flex items-center justify-between w-full h-10 px-3.5 rounded-xl text-xs font-semibold transition-all ${
-              isActive
-                ? "bg-teal-600 text-white shadow-md shadow-teal-600/30 font-bold"
-                : "text-slate-300 hover:bg-slate-800/60 hover:text-white"
-            }`}
+            className={`flex items-center justify-between w-full h-10 px-3.5 rounded-xl text-xs font-semibold transition-all ${isActive
+              ? "bg-teal-600 text-white shadow-md shadow-teal-600/30 font-bold"
+              : "text-slate-300 hover:bg-slate-800/60 hover:text-white"
+              }`}
           >
             <div className="flex items-center gap-3 min-w-0 overflow-hidden">
               <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-white" : "text-slate-400"}`} />
