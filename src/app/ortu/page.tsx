@@ -26,6 +26,8 @@ import {
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import AspectRadarChart from "@/components/AspectRadarChart";
+import Footer from "@/components/Footer";
+
 
 export default function OrtuDashboard() {
   const { data: session } = useSession();
@@ -517,7 +519,9 @@ export default function OrtuDashboard() {
             </div>
           </div>
         </div>
+        <Footer />
       </main>
     </div>
   );
 }
+

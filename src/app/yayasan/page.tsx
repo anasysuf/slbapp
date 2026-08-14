@@ -18,6 +18,8 @@ import {
   ArrowRight,
   TrendingUp,
 } from "lucide-react";
+import Footer from "@/components/Footer";
+
 
 export default function YayasanDashboard() {
   const [stats, setStats] = useState<any>(null);
@@ -192,7 +194,9 @@ export default function YayasanDashboard() {
             </div>
           </div>
         </div>
+        <Footer />
       </main>
     </div>
   );
 }
+

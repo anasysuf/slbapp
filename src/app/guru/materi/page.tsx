@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { BookOpen, PlusCircle, FileText, Calendar, CheckCircle2, Clock, X, Trash2 } from "lucide-react";
+import Footer from "@/components/Footer";
+
 
 export default function GuruMateriPage() {
   const [classes, setClasses] = useState<any[]>([]);
@@ -197,7 +199,9 @@ export default function GuruMateriPage() {
             </div>
           )}
         </div>
+        <Footer />
       </main>
+
 
       {/* Modal Upload Materi */}
       {isModalOpen && (

@@ -5,6 +5,8 @@ import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { FileCheck2, CheckCircle2, HelpCircle, AlertCircle, Calendar, Sparkles, Filter } from "lucide-react";
 import EvaluationModal from "@/components/EvaluationModal";
+import Footer from "@/components/Footer";
+
 
 export default function GuruEvaluasiPage() {
   const [classes, setClasses] = useState<any[]>([]);
@@ -137,7 +139,9 @@ export default function GuruEvaluasiPage() {
             )}
           </div>
         </div>
+        <Footer />
       </main>
+
 
       <EvaluationModal
         isOpen={evalModalState.isOpen}

@@ -17,6 +17,8 @@ import {
   Image as ImageIcon,
   Check,
 } from "lucide-react";
+import Footer from "@/components/Footer";
+
 
 export default function GuruJurnalPage() {
   const [classes, setClasses] = useState<any[]>([]);
@@ -218,7 +220,9 @@ export default function GuruJurnalPage() {
             </div>
           )}
         </div>
+        <Footer />
       </main>
+
 
       {/* Modal Tulis Jurnal */}
       {isModalOpen && (

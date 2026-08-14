@@ -7,6 +7,8 @@ import { Target, PlusCircle, Sparkles, Filter, Search, Calendar, CheckCircle2 } 
 import PpiModal from "@/components/PpiModal";
 import EvaluationModal from "@/components/EvaluationModal";
 import PpiProgressCard from "@/components/PpiProgressCard";
+import Footer from "@/components/Footer";
+
 
 export default function GuruPpiPage() {
   const [classes, setClasses] = useState<any[]>([]);
@@ -157,7 +159,9 @@ export default function GuruPpiPage() {
             </div>
           )}
         </div>
+        <Footer />
       </main>
+
 
       <PpiModal
         isOpen={isPpiModalOpen}

@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import AssessmentModal from "@/components/AssessmentModal";
 import PpiModal from "@/components/PpiModal";
+import Footer from "@/components/Footer";
+
 
 export default function GuruDashboard() {
   const [classes, setClasses] = useState<any[]>([]);
@@ -345,7 +347,9 @@ export default function GuruDashboard() {
             </div>
           </div>
         </div>
+        <Footer />
       </main>
+
 
       {/* Modals */}
       <AssessmentModal

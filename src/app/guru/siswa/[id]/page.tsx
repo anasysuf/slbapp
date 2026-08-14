@@ -24,6 +24,8 @@ import {
   MessageCircle,
 } from "lucide-react";
 import AspectRadarChart from "@/components/AspectRadarChart";
+import Footer from "@/components/Footer";
+
 
 export default function StudentDetailPage() {
   const params = useParams();
@@ -435,7 +437,9 @@ export default function StudentDetailPage() {
             </div>
           )}
         </div>
+        <Footer />
       </main>
     </div>
   );
 }
+

@@ -21,6 +21,8 @@ import {
   Eye,
   UserCheck,
 } from "lucide-react";
+import Footer from "@/components/Footer";
+
 
 export default function GuruStudentManagementPage() {
   const [students, setStudents] = useState<any[]>([]);
@@ -364,7 +366,9 @@ export default function GuruStudentManagementPage() {
             )}
           </div>
         </div>
+        <Footer />
       </main>
+
 
       {/* Modal Tambah Siswa */}
       {isAddModalOpen && (

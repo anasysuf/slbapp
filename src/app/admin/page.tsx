@@ -36,6 +36,8 @@ import {
   Eye,
   HeartHandshake,
 } from "lucide-react";
+import Footer from "@/components/Footer";
+
 
 function AdminDashboardContent() {
   const router = useRouter();
@@ -2487,9 +2489,11 @@ function AdminDashboardContent() {
           </div>
         </div>
       )}
+      <Footer />
     </main>
   );
 }
+
 
 export default function AdminDashboard() {
   return (

@@ -32,6 +32,8 @@ import {
 } from "lucide-react";
 import { exportToCsv } from "@/lib/exportUtils";
 import AspectRadarChart from "@/components/AspectRadarChart";
+import Footer from "@/components/Footer";
+
 
 function RekapContent() {
   const { data: session } = useSession();
@@ -710,8 +712,12 @@ function RekapContent() {
             </div>
           </div>
         </div>
+        <div className="print:hidden">
+          <Footer />
+        </div>
       </main>
     </div>
+
   );
 }
 
