@@ -116,9 +116,9 @@ Gunakan akun berikut untuk menguji masing-masing hak akses:
 | **Guru Kelas 2** | `guru2@slb.sch.id` | `guru123` | Asesmen diagnostik, target PPI, buku penghubung, & rekap |
 | **Guru Kelas 3** | `guru3@slb.sch.id` | `guru123` | Asesmen diagnostik, target PPI, buku penghubung, & rekap |
 | **Guru Kelas 4** | `guru4@slb.sch.id` | `guru123` | Asesmen diagnostik, target PPI, buku penghubung, & rekap |
-| **Orang Tua 1** | `ortu@slb.sch.id` | `ortu123` | Pantauan ananda Farhan, radar perkembangan, & buku penghubung |
-| **Orang Tua 2** | `ortu2@slb.sch.id` | `ortu123` | Pantauan ananda Farhan, radar perkembangan, & buku penghubung |
-| **Orang Tua 3** | `ortu3@slb.sch.id` | `ortu123` | Pantauan ananda Farhan, radar perkembangan, & buku penghubung |
+| **Orang Tua 1** | `ortu@slb.sch.id` | `ortu123` | Pantauan ananda, radar perkembangan, & buku penghubung |
+| **Orang Tua 2** | `ortu2@slb.sch.id` | `ortu123` | Pantauan ananda, radar perkembangan, & buku penghubung |
+| **Orang Tua 3** | `ortu3@slb.sch.id` | `ortu123` | Pantauan ananda, radar perkembangan, & buku penghubung |
 | **Yayasan** | `pimpinan@yayasan.org` | `yayasan123` | Dashboard eksekutif pimpinan & ekspor laporan menyeluruh |
 
 ---
