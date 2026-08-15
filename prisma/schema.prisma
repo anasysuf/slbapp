@@ -61,13 +61,15 @@ model User {
   // Relations
   students      Student[]      @relation("ParentStudents")
   classesTaught Class[]        @relation("ClassTeacher")
-  materials     Material[]
-  ppiPlans      PpiPlan[]
-  assessments   Assessment[]
-  dailyJournals DailyJournal[]
-  activityLogs  ActivityLog[]
-  notifications Notification[]
+  materials        Material[]
+  ppiPlans         PpiPlan[]
+  assessments      Assessment[]
+  dailyJournals    DailyJournal[] @relation("TeacherJournals")
+  authoredJournals DailyJournal[] @relation("AuthorJournals")
+  activityLogs     ActivityLog[]
+  notifications    Notification[]
 }
+
 
 
 model Student {
@@ -198,6 +200,9 @@ model DailyJournal {
   id               String    @id @default(cuid())
   studentId        String
   teacherId        String
+  authorId         String?   // User yang menginput catatan (Guru/Orang Tua/Admin)
+  authorName       String?   // Nama pembuat catatan saat dibuat
+  authorRole       Role?     // Peran pembuat catatan (GURU / ORANG_TUA / ADMIN)
   date             DateTime  @default(now())
   academicYear     String?   @default("2026/2027")
   semester         String?   @default("Ganjil")
@@ -211,8 +216,10 @@ model DailyJournal {
   updatedAt        DateTime  @updatedAt
 
   student          Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  teacher          User      @relation(fields: [teacherId], references: [id])
+  teacher          User      @relation("TeacherJournals", fields: [teacherId], references: [id])
+  author           User?     @relation("AuthorJournals", fields: [authorId], references: [id])
 }
+
 
 model ActivityLog {
   id           String      @id @default(cuid())

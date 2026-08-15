@@ -351,23 +351,61 @@ export default function OrtuDashboard() {
                   const isEditingThis = editingFeedbackId === j.id;
                   const hasParentFeedback = Boolean(j.parentFeedback);
 
+                  const isWrittenByParent =
+                    j.authorRole === "ORANG_TUA" ||
+                    (j.authorId && j.authorId === (session?.user as any)?.id) ||
+                    (!j.authorRole && j.learningActivity?.toLowerCase().includes("orang tua"));
+
+                  const isWrittenByAdmin = j.authorRole === "ADMIN";
+
+                  const authorDisplayName =
+                    j.authorName ||
+                    j.author?.name ||
+                    (isWrittenByParent
+                      ? session?.user?.name || "Orang Tua / Wali"
+                      : j.teacher?.name || "Guru Wali Kelas");
+
                   return (
                     <div
                       key={j.id}
-                      className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-3 hover:border-emerald-200 transition-colors"
+                      className={`p-4 sm:p-5 rounded-3xl border space-y-3 transition-all ${
+                        isWrittenByParent
+                          ? "bg-emerald-50/30 border-emerald-300 ring-1 ring-emerald-200"
+                          : "bg-slate-50 border-slate-200/90 hover:border-emerald-200"
+                      }`}
                     >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
-                          <span className="font-bold text-xs text-slate-800">
-                            {new Date(j.date).toLocaleDateString("id-ID", {
-                              weekday: "long",
-                              day: "numeric",
-                              month: "long",
-                              year: "numeric",
-                            })}
-                          </span>
+                      <div className="flex items-start justify-between gap-2 border-b border-slate-200/60 pb-3">
+                        <div className="space-y-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-bold text-xs text-slate-800 flex items-center gap-1.5">
+                              <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                              {new Date(j.date).toLocaleDateString("id-ID", {
+                                weekday: "long",
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              })}
+                            </span>
+
+                            <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+                              isWrittenByParent
+                                ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+                                : isWrittenByAdmin
+                                ? "bg-purple-100 text-purple-800 border-purple-300"
+                                : "bg-teal-100 text-teal-800 border-teal-300"
+                            }`}>
+                              {isWrittenByParent
+                                ? "🏡 Catatan dari Rumah"
+                                : isWrittenByAdmin
+                                ? "🛡️ Catatan Admin"
+                                : "🏫 Catatan Sekolah"}
+                            </span>
+                          </div>
+                          <div className="text-[11px] text-slate-500">
+                            Ditulis oleh: <strong className="text-slate-900">{authorDisplayName}</strong> ({isWrittenByParent ? "Ayah/Bunda" : isWrittenByAdmin ? "Admin" : "Guru Wali Kelas"})
+                          </div>
                         </div>
+
                         <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 bg-emerald-100 text-emerald-800 text-[11px] sm:text-xs font-bold rounded-full border border-emerald-200 shrink-0">
                           {j.mood}
                         </span>
@@ -384,8 +422,14 @@ export default function OrtuDashboard() {
                         </div>
                       </div>
 
-                      <div className="p-3 bg-teal-50/60 rounded-xl border border-teal-100 text-xs text-slate-700 leading-relaxed">
-                        <span className="font-bold text-teal-900 block mb-1">Aktivitas Terapi & Belajar di Kelas:</span>
+                      <div className={`p-3 rounded-xl border text-xs leading-relaxed ${
+                        isWrittenByParent
+                          ? "bg-emerald-50/80 border-emerald-200 text-emerald-950"
+                          : "bg-teal-50/60 border-teal-100 text-slate-700"
+                      }`}>
+                        <span className="font-bold block mb-1">
+                          {isWrittenByParent ? "🏡 Kabar & Aktivitas dari Rumah:" : "🏫 Aktivitas Terapi & Belajar di Kelas:"}
+                        </span>
                         {j.learningActivity}
                       </div>
 
@@ -412,7 +456,7 @@ export default function OrtuDashboard() {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-1.5 font-bold text-emerald-900">
                               <MessageCircle className="w-4 h-4 text-emerald-700 shrink-0" />
-                              <span>Catatan Ayah/Bunda di Rumah:</span>
+                              <span>Catatan Respon Ayah/Bunda di Rumah:</span>
                             </div>
                             <button
                               onClick={() => {
@@ -467,6 +511,7 @@ export default function OrtuDashboard() {
                     </div>
                   );
                 })}
+
               </div>
             )}
           </div>

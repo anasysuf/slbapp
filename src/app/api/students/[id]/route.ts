@@ -37,9 +37,20 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
           },
         },
         assessments: true,
-        dailyJournals: true,
+        dailyJournals: {
+          include: {
+            teacher: {
+              select: { id: true, name: true, role: true },
+            },
+            author: {
+              select: { id: true, name: true, role: true },
+            },
+          },
+          orderBy: { date: "desc" },
+        },
       },
     });
+
 
     if (!student) {
       return NextResponse.json({ error: "Siswa tidak ditemukan" }, { status: 404 });

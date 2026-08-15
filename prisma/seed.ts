@@ -803,59 +803,104 @@ async function main() {
   // 11. Create Multi-Entry Daily Journals (Buku Penghubung Guru-Ortu)
   await prisma.dailyJournal.createMany({
     data: [
-      // Rizky (Kelas 2 SDLB - Ayah Hendra)
+      // Rizky (Kelas 2 SDLB - Ditulis Guru Dewi)
       {
         studentId: studentRizky.id,
         teacherId: guruDewi.id,
+        authorId: guruDewi.id,
+        authorName: guruDewi.name || "Dewi Rahmawati, S.Pd",
+        authorRole: Role.GURU,
         mood: "Gembira & Sangat Fokus",
         healthCondition: "Sehat bugar",
         eatingNote: "Makan bekal nasi & telur habis mandiri",
         learningActivity: "Hari ini Rizky sangat kooperatif mengikuti sesi meronce balok geometri dan latihan cuci tangan 6 langkah. Kontak mata meningkat hingga 8 detik.",
         parentFeedback: "Alhamdulillah terima kasih banyak Bu Dewi atas bimbingannya. Di rumah Rizky juga mulai terbiasa merapikan kotak makannya sendiri.",
       },
+      // Rizky (Kelas 2 SDLB - Ditulis Orang Tua Hendra)
+      {
+        studentId: studentRizky.id,
+        teacherId: guruDewi.id,
+        authorId: ortuHendra.id,
+        authorName: ortuHendra.name || "Hendra Wijaya",
+        authorRole: Role.ORANG_TUA,
+        mood: "Gembira & Fokus",
+        healthCondition: "Sehat bugar, tidur cukup 8 jam",
+        eatingNote: "Sarapan bubur ayam habis mandiri di rumah",
+        learningActivity: "Kabar dari rumah: Rizky bangun pagi dengan ceria dan sudah bisa memakai kaos kaki sendiri tanpa dibantu.",
+        parentFeedback: "Mohon bimbingan Bu Dewi untuk latihan kemandirian mengancingkan kemeja hari ini.",
+      },
+      // Budi (Kelas 2 SDLB - Ditulis Guru Dewi)
       {
         studentId: studentBudi.id,
         teacherId: guruDewi.id,
+        authorId: guruDewi.id,
+        authorName: guruDewi.name || "Dewi Rahmawati, S.Pd",
+        authorRole: Role.GURU,
         mood: "Tenang",
         healthCondition: "Sehat",
         eatingNote: "Makan bekal roti & susu habis",
         learningActivity: "Budi latihan menulis menggunakan pensil grip adaptif dan menyelesaikan lembar kerja mewarnai bentuk apel dengan rapi.",
         parentFeedback: "Terima kasih Bu Dewi, di rumah Budi semakin bersemangat menggambar.",
       },
-      // Dimas (Kelas 11 SMALB - Ibu Ratna)
+      // Dimas (Kelas 11 SMALB - Ditulis Guru Ahmad)
       {
         studentId: studentDimas.id,
         teacherId: guruAhmad.id,
+        authorId: guruAhmad.id,
+        authorName: guruAhmad.name || "Ahmad Fauzi, S.Pd",
+        authorRole: Role.GURU,
         mood: "Tenang & Kooperatif",
         healthCondition: "Sehat bugar",
         eatingNote: "Makan bekal nasi ayam habis",
         learningActivity: "Dimas sangat antusias belajar membaca pola timbul cerita fabel pendek dengan teks Braille dan navigasi lorong sekolah.",
         parentFeedback: "Terima kasih Pak Ahmad, Dimas di rumah senang menceritakan kembali kisah fabel yang dibacanya.",
       },
-      // Siti (Kelas 8 SMPLB - Ibu Ratna)
+      // Siti (Kelas 8 SMPLB - Ditulis Guru Siti)
       {
         studentId: studentSiti.id,
         teacherId: guruSiti.id,
+        authorId: guruSiti.id,
+        authorName: guruSiti.name || "Siti Rahayu, S.Pd",
+        authorRole: Role.GURU,
         mood: "Gembira & Ceria",
         healthCondition: "Sehat",
         eatingNote: "Makan buah apel dan bekal mie goreng",
         learningActivity: "Siti memimpin kelompok belajar dalam mempraktikkan isyarat nama-nama hari dan bulan dengan penuh percaya diri.",
         parentFeedback: "Hebat Siti! Terima kasih Bu Siti atas motivasi dan kasih sayangnya.",
       },
-      // Kenzo (Kelas TKLB - Ibu Maya)
+      // Kenzo (Kelas TKLB - Ditulis Guru Agus)
       {
         studentId: studentKenzo.id,
         teacherId: guruAgus.id,
+        authorId: guruAgus.id,
+        authorName: guruAgus.name || "Agus Setiawan, S.Pd",
+        authorRole: Role.GURU,
         mood: "Ceria & Mau Mencoba",
         healthCondition: "Sehat",
         eatingNote: "Makan biskuit dan minum air putih habis",
         learningActivity: "Kenzo mengikuti sesi terapi sensori playdough tanpa tantrum dan mau meremas adonan bersama teman sekelas.",
         parentFeedback: "Senang sekali mendengarnya Pak Agus! Di rumah kami juga sediakan playdough warna-warni.",
       },
-      // Annisa (Kelas TKLB - Ibu Maya)
+      // Kenzo (Kelas TKLB - Ditulis Orang Tua Maya)
+      {
+        studentId: studentKenzo.id,
+        teacherId: guruAgus.id,
+        authorId: ortuMaya.id,
+        authorName: ortuMaya.name || "Maya Indah",
+        authorRole: Role.ORANG_TUA,
+        mood: "Ceria & Mau Mencoba",
+        healthCondition: "Sehat bugar",
+        eatingNote: "Sarapan roti gandum dan susu hangat",
+        learningActivity: "Kabar dari rumah: Kenzo pagi ini sangat bersemangat berangkat sekolah membawa mainan mobil-mobilan favoritnya.",
+        parentFeedback: "Terima kasih Pak Agus telah mendampingi Kenzo dengan sabar.",
+      },
+      // Annisa (Kelas TKLB - Ditulis Guru Agus)
       {
         studentId: studentAnnisa.id,
         teacherId: guruAgus.id,
+        authorId: guruAgus.id,
+        authorName: guruAgus.name || "Agus Setiawan, S.Pd",
+        authorRole: Role.GURU,
         mood: "Gembira",
         healthCondition: "Sehat",
         eatingNote: "Makan bekal nasi kuning habis dibantu guru",
@@ -864,6 +909,7 @@ async function main() {
       },
     ],
   });
+
 
   // 12. Create Activity Logs
   await prisma.activityLog.createMany({

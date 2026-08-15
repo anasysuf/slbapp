@@ -64,12 +64,27 @@ export async function GET(req: Request) {
             disabilityType: true,
             parentId: true,
             foundationId: true,
+            parent: {
+              select: {
+                id: true,
+                name: true,
+                phone: true,
+              },
+            },
           },
         },
         teacher: {
           select: {
             id: true,
             name: true,
+          },
+        },
+        author: {
+          select: {
+            id: true,
+            name: true,
+            role: true,
+            avatar: true,
           },
         },
       },
@@ -94,6 +109,7 @@ export async function POST(req: Request) {
 
     const role = (session.user as any).role;
     const userId = (session.user as any).id;
+    const authorName = session.user.name || (role === "ORANG_TUA" ? "Orang Tua" : role === "ADMIN" ? "Administrator" : "Guru");
 
     if (role !== "GURU" && role !== "ADMIN" && role !== "ORANG_TUA") {
       return NextResponse.json({ error: "Akses ditolak: Anda tidak memiliki izin untuk menulis catatan buku penghubung" }, { status: 403 });
@@ -161,18 +177,23 @@ export async function POST(req: Request) {
       data: {
         studentId,
         teacherId: finalTeacherId,
+        authorId: userId,
+        authorName: authorName,
+        authorRole: role,
         mood: mood.trim(),
         healthCondition: healthCondition ? healthCondition.trim() : "Sehat bugar",
         eatingNote: eatingNote ? eatingNote.trim() : "Makan mandiri",
-        learningActivity: learningActivity ? learningActivity.trim() : `Kabar dan catatan aktivitas harian dari rumah oleh Orang Tua (${session.user.name || "Orang Tua"})`,
+        learningActivity: learningActivity ? learningActivity.trim() : `Kabar dan catatan aktivitas harian dari rumah oleh ${authorName}`,
         photoUrl: photoUrl ? photoUrl.trim() : null,
         parentFeedback: parentFeedback ? parentFeedback.trim() : (role === "ORANG_TUA" ? (learningActivity || "Kabar dari rumah telah dikirim.") : null),
       },
       include: {
         student: true,
         teacher: true,
+        author: true,
       },
     });
+
 
     // Log Activity
     await logActivity({
