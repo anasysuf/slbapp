@@ -111,6 +111,46 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
       return NextResponse.json({ error: "Pengguna tidak ditemukan" }, { status: 404 });
     }
 
+    // 1. Unlink students if user is parent
+    await prisma.student.updateMany({
+      where: { parentId: params.id },
+      data: { parentId: null },
+    });
+
+    // 2. Unlink classes if user is teacher
+    await prisma.class.updateMany({
+      where: { teacherId: params.id },
+      data: { teacherId: null },
+    });
+
+    // 3. Delete notifications for this user
+    await prisma.notification.deleteMany({
+      where: { userId: params.id },
+    });
+
+    // 4. Delete user's materials & assignments
+    const userMaterials = await prisma.material.findMany({ where: { createdById: params.id }, select: { id: true } });
+    if (userMaterials.length > 0) {
+      await prisma.assignment.deleteMany({ where: { materialId: { in: userMaterials.map(m => m.id) } } });
+      await prisma.material.deleteMany({ where: { createdById: params.id } });
+    }
+
+    // 5. Delete assessments created by this teacher
+    await prisma.assessment.deleteMany({
+      where: { teacherId: params.id },
+    });
+
+    // 6. Delete PPI plans created by this teacher
+    await prisma.ppiPlan.deleteMany({
+      where: { teacherId: params.id },
+    });
+
+    // 7. Delete Daily Journals involving this user
+    await prisma.dailyJournal.deleteMany({
+      where: { OR: [{ teacherId: params.id }, { authorId: params.id }] },
+    });
+
+    // 8. Delete user
     await prisma.user.delete({
       where: { id: params.id },
     });

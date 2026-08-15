@@ -689,17 +689,17 @@ export default function OrtuDashboard() {
 
                         <div>
                           {a.score === "MANDIRI" && (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            <span className="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 whitespace-nowrap inline-flex items-center gap-1 shrink-0">
                               🟢 Mandiri
                             </span>
                           )}
                           {a.score === "DENGAN_BANTUAN" && (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                            <span className="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200 whitespace-nowrap inline-flex items-center gap-1 shrink-0">
                               🟡 Dengan Bantuan
                             </span>
                           )}
                           {a.score === "BELUM_MAMPU" && (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
+                            <span className="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-200 whitespace-nowrap inline-flex items-center gap-1 shrink-0">
                               🔴 Belum Mampu
                             </span>
                           )}

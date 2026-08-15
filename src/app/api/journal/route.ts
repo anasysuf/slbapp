@@ -315,4 +315,68 @@ export async function PATCH(req: Request) {
   }
 }
 
+export async function DELETE(req: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Akses ditolak: Anda belum terautentikasi" }, { status: 401 });
+    }
+
+    const role = (session.user as any).role;
+    const userId = (session.user as any).id;
+
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "ID catatan jurnal wajib disertakan" }, { status: 400 });
+    }
+
+    const journal = await prisma.dailyJournal.findUnique({
+      where: { id },
+      include: { student: true },
+    });
+
+    if (!journal) {
+      return NextResponse.json({ error: "Catatan jurnal tidak ditemukan" }, { status: 404 });
+    }
+
+    // Authorization: GURU can only delete journals of their students or they authored, ORANG_TUA can only delete journals they authored, ADMIN can delete any
+    if (role === "GURU") {
+      const isAuthor = journal.authorId === userId || journal.teacherId === userId;
+      if (!isAuthor) {
+        return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat menghapus catatan jurnal kelas Anda" }, { status: 403 });
+      }
+    } else if (role === "ORANG_TUA") {
+      const isAuthor = journal.authorId === userId;
+      if (!isAuthor) {
+        return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat menghapus catatan yang Anda buat sendiri" }, { status: 403 });
+      }
+    } else if (role !== "ADMIN") {
+      return NextResponse.json({ error: "Akses ditolak" }, { status: 403 });
+    }
+
+    await prisma.dailyJournal.delete({
+      where: { id },
+    });
+
+    // Log Activity
+    await logActivity({
+      userId: userId,
+      userName: session.user.name || "Pengguna",
+      userRole: role,
+      action: "DELETE",
+      entity: "DailyJournal",
+      entityId: id,
+      description: `Menghapus catatan buku penghubung siswa ${journal.student.name}`,
+      foundationId: journal.student.foundationId,
+    });
+
+    return NextResponse.json({ success: true, message: "Catatan jurnal berhasil dihapus" });
+  } catch (error: any) {
+    console.error("Error deleting journal:", error);
+    return NextResponse.json({ error: "Gagal menghapus catatan jurnal: " + error.message }, { status: 500 });
+  }
+}
+
 

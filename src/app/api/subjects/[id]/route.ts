@@ -74,6 +74,15 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
       return NextResponse.json({ error: "Mata pelajaran tidak ditemukan" }, { status: 404 });
     }
 
+    // 1. Delete materials & assignments for this subject
+    const materials = await prisma.material.findMany({ where: { subjectId: params.id }, select: { id: true } });
+    const materialIds = materials.map(m => m.id);
+    if (materialIds.length > 0) {
+      await prisma.assignment.deleteMany({ where: { materialId: { in: materialIds } } });
+      await prisma.material.deleteMany({ where: { subjectId: params.id } });
+    }
+
+    // 2. Delete subject
     await prisma.subject.delete({
       where: { id: params.id },
     });

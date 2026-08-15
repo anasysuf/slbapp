@@ -261,9 +261,9 @@ export default function StudentDetailPage() {
                       <span className="text-slate-500">Jenis Kelamin</span>
                       <span className="font-medium text-slate-800">{student.gender === "P" ? "Perempuan" : "Laki-laki"}</span>
                     </div>
-                    <div className="flex justify-between py-1 border-b border-slate-100">
+                    <div className="flex justify-between items-center py-1 border-b border-slate-100">
                       <span className="text-slate-500">Klasifikasi Kebutuhan Khusus</span>
-                      <span className="font-bold text-teal-800 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200">
+                      <span className="font-bold text-teal-800 bg-teal-50 px-2.5 py-1 rounded-xl border border-teal-200 whitespace-nowrap inline-flex items-center">
                         {student.disabilityType}
                       </span>
                     </div>

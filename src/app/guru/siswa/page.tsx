@@ -319,8 +319,8 @@ export default function GuruStudentManagementPage() {
                             {s.classes?.[0]?.class?.name || <span className="text-slate-400 italic">Belum ada kelas</span>}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
-                          <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-teal-50 text-teal-800 border border-teal-200">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-teal-50 text-teal-800 border border-teal-200 whitespace-nowrap inline-flex items-center">
                             {s.disabilityType}
                           </span>
                         </td>

@@ -1212,8 +1212,8 @@ function AdminDashboardContent() {
                             {s.classes?.[0]?.class?.name || <span className="text-slate-400 italic">Belum ada kelas</span>}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
-                          <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-teal-50 text-teal-800 border border-teal-200">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-teal-50 text-teal-800 border border-teal-200 whitespace-nowrap inline-flex items-center">
                             {s.disabilityType}
                           </span>
                         </td>
@@ -1250,8 +1250,8 @@ function AdminDashboardContent() {
 
                                 <button
                                   onClick={() => handleDeleteStudent(s.id, s.name)}
-                                  className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg transition-colors"
-                                  title="Hapus Siswa"
+                                  className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg transition-colors font-bold text-xs"
+                                  title="Hapus Data Siswa"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>
@@ -1268,35 +1268,21 @@ function AdminDashboardContent() {
           </div>
         )}
 
-        {/* TAB GURU: MANAJEMEN GURU KHUSUS SLB */}
+        {/* TAB 2: DATA GURU KELAS */}
         {activeTab === "guru" && (
           <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden space-y-4 animate-fade-in">
             <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center font-bold">
-                  <GraduationCap className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-base text-slate-800">Manajemen Guru Khusus SLB</h3>
-                  <p className="text-xs text-slate-500">Kelola akun pendidik khusus, rombel kelas binaan, dan kontak WhatsApp guru</p>
-                </div>
+              <div>
+                <h3 className="font-bold text-base text-slate-800">Manajemen Guru Wali Kelas (Pendidik Khusus)</h3>
+                <p className="text-xs text-slate-500">Setiap 1 akun guru mengampu 1 rombel kelas khusus yang terisolasi aman</p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2.5">
-                <button
-                  onClick={() => exportTeachersToCsv(teachers, `Rekap_Data_Guru_${schoolName || "SLB"}`)}
-                  className="px-3.5 py-2 bg-teal-50 hover:bg-teal-100 text-teal-900 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shrink-0 border border-teal-200"
-                  title="Unduh Rekap Data Guru ke CSV / Excel"
-                >
-                  <Download className="w-3.5 h-3.5 text-teal-700" />
-                  <span>Unduh Rekap Guru (CSV)</span>
-                </button>
-
+              <div className="flex items-center gap-2.5">
                 <div className="relative w-full sm:w-64">
                   <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
                   <input
                     type="text"
-                    placeholder="Cari nama, email, kelas guru..."
+                    placeholder="Cari nama guru, email, rombel..."
                     value={searchUser}
                     onChange={(e) => setSearchUser(e.target.value)}
                     className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-600 font-medium"
@@ -1313,7 +1299,6 @@ function AdminDashboardContent() {
                   </button>
                 )}
               </div>
-
             </div>
 
             {loading ? (
@@ -1322,8 +1307,7 @@ function AdminDashboardContent() {
               <div className="p-12 text-center text-xs text-slate-500">Belum ada akun guru yang terdaftar.</div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[650px] text-left text-xs">
-
+                <table className="w-full min-w-[700px] text-left text-xs">
                   <thead className="bg-slate-50 text-slate-600 uppercase tracking-wider font-bold border-b border-slate-200">
                     <tr>
                       <th className="px-6 py-3.5">Nama & Kontak Guru</th>
@@ -1348,9 +1332,9 @@ function AdminDashboardContent() {
                       .map((u) => (
                         <tr key={u.id} className="hover:bg-slate-50/70 transition-colors">
                           <td className="px-6 py-4">
-                            <div className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                            <div className="font-bold text-slate-900 text-sm flex flex-wrap items-center gap-2">
                               <span>{u.name}</span>
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-100 text-teal-800 border border-teal-200">
+                              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-100 text-teal-800 border border-teal-200 whitespace-nowrap inline-flex items-center shrink-0">
                                 Pendidik Khusus
                               </span>
                             </div>
@@ -1419,31 +1403,16 @@ function AdminDashboardContent() {
           </div>
         )}
 
-
-        {/* TAB ORTU: MANAJEMEN ORANG TUA SISWA */}
+        {/* TAB ORANG TUA: MANAJEMEN WALI MURID */}
         {activeTab === "ortu" && (
           <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden space-y-4 animate-fade-in">
             <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-800 flex items-center justify-center font-bold">
-                  <HeartHandshake className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-base text-slate-800">Manajemen Orang Tua Siswa</h3>
-                  <p className="text-xs text-slate-500">Kelola akun wali murid, anak/siswa binaan yang ditautkan, dan akses Portal Ortu</p>
-                </div>
+              <div>
+                <h3 className="font-bold text-base text-slate-800">Manajemen Akun Orang Tua & Wali Murid</h3>
+                <p className="text-xs text-slate-500">Setiap akun orang tua ditautkan khusus dengan data anak binaannya</p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2.5">
-                <button
-                  onClick={() => exportParentsToCsv(parents, `Rekap_Data_Orang_Tua_${schoolName || "SLB"}`)}
-                  className="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-900 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shrink-0 border border-rose-200"
-                  title="Unduh Rekap Data Orang Tua ke CSV / Excel"
-                >
-                  <Download className="w-3.5 h-3.5 text-rose-700" />
-                  <span>Unduh Rekap Ortu (CSV)</span>
-                </button>
-
+              <div className="flex items-center gap-2.5">
                 <div className="relative w-full sm:w-64">
                   <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
                   <input
@@ -1465,7 +1434,6 @@ function AdminDashboardContent() {
                   </button>
                 )}
               </div>
-
             </div>
 
             {loading ? (
@@ -1498,9 +1466,9 @@ function AdminDashboardContent() {
                       .map((u) => (
                         <tr key={u.id} className="hover:bg-slate-50/70 transition-colors">
                           <td className="px-6 py-4">
-                            <div className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                            <div className="font-bold text-slate-900 text-sm flex flex-wrap items-center gap-2">
                               <span>{u.name}</span>
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
+                              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200 whitespace-nowrap inline-flex items-center shrink-0">
                                 Wali Murid
                               </span>
                             </div>
@@ -1630,9 +1598,9 @@ function AdminDashboardContent() {
                       .map((u) => (
                         <tr key={u.id} className="hover:bg-slate-50/70 transition-colors">
                           <td className="px-6 py-4">
-                            <div className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                            <div className="font-bold text-slate-900 text-sm flex flex-wrap items-center gap-2">
                               <span>{u.name}</span>
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-200">
+                              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-200 whitespace-nowrap inline-flex items-center shrink-0">
                                 Pengurus Yayasan
                               </span>
                             </div>
@@ -1746,9 +1714,9 @@ function AdminDashboardContent() {
                       .map((u) => (
                         <tr key={u.id} className="hover:bg-slate-50/70 transition-colors">
                           <td className="px-6 py-4">
-                            <div className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                            <div className="font-bold text-slate-900 text-sm flex flex-wrap items-center gap-2">
                               <span>{u.name}</span>
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-900 border border-purple-200">
+                              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-900 border border-purple-200 whitespace-nowrap inline-flex items-center shrink-0">
                                 Super Administrator
                               </span>
                             </div>

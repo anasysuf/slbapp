@@ -551,8 +551,8 @@ function RekapContent() {
                           </td>
 
                           {/* Disabilitas */}
-                          <td className="px-5 py-4">
-                            <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-teal-50 text-teal-800 border border-teal-200">
+                          <td className="px-5 py-4 whitespace-nowrap">
+                            <span className="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-teal-50 text-teal-800 border border-teal-200 whitespace-nowrap inline-flex items-center">
                               {st.disabilityType}
                             </span>
                           </td>

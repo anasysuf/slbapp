@@ -79,6 +79,18 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
       return NextResponse.json({ error: "Kelas tidak ditemukan" }, { status: 404 });
     }
 
+    // 1. Delete materials & assignments for this class
+    const materials = await prisma.material.findMany({ where: { classId: params.id }, select: { id: true } });
+    const materialIds = materials.map(m => m.id);
+    if (materialIds.length > 0) {
+      await prisma.assignment.deleteMany({ where: { materialId: { in: materialIds } } });
+      await prisma.material.deleteMany({ where: { classId: params.id } });
+    }
+
+    // 2. Delete class student associations
+    await prisma.classStudent.deleteMany({ where: { classId: params.id } });
+
+    // 3. Delete class
     await prisma.class.delete({
       where: { id: params.id },
     });
