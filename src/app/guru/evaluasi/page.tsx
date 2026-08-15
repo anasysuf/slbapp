@@ -92,13 +92,13 @@ export default function GuruEvaluasiPage() {
                   return (
                     <div key={plan.id} className="p-5 hover:bg-slate-50/70 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div className="space-y-1 max-w-xl">
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-1.5">
                           <span className="font-bold text-sm text-slate-900">{plan.student?.name}</span>
-                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200">
+                          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 whitespace-nowrap inline-flex items-center shrink-0">
                             {plan.student?.disabilityType}
                           </span>
                           {className && (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-lg bg-slate-100 text-slate-700 whitespace-nowrap inline-flex items-center shrink-0">
                               {className}
                             </span>
                           )}

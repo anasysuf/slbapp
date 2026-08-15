@@ -1225,7 +1225,7 @@ function AdminDashboardContent() {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-teal-50 text-teal-800 border border-teal-200 whitespace-nowrap inline-flex items-center">
+                          <span className="px-2.5 py-0.5 rounded-lg text-[11px] font-bold bg-teal-50 text-teal-800 border border-teal-200 whitespace-nowrap inline-flex items-center shrink-0">
                             {s.disabilityType}
                           </span>
                         </td>
@@ -1970,9 +1970,9 @@ function AdminDashboardContent() {
                     className="p-4 bg-slate-50 hover:bg-slate-100/80 rounded-2xl border border-slate-200 transition-colors flex items-start justify-between gap-4"
                   >
                     <div className="space-y-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-1.5">
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${
+                          className={`inline-flex items-center justify-center px-2 py-0.5 rounded text-[10px] font-black uppercase whitespace-nowrap shrink-0 ${
                             log.action === "CREATE"
                               ? "bg-emerald-100 text-emerald-900"
                               : log.action === "UPDATE"

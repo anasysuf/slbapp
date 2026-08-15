@@ -184,13 +184,13 @@ export default function GuruJurnalPage() {
                     <div className="space-y-3">
                       <div className="flex items-start justify-between border-b border-slate-100 pb-3 gap-2">
                         <div>
-                          <div className="flex flex-wrap items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-1.5">
                             <h3 className="font-bold text-base text-slate-900">{j.student?.name}</h3>
-                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200">
+                            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 whitespace-nowrap inline-flex items-center shrink-0">
                               {j.student?.disabilityType}
                             </span>
                             {isFromParent && (
-                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                              <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-300 whitespace-nowrap inline-flex items-center shrink-0">
                                 🏡 Dari Rumah
                               </span>
                             )}
@@ -206,7 +206,7 @@ export default function GuruJurnalPage() {
                           </div>
                         </div>
 
-                        <span className="px-3 py-1 bg-teal-50 text-teal-800 text-xs font-bold rounded-full border border-teal-200 shrink-0">
+                        <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 bg-teal-50 text-teal-800 text-[10px] sm:text-xs font-bold rounded-lg sm:rounded-full border border-teal-200 shrink-0 whitespace-nowrap inline-flex items-center">
                           {j.mood}
                         </span>
                       </div>

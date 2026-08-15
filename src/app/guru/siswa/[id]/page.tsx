@@ -319,7 +319,7 @@ export default function StudentDetailPage() {
                           <p className="text-xs text-slate-500">{new Date(as.assessmentDate).toLocaleDateString("id-ID")}</p>
                         </div>
                         <div>
-                          <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-emerald-100 text-emerald-800">
+                          <span className="inline-flex items-center justify-center px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-bold rounded-lg sm:rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 whitespace-nowrap shrink-0">
                             {as.score}
                           </span>
                         </div>
@@ -422,7 +422,7 @@ export default function StudentDetailPage() {
                       >
                         <div className="space-y-3">
                           <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 gap-2">
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-wrap items-center gap-1.5">
                               <span className="text-xs font-bold text-slate-800">
                                 {new Date(j.date).toLocaleDateString("id-ID", {
                                   weekday: "long",
@@ -432,12 +432,12 @@ export default function StudentDetailPage() {
                                 })}
                               </span>
                               {isFromParent && (
-                                <span className="text-[10px] font-bold px-2 py-0.2 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-300 whitespace-nowrap inline-flex items-center shrink-0">
                                   🏡 Dari Rumah
                                 </span>
                               )}
                             </div>
-                            <span className="px-2.5 py-0.5 bg-teal-50 text-teal-800 text-[11px] font-bold rounded-full border border-teal-200 shrink-0">
+                            <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 bg-teal-50 text-teal-800 text-[10px] sm:text-xs font-bold rounded-lg sm:rounded-full border border-teal-200 shrink-0 whitespace-nowrap inline-flex items-center">
                               {j.mood}
                             </span>
                           </div>
@@ -474,7 +474,7 @@ export default function StudentDetailPage() {
                           <div className="flex items-center gap-1.5 font-medium">
                             <span>Ditulis oleh:</span>
                             <strong className="text-slate-900 font-bold">{authorDisplayName}</strong>
-                            <span className={`text-[10px] font-bold px-2 py-0.2 rounded-md ${
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
                               isFromParent
                                 ? "bg-emerald-100 text-emerald-800"
                                 : isFromAdmin

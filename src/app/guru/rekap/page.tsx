@@ -454,9 +454,9 @@ function RekapContent() {
                       className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-indigo-300 transition-colors flex flex-col justify-between space-y-3"
                     >
                       <div className="space-y-2">
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-wrap items-center justify-between gap-1.5">
                           <span className="font-bold text-sm text-slate-900">{st.name}</span>
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-900">
+                          <span className="px-2.5 py-0.5 rounded-lg sm:rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-900 whitespace-nowrap inline-flex items-center shrink-0">
                             {st.independenceRate}% Mandiri
                           </span>
                         </div>

@@ -444,7 +444,7 @@ export default function OrtuDashboard() {
                               })}
                             </span>
 
-                            <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+                            <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-lg sm:rounded-full border whitespace-nowrap inline-flex items-center shrink-0 ${
                               isWrittenByParent
                                 ? "bg-emerald-100 text-emerald-800 border-emerald-300"
                                 : isWrittenByAdmin
@@ -463,7 +463,7 @@ export default function OrtuDashboard() {
                           </div>
                         </div>
 
-                        <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 bg-emerald-100 text-emerald-800 text-[11px] sm:text-xs font-bold rounded-full border border-emerald-200 shrink-0">
+                        <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 bg-emerald-100 text-emerald-800 text-[10px] sm:text-xs font-bold rounded-lg sm:rounded-full border border-emerald-200 shrink-0 whitespace-nowrap inline-flex items-center">
                           {j.mood}
                         </span>
                       </div>

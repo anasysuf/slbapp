@@ -240,9 +240,9 @@ export default function GuruAsesmenPage() {
                     {/* Top Row: Student, Disability & Score */}
                     <div className="flex items-start justify-between gap-2 border-b border-slate-100 pb-3">
                       <div>
-                        <div className="flex items-center gap-2 flex-wrap">
+                        <div className="flex flex-wrap items-center gap-1.5">
                           <h3 className="font-bold text-base text-slate-900">{item.student?.name}</h3>
-                          <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200">
+                          <span className="text-[10px] sm:text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 whitespace-nowrap inline-flex items-center shrink-0">
                             {item.student?.disabilityType}
                           </span>
                         </div>
@@ -263,17 +263,17 @@ export default function GuruAsesmenPage() {
                       {/* Score Badge */}
                       <div className="shrink-0">
                         {item.score === "MANDIRI" && (
-                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                          <span className="inline-flex items-center justify-center gap-1 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-lg sm:rounded-full text-[10px] sm:text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 whitespace-nowrap shrink-0">
                             <CheckCircle2 className="w-3.5 h-3.5" /> Mandiri
                           </span>
                         )}
                         {item.score === "DENGAN_BANTUAN" && (
-                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-200">
+                          <span className="inline-flex items-center justify-center gap-1 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-lg sm:rounded-full text-[10px] sm:text-xs font-bold bg-amber-100 text-amber-900 border border-amber-200 whitespace-nowrap shrink-0">
                             <HelpCircle className="w-3.5 h-3.5" /> Dg Bantuan
                           </span>
                         )}
                         {item.score === "BELUM_MAMPU" && (
-                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200">
+                          <span className="inline-flex items-center justify-center gap-1 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-lg sm:rounded-full text-[10px] sm:text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200 whitespace-nowrap shrink-0">
                             <AlertCircle className="w-3.5 h-3.5" /> Belum Mampu
                           </span>
                         )}

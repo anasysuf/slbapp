@@ -390,7 +390,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
                     {session?.user?.email || "user@slb.sch.id"}
                   </div>
                   <div className="pt-1">
-                    <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold border ${roleInfo.color}`}>
+                    <span className={`inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border whitespace-nowrap shrink-0 ${roleInfo.color}`}>
                       {roleInfo.label}
                     </span>
                   </div>

@@ -188,9 +188,9 @@ export default function GuruDashboard() {
 
               <div className="p-4 bg-gradient-to-r from-teal-50/80 to-slate-50 rounded-2xl border border-teal-200/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="space-y-1">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-1.5">
                     <span className="font-black text-base text-teal-950">{classes[0]?.name}</span>
-                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-700 text-white">
+                    <span className="px-2.5 py-0.5 rounded-lg sm:rounded-full text-[10px] sm:text-xs font-bold bg-teal-700 text-white whitespace-nowrap inline-flex items-center shrink-0">
                       Jenjang {classes[0]?.jenjang}
                     </span>
                   </div>
@@ -253,12 +253,12 @@ export default function GuruDashboard() {
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-1.5">
                             <span className="font-bold text-sm text-slate-900">{item.student.name}</span>
-                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200/70 text-slate-700">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-slate-200/70 text-slate-700 whitespace-nowrap inline-flex items-center shrink-0">
                               {item.student.disabilityType}
                             </span>
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-100 text-teal-800">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-teal-100 text-teal-800 whitespace-nowrap inline-flex items-center shrink-0">
                               {item.category}
                             </span>
                           </div>
@@ -270,19 +270,19 @@ export default function GuruDashboard() {
                           </p>
                         </div>
 
-                        <div>
+                        <div className="shrink-0">
                           {item.score === "MANDIRI" && (
-                            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 whitespace-nowrap">
+                            <span className="inline-flex items-center justify-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-lg sm:rounded-full text-[10px] sm:text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 whitespace-nowrap shrink-0">
                               🟢 Mandiri
                             </span>
                           )}
                           {item.score === "DENGAN_BANTUAN" && (
-                            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200 whitespace-nowrap">
+                            <span className="inline-flex items-center justify-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-lg sm:rounded-full text-[10px] sm:text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200 whitespace-nowrap shrink-0">
                               🟡 Dg Bantuan
                             </span>
                           )}
                           {item.score === "BELUM_MAMPU" && (
-                            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200 whitespace-nowrap">
+                            <span className="inline-flex items-center justify-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-lg sm:rounded-full text-[10px] sm:text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200 whitespace-nowrap shrink-0">
                               🔴 Belum
                             </span>
                           )}

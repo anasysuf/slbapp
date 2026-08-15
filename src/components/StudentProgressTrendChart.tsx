@@ -161,16 +161,16 @@ export default function StudentProgressTrendChart({
                   </h4>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex flex-wrap items-center gap-1.5 shrink-0">
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-bold border ${getScoreColor(
+                    className={`inline-flex items-center justify-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-lg sm:rounded-full text-[10px] sm:text-xs font-bold border whitespace-nowrap shrink-0 ${getScoreColor(
                       latestScore
                     )}`}
                   >
                     Skor Terkini: {getScoreLabel(latestScore)}
                   </span>
                   {isImproved && (
-                    <span className="px-2 py-1 bg-emerald-600 text-white text-[10px] font-black rounded-lg shadow-sm">
+                    <span className="inline-flex items-center px-2 py-0.5 sm:py-1 bg-emerald-600 text-white text-[10px] font-black rounded-lg shadow-sm whitespace-nowrap shrink-0">
                       📈 Meningkat
                     </span>
                   )}
