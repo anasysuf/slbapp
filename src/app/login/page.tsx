@@ -21,6 +21,8 @@ import {
   Target,
   BarChart3,
   Heart,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 function LoginContent() {
@@ -30,6 +32,7 @@ function LoginContent() {
   const { data: session, status } = useSession();
   const [email, setEmail] = useState("guru@slb.sch.id");
   const [password, setPassword] = useState("guru123");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -256,13 +259,21 @@ function LoginContent() {
                     <div className="relative">
                       <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
                       <input
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none bg-slate-50 text-slate-900 font-semibold"
+                        className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none bg-slate-50 text-slate-900 font-semibold"
                         required
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-700 transition-colors"
+                        title={showPassword ? "Sembunyikan Kata Sandi" : "Lihat Kata Sandi"}
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
                     </div>
                   </div>
 

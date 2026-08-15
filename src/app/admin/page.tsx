@@ -34,6 +34,7 @@ import {
   RefreshCw,
   ExternalLink,
   Eye,
+  EyeOff,
   HeartHandshake,
   BarChart3,
   Printer,
@@ -149,6 +150,8 @@ function AdminDashboardContent() {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [userPassword, setUserPassword] = useState("slb123");
+  const [showUserPassword, setShowUserPassword] = useState(false);
+  const [showEditUserPassword, setShowEditUserPassword] = useState(false);
   const [userRole, setUserRole] = useState("GURU");
   const [userPhone, setUserPhone] = useState("");
 
@@ -2279,14 +2282,24 @@ function AdminDashboardContent() {
 
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Kata Sandi Awal *</label>
-                <input
-                  type="password"
-                  value={userPassword}
-                  onChange={(e) => setUserPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
-                  required
-                />
+                <div className="relative">
+                  <input
+                    type={showUserPassword ? "text" : "password"}
+                    value={userPassword}
+                    onChange={(e) => setUserPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowUserPassword(!showUserPassword)}
+                    className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-700 transition-colors"
+                    title={showUserPassword ? "Sembunyikan Sandi" : "Tampilkan Sandi"}
+                  >
+                    {showUserPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
 
               <div>
@@ -2378,13 +2391,23 @@ function AdminDashboardContent() {
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                       Reset Kata Sandi (Kosongkan jika tidak diubah)
                     </label>
-                    <input
-                      type="password"
-                      value={userPassword}
-                      onChange={(e) => setUserPassword(e.target.value)}
-                      placeholder="Ketik password baru jika ingin mereset..."
-                      className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
-                    />
+                    <div className="relative">
+                      <input
+                        type={showEditUserPassword ? "text" : "password"}
+                        value={userPassword}
+                        onChange={(e) => setUserPassword(e.target.value)}
+                        placeholder="Ketik password baru jika ingin mereset..."
+                        className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border text-xs sm:text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none font-semibold"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowEditUserPassword(!showEditUserPassword)}
+                        className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-700 transition-colors"
+                        title={showEditUserPassword ? "Sembunyikan Sandi" : "Tampilkan Sandi"}
+                      >
+                        {showEditUserPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
                   </div>
                 </>
               ) : (

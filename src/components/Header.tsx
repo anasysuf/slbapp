@@ -59,6 +59,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
@@ -474,7 +475,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
               )}
 
               {/* Old Password */}
-              <div className="opacity-60">
+              <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                   Kata Sandi Lama *
                 </label>
@@ -484,13 +485,15 @@ export default function Header({ title, subtitle }: HeaderProps) {
                     value={oldPassword}
                     onChange={(e) => setOldPassword(e.target.value)}
                     placeholder="Masukkan sandi saat ini..."
-                    disabled
-                    className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border text-xs sm:text-sm font-semibold bg-slate-100 cursor-not-allowed text-slate-500"
+                    disabled={passwordLoading}
+                    className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border text-xs sm:text-sm font-semibold bg-slate-50 focus:bg-white focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                    required
                   />
                   <button
                     type="button"
-                    disabled
-                    className="absolute right-3 top-3 text-slate-400 cursor-not-allowed"
+                    onClick={() => setShowOldPassword(!showOldPassword)}
+                    className="absolute right-3 top-3 text-slate-400 hover:text-slate-700 transition-colors"
+                    title={showOldPassword ? "Sembunyikan Sandi" : "Tampilkan Sandi"}
                   >
                     {showOldPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -498,7 +501,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
               </div>
 
               {/* New Password */}
-              <div className="opacity-60">
+              <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                   Kata Sandi Baru * (Min. 6 Karakter)
                 </label>
@@ -508,13 +511,15 @@ export default function Header({ title, subtitle }: HeaderProps) {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="Ketik sandi baru yang aman..."
-                    disabled
-                    className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border text-xs sm:text-sm font-semibold bg-slate-100 cursor-not-allowed text-slate-500"
+                    disabled={passwordLoading}
+                    className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border text-xs sm:text-sm font-semibold bg-slate-50 focus:bg-white focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                    required
                   />
                   <button
                     type="button"
-                    disabled
-                    className="absolute right-3 top-3 text-slate-400 cursor-not-allowed"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-3 top-3 text-slate-400 hover:text-slate-700 transition-colors"
+                    title={showNewPassword ? "Sembunyikan Sandi" : "Tampilkan Sandi"}
                   >
                     {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -522,18 +527,29 @@ export default function Header({ title, subtitle }: HeaderProps) {
               </div>
 
               {/* Confirm New Password */}
-              <div className="opacity-60">
+              <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                   Konfirmasi Kata Sandi Baru *
                 </label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Ulangi kata sandi baru..."
-                  disabled
-                  className="w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm font-semibold bg-slate-100 cursor-not-allowed text-slate-500"
-                />
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Ulangi kata sandi baru..."
+                    disabled={passwordLoading}
+                    className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border text-xs sm:text-sm font-semibold bg-slate-50 focus:bg-white focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-3 text-slate-400 hover:text-slate-700 transition-colors"
+                    title={showConfirmPassword ? "Sembunyikan Sandi" : "Tampilkan Sandi"}
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
 
               <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
