@@ -268,10 +268,14 @@ export default function Header({ title, subtitle }: HeaderProps) {
           {/* Notifications Popover */}
           <div className="relative" ref={notifRef}>
             <button
-              onClick={() => setIsNotifOpen(!isNotifOpen)}
+              onClick={() => {
+                if (!isNotifOpen) fetchNotifications();
+                setIsNotifOpen(!isNotifOpen);
+              }}
               className="p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition-colors relative"
               aria-label="Notifikasi"
             >
+
               <Bell className="w-4 h-4 text-slate-700" />
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center animate-pulse">

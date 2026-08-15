@@ -2,23 +2,25 @@
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  compress: true,
+  swcMinify: true,
+  experimental: {
+    optimizePackageImports: ["lucide-react"],
+  },
   async headers() {
     return [
       {
-        source: "/(.*)",
+        source: "/_next/static/(.*)",
         headers: [
           {
             key: "Cache-Control",
-            value: "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+            value: "public, max-age=31536000, immutable",
           },
-          {
-            key: "Pragma",
-            value: "no-cache",
-          },
-          {
-            key: "Expires",
-            value: "0",
-          },
+        ],
+      },
+      {
+        source: "/(.*)",
+        headers: [
           {
             key: "X-Frame-Options",
             value: "SAMEORIGIN",
@@ -46,3 +48,4 @@ const nextConfig = {
 };
 
 export default nextConfig;
+

@@ -68,9 +68,10 @@ model User {
   authoredJournals DailyJournal[] @relation("AuthorJournals")
   activityLogs     ActivityLog[]
   notifications    Notification[]
+
+  @@index([foundationId])
+  @@index([role])
 }
-
-
 
 model Student {
   id             String         @id @default(cuid())
@@ -91,6 +92,11 @@ model Student {
   ppiPlans       PpiPlan[]
   assessments    Assessment[]
   dailyJournals  DailyJournal[]
+
+  @@index([parentId])
+  @@index([foundationId])
+  @@index([jenjang])
+  @@index([disabilityType])
 }
 
 model Class {
@@ -106,6 +112,9 @@ model Class {
   
   students     ClassStudent[]
   materials    Material[]
+
+  @@index([teacherId])
+  @@index([foundationId])
 }
 
 model ClassStudent {
@@ -116,6 +125,8 @@ model ClassStudent {
   student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@unique([classId, studentId])
+  @@index([classId])
+  @@index([studentId])
 }
 
 model Subject {
@@ -139,6 +150,10 @@ model Material {
   subject       Subject      @relation(fields: [subjectId], references: [id])
   createdBy     User         @relation(fields: [createdById], references: [id])
   assignments   Assignment[]
+
+  @@index([classId])
+  @@index([subjectId])
+  @@index([createdById])
 }
 
 model Assignment {
@@ -147,6 +162,8 @@ model Assignment {
   deadline     DateTime?
   instructions String?
   material     Material  @relation(fields: [materialId], references: [id])
+
+  @@index([materialId])
 }
 
 model Assessment {
@@ -167,6 +184,12 @@ model Assessment {
 
   student        Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
   teacher        User      @relation(fields: [teacherId], references: [id])
+
+  @@index([studentId])
+  @@index([teacherId])
+  @@index([academicYear, semester])
+  @@index([category])
+  @@index([createdAt])
 }
 
 model PpiPlan {
@@ -184,6 +207,10 @@ model PpiPlan {
   student           Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
   teacher           User            @relation(fields: [teacherId], references: [id])
   evaluations       PpiEvaluation[]
+
+  @@index([studentId])
+  @@index([teacherId])
+  @@index([academicYear, semester])
 }
 
 model PpiEvaluation {
@@ -194,6 +221,9 @@ model PpiEvaluation {
   narrativeNotes String?
   
   ppiPlan        PpiPlan  @relation(fields: [ppiPlanId], references: [id], onDelete: Cascade)
+
+  @@index([ppiPlanId])
+  @@index([evaluationDate])
 }
 
 model DailyJournal {
@@ -218,8 +248,13 @@ model DailyJournal {
   student          Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
   teacher          User      @relation("TeacherJournals", fields: [teacherId], references: [id])
   author           User?     @relation("AuthorJournals", fields: [authorId], references: [id])
-}
 
+  @@index([studentId])
+  @@index([teacherId])
+  @@index([authorId])
+  @@index([date])
+  @@index([academicYear, semester])
+}
 
 model ActivityLog {
   id           String      @id @default(cuid())
@@ -235,6 +270,10 @@ model ActivityLog {
   createdAt    DateTime    @default(now())
 
   user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([foundationId])
+  @@index([createdAt])
 }
 
 model Notification {
@@ -249,5 +288,9 @@ model Notification {
   updatedAt    DateTime    @updatedAt
 
   user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
 }
+
 
