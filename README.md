@@ -5,7 +5,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![Prisma ORM](https://img.shields.io/badge/Prisma-5.22-2D3748?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
 [![Neon PostgreSQL](https://img.shields.io/badge/Database-Neon_PostgreSQL-00E599?style=for-the-badge&logo=postgresql)](https://neon.tech/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![License: Non-Commercial](https://img.shields.io/badge/License-Non--Commercial-red.svg?style=for-the-badge)](LICENSE)
 
 **slbApp** adalah platform web modern yang dirancang khusus untuk Sekolah Luar Biasa (SLB), pusat terapi, dan institusi pendidikan inklusi. Sistem ini mengintegrasikan **Asesmen Diagnostik Siswa**, **Program Pembelajaran Individual (PPI)**, **Buku Penghubung Harian Orang Tua & Guru**, **Pemantauan Perkembangan Berbasis Radar & Grafik Tren**, serta **Laporan Eksekutif Yayasan**.
 
@@ -158,4 +158,7 @@ slbApp/
 
 ## 📄 Lisensi
 
-Proyek ini dilisensikan di bawah [Lisensi MIT](LICENSE). Bebas digunakan dan dikembangkan untuk keperluan institusi pendidikan dan kemanusiaan.
+Proyek ini dilisensikan di bawah [Non-Commercial Software License](LICENSE). 
+
+- ✅ **Diizinkan**: Penggunaan gratis untuk sekolah luar biasa (SLB), yayasan nirlaba, guru, terapis, orang tua, dan tujuan riset/edukasi tanpa memungut biaya komersial.
+- ❌ **Dilarang**: Penggunaan untuk tujuan komersial, monetisasi, penjualan ulang (*reselling*), hosting SaaS berbayar, atau keuntungan finansial lainnya tanpa izin tertulis dari pemilik hak cipta.
