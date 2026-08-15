@@ -209,8 +209,17 @@ export default function OrtuDashboard() {
     return cleaned;
   };
 
-  const waMessage = `Halo ${teacherName}, saya ${parentName} (Orang Tua dari ananda ${studentName}, ${className}). Saya ingin berkonsultasi mengenai perkembangan dan aktivitas belajar ananda di sekolah. Terima kasih.`;
+  const teacherPrefix =
+    teacherName.toLowerCase().startsWith("bu ") ||
+    teacherName.toLowerCase().startsWith("pak ") ||
+    teacherName.toLowerCase().startsWith("ibu ") ||
+    teacherName.toLowerCase().startsWith("bapak ")
+      ? ""
+      : "Bu / Pak ";
+
+  const waMessage = `Halo ${teacherPrefix}${teacherName}, saya ${parentName} (Orang Tua dari ananda ${studentName}, ${className}). Saya ingin berkonsultasi mengenai perkembangan dan aktivitas belajar ananda di sekolah. Terima kasih.`;
   const waUrl = `https://wa.me/${formatWhatsAppPhone(teacherPhone)}?text=${encodeURIComponent(waMessage)}`;
+
 
   return (
 
