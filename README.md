@@ -156,9 +156,18 @@ slbApp/
 
 ---
 
-## 📄 Lisensi
+## 👨‍💻 Pembuat & Pengembang (Author)
 
-Proyek ini dilisensikan di bawah [Non-Commercial Software License](LICENSE). 
+Dikembangkan dengan dedikasi untuk kemajuan pendidikan inklusi dan Sekolah Luar Biasa (SLB) oleh:
+- **Muhammad Anas Yusuf** ([@anasysuf](https://github.com/anasysuf))
 
-- ✅ **Diizinkan**: Penggunaan gratis untuk sekolah luar biasa (SLB), yayasan nirlaba, guru, terapis, orang tua, dan tujuan riset/edukasi tanpa memungut biaya komersial.
-- ❌ **Dilarang**: Penggunaan untuk tujuan komersial, monetisasi, penjualan ulang (*reselling*), hosting SaaS berbayar, atau keuntungan finansial lainnya tanpa izin tertulis dari pemilik hak cipta.
+---
+
+## 📄 Lisensi (License)
+
+Hak Cipta © 2026 **Muhammad Anas Yusuf**. Seluruh hak cipta dilindungi undang-undang.
+
+Proyek ini dilisensikan di bawah [Non-Commercial Software License (Lisensi Non-Komersial)](LICENSE).
+
+- ✅ **Diizinkan (Permitted)**: Penggunaan gratis untuk sekolah luar biasa (SLB), yayasan nirlaba, guru, terapis, orang tua, dan tujuan riset/edukasi tanpa memungut biaya komersial.
+- ❌ **Dilarang (Prohibited)**: Penggunaan untuk tujuan komersial, monetisasi, penjualan ulang (*reselling*), hosting SaaS berbayar, atau keuntungan finansial lainnya tanpa izin tertulis dari pemegang hak cipta (**Muhammad Anas Yusuf**).

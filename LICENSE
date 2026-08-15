@@ -1,6 +1,44 @@
-NON-COMMERCIAL SOFTWARE LICENSE
+LISENSI PERANGKAT LUNAK NON-KOMERSIAL (NON-COMMERCIAL SOFTWARE LICENSE)
 
-Copyright (c) 2026 slbApp Contributors. All rights reserved.
+Hak Cipta (c) 2026 Muhammad Anas Yusuf. Hak cipta dilindungi undang-undang.
+Copyright (c) 2026 Muhammad Anas Yusuf. All rights reserved.
+
+================================================================================
+VERSI BAHASA INDONESIA (INDONESIAN VERSION)
+================================================================================
+
+Dengan ini izin diberikan secara cuma-cuma kepada siapa pun yang memperoleh salinan
+perangkat lunak ini dan berkas dokumentasi terkait ("Perangkat Lunak"), untuk
+menggunakan, menyalin, mempelajari, memodifikasi, dan mendistribusikan Perangkat Lunak
+HANYA UNTUK TUJUAN NON-KOMERSIAL, PENDIDIKAN, SOSIAL, DAN PENELITIAN, dengan tunduk
+pada ketentuan berikut:
+
+1. PEMBATASAN PENGGUNAAN NON-KOMERSIAL:
+   Perangkat Lunak ini beserta seluruh karya turunannya TIDAK BOLEH digunakan, baik secara
+   langsung maupun tidak langsung, untuk tujuan komersial, monetisasi, penjualan kembali
+   (reselling), penyediaan layanan SaaS berbayar, distribusi komersial, atau aktivitas
+   apa pun yang bertujuan utama untuk memperoleh keuntungan finansial atau kompensasi
+   moneter tanpa izin tertulis dari pemegang hak cipta (Muhammad Anas Yusuf).
+
+2. PENGGUNAAN PENDIDIKAN & NIRLABA:
+   Penggunaan oleh sekolah luar biasa (SLB), sekolah inklusi, yayasan pendidikan nirlaba,
+   pusat terapi anak, peneliti, pendidik, guru, dan orang tua murid untuk tujuan
+   pembelajaran, amal, dan kemanusiaan tanpa memungut biaya adalah DIIZINKAN.
+
+3. ATRIBUSI:
+   Pemberitahuan hak cipta di atas dan pemberitahuan izin ini wajib disertakan dalam
+   semua salinan atau bagian penting dari Perangkat Lunak.
+
+4. PENAFIAN JAMINAN (NO WARRANTY):
+   PERANGKAT LUNAK INI DISEDIAKAN "SEBAGAIMANA ADANYA", TANPA JAMINAN DALAM BENTUK APA PUN,
+   BAIK TERSURAT MAUPUN TERSIRAT, TERMASUK NAMUN TIDAK TERBATAS PADA JAMINAN KELAYAKAN
+   JUAL, KESESUAIAN UNTUK TUJUAN TERTENTU, DAN KETIDAKPELANGGARAN. DALAM KONDISI APA PUN,
+   PENULIS ATAU PEMEGANG HAK CIPTA TIDAK BERTANGGUNG JAWAB ATAS KLAIM, KERUGIAN, ATAU
+   KEWAJIBAN LAINNYA YANG TIMBUL DARI PENGGUNAAN PERANGKAT LUNAK INI.
+
+================================================================================
+ENGLISH VERSION (VERSI BAHASA INGGRIS)
+================================================================================
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to use,
@@ -11,12 +49,13 @@ AND RESEARCH PURPOSES ONLY, subject to the following conditions:
    The Software and any derivative works MAY NOT be used, directly or indirectly,
    for commercial purposes, monetization, resale, paid SaaS hosting, commercial
    distribution, or any activities primarily intended for commercial advantage
-   or monetary compensation.
+   or monetary compensation without prior written permission from the copyright
+   holder (Muhammad Anas Yusuf).
 
 2. EDUCATIONAL & NON-PROFIT USE:
-   Use by public schools, non-profit special education foundations (SLB),
-   therapists, researchers, teachers, and parents for educational and charitable
-   purposes without charging fees is explicitly permitted and encouraged.
+   Use by special education schools (SLB), non-profit foundations, therapy centers,
+   researchers, teachers, and parents for educational and charitable purposes
+   without charging fees is explicitly permitted and encouraged.
 
 3. ATTRIBUTION:
    The above copyright notice and this permission notice shall be included in all
