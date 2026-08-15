@@ -21,16 +21,12 @@ export async function GET(req: Request) {
     const semester = searchParams.get("semester") || "Ganjil";
     const requestedClassId = searchParams.get("classId");
 
-    // Fetch active foundation info for Kop Surat & default periods
-    const foundation = await prisma.foundation.findFirst({
-      where: foundationId ? { id: foundationId } : undefined,
-    });
-
     let targetClassIds: string[] = [];
 
     if (role === "GURU") {
       const teacherClass = await prisma.class.findFirst({
         where: { teacherId: userId },
+        select: { id: true },
       });
       if (teacherClass) {
         targetClassIds = [teacherClass.id];
@@ -51,52 +47,64 @@ export async function GET(req: Request) {
       };
     }
 
-    // Fetch students with all assessments, PPI plans, and journals in the given period
-    const students = await prisma.student.findMany({
-      where: studentWhere,
-      include: {
-        parent: {
-          select: { id: true, name: true, phone: true, email: true },
-        },
-        classes: {
-          include: {
-            class: {
-              include: {
-                teacher: {
-                  select: { id: true, name: true, email: true },
+    // Run Foundation info, Classes list, and Students queries in parallel
+    const [foundation, allClasses, students] = await Promise.all([
+      prisma.foundation.findFirst({
+        where: foundationId ? { id: foundationId } : undefined,
+        select: { id: true, name: true, code: true, address: true, phone: true, logo: true },
+      }),
+      role === "ADMIN" || role === "YAYASAN"
+        ? prisma.class.findMany({
+            select: { id: true, name: true, jenjang: true, teacher: { select: { name: true } } },
+            orderBy: { name: "asc" },
+          })
+        : Promise.resolve([]),
+      prisma.student.findMany({
+        where: studentWhere,
+        include: {
+          parent: {
+            select: { id: true, name: true, phone: true, email: true },
+          },
+          classes: {
+            include: {
+              class: {
+                include: {
+                  teacher: {
+                    select: { id: true, name: true, email: true },
+                  },
                 },
               },
             },
           },
-        },
-        assessments: {
-          where: {
-            academicYear: academicYear,
-            semester: semester,
+          assessments: {
+            where: {
+              academicYear: academicYear,
+              semester: semester,
+            },
+            orderBy: { createdAt: "desc" },
           },
-          orderBy: { createdAt: "desc" },
-        },
-        ppiPlans: {
-          where: {
-            academicYear: academicYear,
-            ...(semester ? { semester: semester } : {}),
-          },
-          include: {
-            evaluations: {
-              orderBy: { evaluationDate: "desc" },
+          ppiPlans: {
+            where: {
+              academicYear: academicYear,
+              ...(semester ? { semester: semester } : {}),
+            },
+            include: {
+              evaluations: {
+                orderBy: { evaluationDate: "desc" },
+              },
             },
           },
-        },
-        dailyJournals: {
-          where: {
-            academicYear: academicYear,
-            semester: semester,
+          dailyJournals: {
+            where: {
+              academicYear: academicYear,
+              semester: semester,
+            },
+            orderBy: { date: "desc" },
           },
-          orderBy: { date: "desc" },
         },
-      },
-      orderBy: { name: "asc" },
-    });
+        orderBy: { name: "asc" },
+      }),
+    ]);
 
     // Compute student recap analytics
     let totalMandiriCount = 0;
@@ -260,15 +268,6 @@ export async function GET(req: Request) {
     // Available academic years and semesters in system
     const availableAcademicYears = ["2026/2027", "2025/2026", "2024/2025"];
     const availableSemesters = ["Ganjil", "Genap"];
-
-    // Fetch classes for filter dropdown (if Admin / Yayasan)
-    const allClasses =
-      role === "ADMIN" || role === "YAYASAN"
-        ? await prisma.class.findMany({
-            select: { id: true, name: true, jenjang: true, teacher: { select: { name: true } } },
-            orderBy: { name: "asc" },
-          })
-        : [];
 
     return NextResponse.json({
       period: {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import Link from "next/link";
@@ -183,11 +183,14 @@ export default function GuruStudentManagementPage() {
     setParentId("");
   };
 
-  const filteredStudents = students.filter((s) => {
-    const matchSearch = s.name.toLowerCase().includes(search.toLowerCase()) || s.nisn.includes(search);
-    const matchDisability = selectedDisability === "SEMUA" || s.disabilityType === selectedDisability;
-    return matchSearch && matchDisability;
-  });
+  const filteredStudents = useMemo(() => {
+    const q = search.toLowerCase().trim();
+    return students.filter((s) => {
+      const matchSearch = !q || s.name?.toLowerCase().includes(q) || s.nisn?.includes(q);
+      const matchDisability = selectedDisability === "SEMUA" || s.disabilityType === selectedDisability;
+      return matchSearch && matchDisability;
+    });
+  }, [students, search, selectedDisability]);
 
   return (
     <div className="flex min-h-screen bg-slate-50">

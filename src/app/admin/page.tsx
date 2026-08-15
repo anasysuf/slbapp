@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense, useRef } from "react";
+import { useState, useEffect, Suspense, useRef, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Sidebar from "@/components/Sidebar";
@@ -611,29 +611,38 @@ function AdminDashboardContent() {
     }
   };
 
-  const parents = users.filter((u) => u.role === "ORANG_TUA");
-  const teachers = users.filter((u) => u.role === "GURU");
-  const yayasanUsers = users.filter((u) => u.role === "YAYASAN");
-  const adminUsers = users.filter((u) => u.role === "ADMIN");
+  const parents = useMemo(() => users.filter((u) => u.role === "ORANG_TUA"), [users]);
+  const teachers = useMemo(() => users.filter((u) => u.role === "GURU"), [users]);
+  const yayasanUsers = useMemo(() => users.filter((u) => u.role === "YAYASAN"), [users]);
+  const adminUsers = useMemo(() => users.filter((u) => u.role === "ADMIN"), [users]);
 
-  const filteredStudents = students.filter(
-    (s) =>
-      s.name.toLowerCase().includes(searchStudent.toLowerCase()) ||
-      s.nisn.includes(searchStudent) ||
-      s.disabilityType.toLowerCase().includes(searchStudent.toLowerCase())
-  );
+  const filteredStudents = useMemo(() => {
+    const q = searchStudent.toLowerCase().trim();
+    if (!q) return students;
+    return students.filter(
+      (s) =>
+        s.name?.toLowerCase().includes(q) ||
+        s.nisn?.includes(q) ||
+        s.disabilityType?.toLowerCase().includes(q)
+    );
+  }, [students, searchStudent]);
 
-  const filteredUsers = users.filter((u) => {
-    const matchesRole = userRoleFilter === "SEMUA" || u.role === userRoleFilter;
-    const matchesSearch =
-      u.name?.toLowerCase().includes(searchUser.toLowerCase()) ||
-      u.email?.toLowerCase().includes(searchUser.toLowerCase()) ||
-      u.role?.toLowerCase().includes(searchUser.toLowerCase()) ||
-      u.phone?.includes(searchUser) ||
-      u.classesTaught?.some((c: any) => c.name?.toLowerCase().includes(searchUser.toLowerCase())) ||
-      u.students?.some((s: any) => s.name?.toLowerCase().includes(searchUser.toLowerCase()));
-    return matchesRole && matchesSearch;
-  });
+  const filteredUsers = useMemo(() => {
+    const q = searchUser.toLowerCase().trim();
+    return users.filter((u) => {
+      const matchesRole = userRoleFilter === "SEMUA" || u.role === userRoleFilter;
+      if (!matchesRole) return false;
+      if (!q) return true;
+      return (
+        u.name?.toLowerCase().includes(q) ||
+        u.email?.toLowerCase().includes(q) ||
+        u.role?.toLowerCase().includes(q) ||
+        u.phone?.includes(q) ||
+        u.classesTaught?.some((c: any) => c.name?.toLowerCase().includes(q)) ||
+        u.students?.some((s: any) => s.name?.toLowerCase().includes(q))
+      );
+    });
+  }, [users, userRoleFilter, searchUser]);
 
   const openAddUserWithRole = (rolePreset?: string) => {
     setUserName("");

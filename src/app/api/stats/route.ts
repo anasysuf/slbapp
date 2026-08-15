@@ -37,7 +37,7 @@ export async function GET() {
         totalClasses,
         totalPpiPlans,
         totalAssessments,
-        evaluations,
+        evaluationGroups,
         studentsByDisability,
         classes,
       ] = await Promise.all([
@@ -53,13 +53,16 @@ export async function GET() {
             student: teacherStudentWhere,
           },
         }),
-        prisma.ppiEvaluation.findMany({
+        prisma.ppiEvaluation.groupBy({
+          by: ["score"],
           where: {
             ppiPlan: {
               student: teacherStudentWhere,
             },
           },
-          select: { score: true },
+          _count: {
+            score: true,
+          },
         }),
         prisma.student.groupBy({
           by: ["disabilityType"],
@@ -70,20 +73,30 @@ export async function GET() {
         }),
         prisma.class.findMany({
           where: { teacherId: userId },
-          include: {
+          select: {
+            id: true,
+            name: true,
+            jenjang: true,
             teacher: { select: { name: true } },
             _count: { select: { students: true } },
           },
         }),
       ]);
 
+      const scoreMap: Record<string, number> = {};
+      let totalEvaluations = 0;
+      evaluationGroups.forEach((g) => {
+        scoreMap[g.score] = g._count.score;
+        totalEvaluations += g._count.score;
+      });
+
       const scoreStats = {
-        MANDIRI: evaluations.filter((e) => e.score === Score.MANDIRI).length,
-        DENGAN_BANTUAN: evaluations.filter((e) => e.score === Score.DENGAN_BANTUAN).length,
-        BELUM_MAMPU: evaluations.filter((e) => e.score === Score.BELUM_MAMPU).length,
+        MANDIRI: scoreMap[Score.MANDIRI] || 0,
+        DENGAN_BANTUAN: scoreMap[Score.DENGAN_BANTUAN] || 0,
+        BELUM_MAMPU: scoreMap[Score.BELUM_MAMPU] || 0,
       };
 
-      const totalEvals = evaluations.length || 1;
+      const totalEvals = totalEvaluations || 1;
       const independenceRate = Math.round((scoreStats.MANDIRI / totalEvals) * 100);
 
       return NextResponse.json({
@@ -107,7 +120,7 @@ export async function GET() {
       totalClasses,
       totalPpiPlans,
       totalAssessments,
-      evaluations,
+      evaluationGroups,
       studentsByDisability,
       classes,
     ] = await Promise.all([
@@ -132,7 +145,8 @@ export async function GET() {
             }
           : {},
       }),
-      prisma.ppiEvaluation.findMany({
+      prisma.ppiEvaluation.groupBy({
+        by: ["score"],
         where: foundationId
           ? {
               ppiPlan: {
@@ -142,7 +156,9 @@ export async function GET() {
               },
             }
           : {},
-        select: { score: true },
+        _count: {
+          score: true,
+        },
       }),
       prisma.student.groupBy({
         by: ["disabilityType"],
@@ -153,21 +169,30 @@ export async function GET() {
       }),
       prisma.class.findMany({
         where: whereFoundation,
-        include: {
+        select: {
+          id: true,
+          name: true,
+          jenjang: true,
           teacher: { select: { name: true } },
           _count: { select: { students: true } },
         },
       }),
     ]);
 
-    // Calculate score distribution
+    const scoreMap: Record<string, number> = {};
+    let totalEvaluations = 0;
+    evaluationGroups.forEach((g) => {
+      scoreMap[g.score] = g._count.score;
+      totalEvaluations += g._count.score;
+    });
+
     const scoreStats = {
-      MANDIRI: evaluations.filter((e) => e.score === Score.MANDIRI).length,
-      DENGAN_BANTUAN: evaluations.filter((e) => e.score === Score.DENGAN_BANTUAN).length,
-      BELUM_MAMPU: evaluations.filter((e) => e.score === Score.BELUM_MAMPU).length,
+      MANDIRI: scoreMap[Score.MANDIRI] || 0,
+      DENGAN_BANTUAN: scoreMap[Score.DENGAN_BANTUAN] || 0,
+      BELUM_MAMPU: scoreMap[Score.BELUM_MAMPU] || 0,
     };
 
-    const totalEvals = evaluations.length || 1;
+    const totalEvals = totalEvaluations || 1;
     const independenceRate = Math.round((scoreStats.MANDIRI / totalEvals) * 100);
 
     return NextResponse.json({
