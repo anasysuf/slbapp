@@ -111,11 +111,15 @@ Gunakan akun berikut untuk menguji masing-masing hak akses:
 
 | Peran (Role) | Email | Password | Hak Akses Utama |
 | :--- | :--- | :--- | :--- |
-| **Super Admin** | `admin@slb.sch.id` | `slb123` | Master data sekolah, users, kelas, mapel, & audit logs |
-| **Guru Kelas** | `siti@slb.sch.id` | `slb123` | Asesmen diagnostik, target PPI, buku penghubung, & rekap |
-| **Guru Kelas** | `budi@slb.sch.id` | `slb123` | Pengampu rombel SDLB Autisme |
-| **Orang Tua** | `ayah.farhan@gmail.com` | `slb123` | Pantauan ananda Farhan, radar perkembangan, & buku penghubung |
-| **Yayasan** | `pimpinan@yayasan.org` | `slb123` | Dashboard eksekutif pimpinan & ekspor laporan menyeluruh |
+| **Super Admin** | `admin@slb.sch.id` | `admin123` | Master data sekolah, users, kelas, mapel, & audit logs |
+| **Guru Kelas 1** | `guru@slb.sch.id` | `guru123` | Asesmen diagnostik, target PPI, buku penghubung, & rekap |
+| **Guru Kelas 2** | `guru2@slb.sch.id` | `guru123` | Asesmen diagnostik, target PPI, buku penghubung, & rekap |
+| **Guru Kelas 3** | `guru3@slb.sch.id` | `guru123` | Asesmen diagnostik, target PPI, buku penghubung, & rekap |
+| **Guru Kelas 4** | `guru4@slb.sch.id` | `guru123` | Asesmen diagnostik, target PPI, buku penghubung, & rekap |
+| **Orang Tua 1** | `ortu@slb.sch.id` | `ortu123` | Pantauan ananda Farhan, radar perkembangan, & buku penghubung |
+| **Orang Tua 2** | `ortu2@slb.sch.id` | `ortu123` | Pantauan ananda Farhan, radar perkembangan, & buku penghubung |
+| **Orang Tua 3** | `ortu3@slb.sch.id` | `ortu123` | Pantauan ananda Farhan, radar perkembangan, & buku penghubung |
+| **Yayasan** | `pimpinan@yayasan.org` | `yayasan123` | Dashboard eksekutif pimpinan & ekspor laporan menyeluruh |
 
 ---
 
