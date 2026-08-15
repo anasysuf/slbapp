@@ -34,7 +34,7 @@ async function main() {
       name: "Yayasan Pendidikan Luar Biasa Harapan Mulia",
       code: "NPSN-20109988",
       address: "Jl. Pendidikan Inklusi No. 45, Kota Bandung, Jawa Barat",
-      phone: "022-78901234 / 0812-3456-7890",
+      phone: "6280000000000",
       logo: "🏫",
       academicYear: "2026/2027",
       semester: "Ganjil",
@@ -46,7 +46,7 @@ async function main() {
       name: "Yayasan Kasih Inklusi Nusantara",
       code: "NPSN-20107755",
       address: "Jl. Raya Inklusif No. 12, Jakarta Selatan, DKI Jakarta",
-      phone: "021-88990011",
+      phone: "6280000000000",
       logo: "🌟",
       academicYear: "2026/2027",
       semester: "Ganjil",
@@ -62,7 +62,7 @@ async function main() {
       email: "admin@slb.sch.id",
       passwordHash: defaultPassword,
       role: Role.ADMIN,
-      phone: "081234567890",
+      phone: "6280000000000",
       foundationId: yayasanHarapan.id,
     },
   });
@@ -73,7 +73,7 @@ async function main() {
       email: "yayasan@slb.sch.id",
       passwordHash: yayasanPassword,
       role: Role.YAYASAN,
-      phone: "081298765432",
+      phone: "6280000000000",
       foundationId: yayasanHarapan.id,
     },
   });
@@ -85,7 +85,7 @@ async function main() {
       email: "guru@slb.sch.id",
       passwordHash: teacherPassword,
       role: Role.GURU,
-      phone: "081345678901",
+      phone: "6280000000000",
       foundationId: yayasanHarapan.id,
     },
   });
@@ -96,7 +96,7 @@ async function main() {
       email: "guru2@slb.sch.id",
       passwordHash: teacherPassword,
       role: Role.GURU,
-      phone: "081398761234",
+      phone: "6280000000000",
       foundationId: yayasanHarapan.id,
     },
   });
@@ -107,7 +107,7 @@ async function main() {
       email: "guru3@slb.sch.id",
       passwordHash: teacherPassword,
       role: Role.GURU,
-      phone: "081355443322",
+      phone: "6280000000000",
       foundationId: yayasanHarapan.id,
     },
   });
@@ -118,7 +118,7 @@ async function main() {
       email: "guru4@slb.sch.id",
       passwordHash: teacherPassword,
       role: Role.GURU,
-      phone: "081366778899",
+      phone: "6280000000000",
       foundationId: yayasanHarapan.id,
     },
   });
@@ -131,7 +131,7 @@ async function main() {
       email: "ortu@slb.sch.id",
       passwordHash: parentPassword,
       role: Role.ORANG_TUA,
-      phone: "085211223344",
+      phone: "6280000000000",
       foundationId: yayasanHarapan.id,
     },
   });
@@ -143,7 +143,7 @@ async function main() {
       email: "ortu2@slb.sch.id",
       passwordHash: parentPassword,
       role: Role.ORANG_TUA,
-      phone: "085299887766",
+      phone: "6280000000000",
       foundationId: yayasanHarapan.id,
     },
   });
@@ -155,7 +155,7 @@ async function main() {
       email: "ortu3@slb.sch.id",
       passwordHash: parentPassword,
       role: Role.ORANG_TUA,
-      phone: "085277665544",
+      phone: "6280000000000",
       foundationId: yayasanHarapan.id,
     },
   });
@@ -167,7 +167,7 @@ async function main() {
       email: "ortu4@slb.sch.id",
       passwordHash: parentPassword,
       role: Role.ORANG_TUA,
-      phone: "085233445566",
+      phone: "6280000000000",
       foundationId: yayasanHarapan.id,
     },
   });

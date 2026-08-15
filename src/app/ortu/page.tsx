@@ -199,7 +199,7 @@ export default function OrtuDashboard() {
   const teacherPhone = teacherObj?.phone;
 
   const formatWhatsAppPhone = (phone?: string | null) => {
-    if (!phone) return "6281345678901";
+    if (!phone) return "6280000000000";
     let cleaned = phone.replace(/[^0-9]/g, "");
     if (cleaned.startsWith("0")) {
       cleaned = "62" + cleaned.slice(1);
