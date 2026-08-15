@@ -51,19 +51,16 @@ function LoginContent() {
       if (res?.error) {
         setError("Email atau kata sandi tidak valid. Coba gunakan tombol akun demo di bawah.");
       } else {
-        if (loginEmail.includes("admin")) {
-          router.push("/admin");
-        } else if (loginEmail.includes("yayasan")) {
-          router.push("/yayasan");
-        } else if (loginEmail.includes("ortu")) {
-          router.push("/ortu");
-        } else {
-          router.push("/guru");
-        }
-        router.refresh();
+        let dest = "/guru";
+        const emailLower = loginEmail.toLowerCase().trim();
+        if (emailLower.includes("admin")) dest = "/admin";
+        else if (emailLower.includes("yayasan")) dest = "/yayasan";
+        else if (emailLower.includes("ortu")) dest = "/ortu";
+
+        window.location.href = dest;
       }
     } catch (err: any) {
-      setError("Terjadi kesalahan saat masuk ke sistem.");
+      setError("Terjadi kesalahan saat masuk ke sistem: " + (err.message || ""));
     } finally {
       setLoading(false);
     }
@@ -185,7 +182,9 @@ function LoginContent() {
 
                 <div className="space-y-2.5">
                   <button
-                    onClick={() => router.push(getDashboardUrl())}
+                    onClick={() => {
+                      window.location.href = getDashboardUrl();
+                    }}
                     className="w-full py-3.5 bg-gradient-to-r from-teal-700 to-emerald-700 hover:from-teal-800 hover:to-emerald-800 text-white font-bold text-sm rounded-2xl shadow-lg shadow-teal-700/25 transition-all flex items-center justify-center gap-2"
                   >
                     <span>Lanjutkan ke Dashboard ({session.user.name?.split(" ")[0]})</span>
