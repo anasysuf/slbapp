@@ -23,6 +23,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import { useSidebar } from "@/context/SidebarContext";
+import EnvironmentBadge from "@/components/EnvironmentBadge";
 
 function SidebarNavList({ onItemClick }: { onItemClick?: () => void }) {
   const pathname = usePathname();
@@ -174,10 +175,13 @@ export default function Sidebar() {
           </svg>
           <span>WhatsApp Contact Me</span>
         </a>
-        <div className="text-center text-[10px] text-slate-400 font-medium flex items-center justify-center gap-1">
-          <span>Made with</span>
-          <span className="text-rose-400">❤️</span>
-          <span>in Malang</span>
+        <div className="flex items-center justify-between pt-1">
+          <EnvironmentBadge />
+          <div className="text-[10px] text-slate-400 font-medium flex items-center gap-1">
+            <span>Made with</span>
+            <span className="text-rose-400">❤️</span>
+            <span>in Malang</span>
+          </div>
         </div>
       </div>
     </div>
