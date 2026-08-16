@@ -24,6 +24,7 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
+import EnvironmentBadge from "@/components/EnvironmentBadge";
 
 function LoginContent() {
   const router = useRouter();
@@ -161,7 +162,10 @@ function LoginContent() {
 
             {/* Footer Left */}
             <div className="pt-6 border-t border-teal-800/60 mt-6 text-[11px] text-teal-300/80 flex items-center justify-between">
-              <span>Versi 2.0 Inklusif</span>
+              <div className="flex items-center gap-2">
+                <span>Versi 2.0 Inklusif</span>
+                <EnvironmentBadge />
+              </div>
               <span>© 2026 Yayasan SLB</span>
             </div>
           </div>
