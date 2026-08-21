@@ -5,8 +5,9 @@ import prisma from "@/lib/prisma";
 import { logActivity } from "@/lib/activityLog";
 import { createNotification } from "@/lib/notifications";
 
-export const dynamic = "force-dynamic";
+import { sanitizeString, sanitizeTextarea } from "@/lib/sanitize";
 
+export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   try {
@@ -17,6 +18,7 @@ export async function GET(req: Request) {
 
     const role = (session.user as any).role;
     const userId = (session.user as any).id;
+    const foundationId = (session.user as any).foundationId;
 
     const { searchParams } = new URL(req.url);
     const studentId = searchParams.get("studentId");
@@ -25,9 +27,18 @@ export async function GET(req: Request) {
     const where: any = {};
     if (studentId) where.studentId = studentId;
 
+    // Foundation scope for Admin / Yayasan
+    if (foundationId && (role === "ADMIN" || role === "YAYASAN")) {
+      where.student = {
+        ...where.student,
+        foundationId,
+      };
+    }
+
     // Isolate data for teachers
     if (role === "GURU") {
       where.student = {
+        ...where.student,
         classes: {
           some: {
             class: {
@@ -39,6 +50,7 @@ export async function GET(req: Request) {
       };
     } else if (classId && classId !== "SEMUA") {
       where.student = {
+        ...where.student,
         classes: {
           some: {
             classId: classId,
@@ -50,6 +62,7 @@ export async function GET(req: Request) {
     // Isolate data for parents
     if (role === "ORANG_TUA") {
       where.student = {
+        ...where.student,
         parentId: userId,
       };
     }
@@ -118,7 +131,14 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { studentId, mood, healthCondition, eatingNote, learningActivity, photoUrl, parentFeedback } = body;
 
-    if (!studentId || !mood || (!learningActivity && !parentFeedback)) {
+    const cleanMood = sanitizeString(mood);
+    const cleanHealth = healthCondition ? sanitizeString(healthCondition) : "Sehat bugar";
+    const cleanEating = eatingNote ? sanitizeString(eatingNote) : "Makan mandiri";
+    const cleanLearning = learningActivity ? sanitizeTextarea(learningActivity) : `Kabar dan catatan aktivitas harian dari rumah oleh ${authorName}`;
+    const cleanPhotoUrl = photoUrl ? sanitizeString(photoUrl) : null;
+    const cleanParentFeedback = parentFeedback ? sanitizeTextarea(parentFeedback) : (role === "ORANG_TUA" ? (cleanLearning || "Kabar dari rumah telah dikirim.") : null);
+
+    if (!studentId || !cleanMood || (!learningActivity && !parentFeedback)) {
       return NextResponse.json({ error: "Siswa, suasana hati (mood), dan catatan aktivitas/kabar wajib diisi" }, { status: 400 });
     }
 
@@ -180,12 +200,12 @@ export async function POST(req: Request) {
         authorId: userId,
         authorName: authorName,
         authorRole: role,
-        mood: mood.trim(),
-        healthCondition: healthCondition ? healthCondition.trim() : "Sehat bugar",
-        eatingNote: eatingNote ? eatingNote.trim() : "Makan mandiri",
-        learningActivity: learningActivity ? learningActivity.trim() : `Kabar dan catatan aktivitas harian dari rumah oleh ${authorName}`,
-        photoUrl: photoUrl ? photoUrl.trim() : null,
-        parentFeedback: parentFeedback ? parentFeedback.trim() : (role === "ORANG_TUA" ? (learningActivity || "Kabar dari rumah telah dikirim.") : null),
+        mood: cleanMood,
+        healthCondition: cleanHealth,
+        eatingNote: cleanEating,
+        learningActivity: cleanLearning,
+        photoUrl: cleanPhotoUrl,
+        parentFeedback: cleanParentFeedback,
       },
       include: {
         student: true,

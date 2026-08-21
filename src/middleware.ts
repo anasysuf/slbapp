@@ -43,8 +43,11 @@ export default withAuth(
     },
     callbacks: {
       authorized: ({ token, req }) => {
-        // Izinkan publik mengakses /login
-        if (req.nextUrl.pathname === "/login") return true;
+        const path = req.nextUrl.pathname;
+        // Izinkan publik mengakses /login, /api/auth, /api/health
+        if (path === "/login" || path.startsWith("/api/auth") || path === "/api/health") {
+          return true;
+        }
         // Rute lainnya wajib memiliki token aktif
         return !!token;
       },
@@ -53,5 +56,12 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/admin/:path*", "/yayasan/:path*", "/guru/:path*", "/ortu/:path*", "/dashboard/:path*"],
+  matcher: [
+    "/admin/:path*",
+    "/yayasan/:path*",
+    "/guru/:path*",
+    "/ortu/:path*",
+    "/dashboard/:path*",
+    "/api/((?!auth|health).*)",
+  ],
 };

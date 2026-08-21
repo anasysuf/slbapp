@@ -5,6 +5,8 @@ import prisma from "@/lib/prisma";
 import { Jenjang } from "@prisma/client";
 import { logActivity } from "@/lib/activityLog";
 
+import { sanitizeString } from "@/lib/sanitize";
+
 export const dynamic = "force-dynamic";
 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
@@ -15,6 +17,8 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     }
 
     const role = (session.user as any).role;
+    const adminFoundationId = (session.user as any).foundationId;
+
     if (role !== "ADMIN") {
       return NextResponse.json({ error: "Hanya Admin yang dapat mengubah rombel kelas" }, { status: 403 });
     }
@@ -30,10 +34,17 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       return NextResponse.json({ error: "Kelas tidak ditemukan" }, { status: 404 });
     }
 
+    // Tenant foundation isolation
+    if (adminFoundationId && existing.foundationId && existing.foundationId !== adminFoundationId) {
+      return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat mengubah rombel kelas pada yayasan/lembaga Anda" }, { status: 403 });
+    }
+
+    const cleanName = name ? sanitizeString(name) : existing.name;
+
     const updated = await prisma.class.update({
       where: { id: params.id },
       data: {
-        name: name ? name.trim() : existing.name,
+        name: cleanName,
         jenjang: jenjang ? (jenjang as Jenjang) : existing.jenjang,
         teacherId: teacherId !== undefined ? (teacherId || null) : existing.teacherId,
         foundationId: foundationId !== undefined ? (foundationId || null) : existing.foundationId,
@@ -67,6 +78,8 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     }
 
     const role = (session.user as any).role;
+    const adminFoundationId = (session.user as any).foundationId;
+
     if (role !== "ADMIN") {
       return NextResponse.json({ error: "Hanya Admin yang dapat menghapus rombel kelas" }, { status: 403 });
     }
@@ -77,6 +90,11 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
 
     if (!existingClass) {
       return NextResponse.json({ error: "Kelas tidak ditemukan" }, { status: 404 });
+    }
+
+    // Tenant foundation isolation
+    if (adminFoundationId && existingClass.foundationId && existingClass.foundationId !== adminFoundationId) {
+      return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat menghapus rombel kelas pada yayasan/lembaga Anda" }, { status: 403 });
     }
 
     // 1. Delete materials & assignments for this class

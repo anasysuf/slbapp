@@ -5,6 +5,8 @@ import prisma from "@/lib/prisma";
 import { Jenjang } from "@prisma/client";
 import { logActivity } from "@/lib/activityLog";
 
+import { sanitizeString } from "@/lib/sanitize";
+
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {
@@ -16,6 +18,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 
     const role = (session.user as any).role;
     const userId = (session.user as any).id;
+    const foundationId = (session.user as any).foundationId;
 
     const student = await prisma.student.findUnique({
       where: { id: params.id },
@@ -51,12 +54,17 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       },
     });
 
-
     if (!student) {
       return NextResponse.json({ error: "Siswa tidak ditemukan" }, { status: 404 });
     }
 
     // Role-based access checks
+    if (foundationId && (role === "ADMIN" || role === "YAYASAN")) {
+      if (student.foundationId && student.foundationId !== foundationId) {
+        return NextResponse.json({ error: "Akses ditolak: Siswa berada di luar yayasan Anda" }, { status: 403 });
+      }
+    }
+
     if (role === "GURU") {
       const isTeacherClass = student.classes.some((c) => c.class?.teacherId === userId);
       if (!isTeacherClass) {
@@ -83,6 +91,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
     const role = (session.user as any).role;
     const userId = (session.user as any).id;
+    const adminFoundationId = (session.user as any).foundationId;
 
     if (role !== "ADMIN" && role !== "GURU") {
       return NextResponse.json({ error: "Hanya Guru atau Admin yang dapat mengubah data siswa" }, { status: 403 });
@@ -105,6 +114,11 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       return NextResponse.json({ error: "Siswa tidak ditemukan" }, { status: 404 });
     }
 
+    // Foundation isolation
+    if (role === "ADMIN" && adminFoundationId && existing.foundationId && existing.foundationId !== adminFoundationId) {
+      return NextResponse.json({ error: "Akses ditolak: Siswa berada di luar yayasan Anda" }, { status: 403 });
+    }
+
     // Validate that GURU only updates their own students and assigns to their own classes
     if (role === "GURU") {
       const isEnrolledInTeacherClass = existing.classes.some((c) => c.class?.teacherId === userId);
@@ -122,13 +136,17 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       }
     }
 
+    const cleanName = name ? sanitizeString(name) : existing.name;
+    const cleanNisn = nisn ? sanitizeString(nisn) : existing.nisn;
+    const cleanDisability = disabilityType ? sanitizeString(disabilityType) : existing.disabilityType;
+
     // Update student data
     const updated = await prisma.student.update({
       where: { id: params.id },
       data: {
-        name: name ? name.trim() : existing.name,
-        nisn: nisn ? nisn.trim() : existing.nisn,
-        disabilityType: disabilityType ? disabilityType.trim() : existing.disabilityType,
+        name: cleanName,
+        nisn: cleanNisn,
+        disabilityType: cleanDisability,
         jenjang: jenjang ? (jenjang as Jenjang) : existing.jenjang,
         gender: gender || existing.gender,
         parentId: parentId !== undefined ? (parentId || null) : existing.parentId,
@@ -176,6 +194,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
 
     const role = (session.user as any).role;
     const userId = (session.user as any).id;
+    const adminFoundationId = (session.user as any).foundationId;
 
     if (role !== "ADMIN" && role !== "GURU") {
       return NextResponse.json({ error: "Hanya Guru atau Admin yang dapat menghapus data siswa" }, { status: 403 });
@@ -194,6 +213,11 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
 
     if (!student) {
       return NextResponse.json({ error: "Siswa tidak ditemukan" }, { status: 404 });
+    }
+
+    // Foundation isolation
+    if (role === "ADMIN" && adminFoundationId && student.foundationId && student.foundationId !== adminFoundationId) {
+      return NextResponse.json({ error: "Akses ditolak: Siswa berada di luar yayasan Anda" }, { status: 403 });
     }
 
     if (role === "GURU") {

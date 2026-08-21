@@ -5,6 +5,8 @@ import prisma from "@/lib/prisma";
 import { Jenjang } from "@prisma/client";
 import { logActivity } from "@/lib/activityLog";
 
+import { sanitizeString } from "@/lib/sanitize";
+
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
@@ -145,13 +147,17 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { name, nisn, disabilityType, jenjang, parentId, gender, classId } = body;
 
-    if (!name || !nisn || !disabilityType) {
+    const cleanName = sanitizeString(name);
+    const cleanNisn = sanitizeString(nisn);
+    const cleanDisability = sanitizeString(disabilityType);
+
+    if (!cleanName || !cleanNisn || !cleanDisability) {
       return NextResponse.json({ error: "Nama, NISN, dan Jenis Disabilitas wajib diisi" }, { status: 400 });
     }
 
     // Check duplicate NISN
     const existing = await prisma.student.findUnique({
-      where: { nisn: nisn.trim() },
+      where: { nisn: cleanNisn },
     });
     if (existing) {
       return NextResponse.json({ error: "NISN sudah terdaftar pada siswa lain" }, { status: 400 });
@@ -174,12 +180,12 @@ export async function POST(req: Request) {
 
     const student = await prisma.student.create({
       data: {
-        name: name.trim(),
-        nisn: nisn.trim(),
-        disabilityType: disabilityType.trim(),
+        name: cleanName,
+        nisn: cleanNisn,
+        disabilityType: cleanDisability,
         jenjang: finalJenjang,
         parentId: parentId || null,
-        gender: gender || "L",
+        gender: gender === "P" ? "P" : "L",
         foundationId: userFoundationId || null,
         classes: finalClassId
           ? {

@@ -6,6 +6,8 @@ import { Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { logActivity } from "@/lib/activityLog";
 
+import { sanitizeString } from "@/lib/sanitize";
+
 export const dynamic = "force-dynamic";
 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
@@ -16,6 +18,8 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     }
 
     const currentRole = (session.user as any).role;
+    const adminFoundationId = (session.user as any).foundationId;
+
     if (currentRole !== "ADMIN" && currentRole !== "YAYASAN") {
       return NextResponse.json({ error: "Hanya Admin dan Pengurus Yayasan yang berwenang mengubah akun pengguna" }, { status: 403 });
     }
@@ -31,6 +35,11 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       return NextResponse.json({ error: "Pengguna tidak ditemukan" }, { status: 404 });
     }
 
+    // Tenant Foundation isolation
+    if (adminFoundationId && existing.foundationId && existing.foundationId !== adminFoundationId) {
+      return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat mengubah pengguna pada yayasan/lembaga Anda" }, { status: 403 });
+    }
+
     // Kebijakan Khusus Yayasan: Hanya boleh edit profil Guru, dan TIDAK BOLEH ubah password
     if (currentRole === "YAYASAN") {
       if (existing.role !== "GURU") {
@@ -41,16 +50,23 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       }
     }
 
+    const cleanName = name ? sanitizeString(name) : existing.name;
+    const cleanEmail = email ? email.toLowerCase().trim() : existing.email;
+    const cleanPhone = phone !== undefined ? (phone ? sanitizeString(phone) : null) : existing.phone;
+
     const updateData: any = {
-      name: name ? name.trim() : existing.name,
-      email: email ? email.toLowerCase().trim() : existing.email,
+      name: cleanName,
+      email: cleanEmail,
       role: currentRole === "ADMIN" && role ? (role as Role) : existing.role,
-      phone: phone !== undefined ? phone : existing.phone,
+      phone: cleanPhone,
       foundationId: foundationId !== undefined ? (foundationId || null) : existing.foundationId,
     };
 
     // Hanya Admin yang bisa mengubah password
     if (currentRole === "ADMIN" && password && password.trim().length > 0) {
+      if (password.trim().length < 6) {
+        return NextResponse.json({ error: "Kata sandi baru minimal 6 karakter" }, { status: 400 });
+      }
       updateData.passwordHash = await bcrypt.hash(password.trim(), 10);
     }
 
@@ -94,6 +110,8 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     }
 
     const currentRole = (session.user as any).role;
+    const adminFoundationId = (session.user as any).foundationId;
+
     if (currentRole !== "ADMIN") {
       return NextResponse.json({ error: "Hanya Admin yang berwenang menghapus akun pengguna" }, { status: 403 });
     }
@@ -109,6 +127,11 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
 
     if (!user) {
       return NextResponse.json({ error: "Pengguna tidak ditemukan" }, { status: 404 });
+    }
+
+    // Tenant isolation
+    if (adminFoundationId && user.foundationId && user.foundationId !== adminFoundationId) {
+      return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat menghapus pengguna pada yayasan/lembaga Anda" }, { status: 403 });
     }
 
     // 1. Unlink students if user is parent

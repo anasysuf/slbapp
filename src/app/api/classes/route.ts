@@ -5,6 +5,8 @@ import prisma from "@/lib/prisma";
 import { Jenjang } from "@prisma/client";
 import { logActivity } from "@/lib/activityLog";
 
+import { sanitizeString } from "@/lib/sanitize";
+
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
@@ -100,13 +102,15 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { name, jenjang, teacherId } = body;
 
-    if (!name || !name.trim()) {
+    const cleanName = sanitizeString(name);
+
+    if (!cleanName) {
       return NextResponse.json({ error: "Nama kelas wajib diisi" }, { status: 400 });
     }
 
     const newClass = await prisma.class.create({
       data: {
-        name: name.trim(),
+        name: cleanName,
         jenjang: jenjang ? (jenjang as Jenjang) : Jenjang.SDLB,
         teacherId: teacherId || null,
         foundationId: foundationId || null,

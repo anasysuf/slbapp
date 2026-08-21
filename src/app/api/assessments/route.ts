@@ -6,8 +6,9 @@ import { Score } from "@prisma/client";
 import { logActivity } from "@/lib/activityLog";
 import { createNotification } from "@/lib/notifications";
 
-export const dynamic = "force-dynamic";
+import { sanitizeString, sanitizeTextarea } from "@/lib/sanitize";
 
+export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   try {
@@ -18,6 +19,7 @@ export async function GET(req: Request) {
 
     const role = (session.user as any).role;
     const userId = (session.user as any).id;
+    const foundationId = (session.user as any).foundationId;
 
     const { searchParams } = new URL(req.url);
     const studentId = searchParams.get("studentId");
@@ -28,9 +30,18 @@ export async function GET(req: Request) {
     if (studentId) where.studentId = studentId;
     if (category) where.category = category;
 
+    // Foundation scope for Admin / Yayasan
+    if (foundationId && (role === "ADMIN" || role === "YAYASAN")) {
+      where.student = {
+        ...where.student,
+        foundationId,
+      };
+    }
+
     // Data isolation for teachers
     if (role === "GURU") {
       where.student = {
+        ...where.student,
         classes: {
           some: {
             class: {
@@ -42,6 +53,7 @@ export async function GET(req: Request) {
       };
     } else if (classId && classId !== "SEMUA") {
       where.student = {
+        ...where.student,
         classes: {
           some: {
             classId: classId,
@@ -53,6 +65,7 @@ export async function GET(req: Request) {
     // Data isolation for parents
     if (role === "ORANG_TUA") {
       where.student = {
+        ...where.student,
         parentId: userId,
       };
     }
@@ -113,7 +126,13 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { studentId, category, title, aspect, score, findings, recommendation } = body;
 
-    if (!studentId || !category || !title || !aspect || !score || !findings) {
+    const cleanTitle = sanitizeString(title);
+    const cleanAspect = sanitizeString(aspect);
+    const cleanFindings = sanitizeTextarea(findings);
+    const cleanRecommendation = recommendation ? sanitizeTextarea(recommendation) : null;
+    const cleanCategory = sanitizeString(category);
+
+    if (!studentId || !cleanCategory || !cleanTitle || !cleanAspect || !score || !cleanFindings) {
       return NextResponse.json({ error: "Semua kolom wajib diisi" }, { status: 400 });
     }
 
@@ -145,12 +164,12 @@ export async function POST(req: Request) {
       data: {
         studentId,
         teacherId,
-        category,
-        title: title.trim(),
-        aspect: aspect.trim(),
+        category: cleanCategory,
+        title: cleanTitle,
+        aspect: cleanAspect,
         score,
-        findings: findings.trim(),
-        recommendation: recommendation ? recommendation.trim() : null,
+        findings: cleanFindings,
+        recommendation: cleanRecommendation,
       },
       include: {
         student: true,
@@ -166,7 +185,7 @@ export async function POST(req: Request) {
       action: "ASSESSMENT",
       entity: "Assessment",
       entityId: assessment.id,
-      description: `Melakukan asesmen [${category} - ${assessment.aspect}] pada siswa ${assessment.student.name} dengan capaian ${score}`,
+      description: `Melakukan asesmen [${cleanCategory} - ${assessment.aspect}] pada siswa ${assessment.student.name} dengan capaian ${score}`,
       foundationId: assessment.student.foundationId,
     });
 
@@ -176,7 +195,7 @@ export async function POST(req: Request) {
       await createNotification({
         userId: assessment.student.parentId,
         title: `Asesmen Baru: ${assessment.student.name}`,
-        message: `Guru telah mencatat asesmen aspek "${assessment.aspect}" (${category}) dengan hasil ${scoreBadge}.`,
+        message: `Guru telah mencatat asesmen aspek "${assessment.aspect}" (${cleanCategory}) dengan hasil ${scoreBadge}.`,
         type: "ASSESSMENT",
         link: "/ortu",
       });
@@ -198,6 +217,8 @@ export async function DELETE(req: Request) {
     }
 
     const role = (session.user as any).role;
+    const userId = (session.user as any).id;
+
     if (role !== "GURU" && role !== "ADMIN") {
       return NextResponse.json({ error: "Akses ditolak: Hanya Guru atau Admin yang dapat menghapus asesmen" }, { status: 403 });
     }
@@ -211,11 +232,31 @@ export async function DELETE(req: Request) {
 
     const assessment = await prisma.assessment.findUnique({
       where: { id },
-      include: { student: true },
+      include: {
+        student: {
+          include: {
+            classes: {
+              include: {
+                class: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!assessment) {
       return NextResponse.json({ error: "Data asesmen tidak ditemukan" }, { status: 404 });
+    }
+
+    // Strict Authorization check for GURU
+    if (role === "GURU") {
+      const isCreator = assessment.teacherId === userId;
+      const isTeacherOfStudent = assessment.student.classes.some((c) => c.class?.teacherId === userId);
+
+      if (!isCreator && !isTeacherOfStudent) {
+        return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat menghapus asesmen yang Anda buat atau siswa kelas Anda" }, { status: 403 });
+      }
     }
 
     await prisma.assessment.delete({
@@ -224,7 +265,7 @@ export async function DELETE(req: Request) {
 
     // Log Activity
     await logActivity({
-      userId: (session.user as any).id,
+      userId: userId,
       userName: session.user.name || "Guru",
       userRole: role,
       action: "DELETE",

@@ -34,13 +34,12 @@ export const authOptions: NextAuthOptions = {
 
         if (!user) return null;
 
-        // Check password with bcrypt or plaintext fallback for seed convenience
-        let isValid = false;
-        if (user.passwordHash.startsWith("$2a$") || user.passwordHash.startsWith("$2b$")) {
-          isValid = await bcrypt.compare(credentials.password, user.passwordHash);
-        } else {
-          isValid = credentials.password === user.passwordHash;
+        // Check password strictly with bcrypt hash
+        if (!user.passwordHash || (!user.passwordHash.startsWith("$2a$") && !user.passwordHash.startsWith("$2b$"))) {
+          return null;
         }
+
+        const isValid = await bcrypt.compare(credentials.password, user.passwordHash);
 
         if (isValid) {
           return {

@@ -6,6 +6,8 @@ import { Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { logActivity } from "@/lib/activityLog";
 
+import { sanitizeString } from "@/lib/sanitize";
+
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
@@ -110,26 +112,34 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { name, email, password, role, phone } = body;
 
-    if (!name || !email || !password || !role) {
+    const cleanName = sanitizeString(name);
+    const cleanEmail = email ? email.toLowerCase().trim() : "";
+    const cleanPhone = phone ? sanitizeString(phone) : null;
+
+    if (!cleanName || !cleanEmail || !password || !role) {
       return NextResponse.json({ error: "Nama, email, kata sandi, dan role wajib diisi" }, { status: 400 });
     }
 
+    if (password.trim().length < 6) {
+      return NextResponse.json({ error: "Kata sandi minimal 6 karakter" }, { status: 400 });
+    }
+
     const existing = await prisma.user.findUnique({
-      where: { email: email.toLowerCase().trim() },
+      where: { email: cleanEmail },
     });
     if (existing) {
       return NextResponse.json({ error: "Email sudah digunakan oleh akun lain" }, { status: 400 });
     }
 
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await bcrypt.hash(password.trim(), 10);
 
     const user = await prisma.user.create({
       data: {
-        name: name.trim(),
-        email: email.toLowerCase().trim(),
+        name: cleanName,
+        email: cleanEmail,
         passwordHash,
         role: role as Role,
-        phone: phone ? phone.trim() : null,
+        phone: cleanPhone,
         foundationId: adminFoundationId || null,
       },
       select: {
