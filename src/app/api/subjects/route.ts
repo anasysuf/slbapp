@@ -3,10 +3,17 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
+import { sanitizeString, sanitizeTextarea } from "@/lib/sanitize";
+
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Akses ditolak: Anda belum terautentikasi" }, { status: 401 });
+    }
+
     const subjects = await prisma.subject.findMany({
       include: {
         _count: {
@@ -42,14 +49,17 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { name, description } = body;
 
-    if (!name || !name.trim()) {
+    const cleanName = sanitizeString(name);
+    const cleanDesc = description ? sanitizeTextarea(description) : null;
+
+    if (!cleanName) {
       return NextResponse.json({ error: "Nama mata pelajaran wajib diisi" }, { status: 400 });
     }
 
     const subject = await prisma.subject.create({
       data: {
-        name: name.trim(),
-        description: description ? description.trim() : null,
+        name: cleanName,
+        description: cleanDesc,
       },
     });
 

@@ -4,10 +4,17 @@ import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { logActivity } from "@/lib/activityLog";
 
+import { sanitizeString, sanitizeTextarea } from "@/lib/sanitize";
+
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Akses ditolak: Belum terautentikasi" }, { status: 401 });
+    }
+
     const foundations = await prisma.foundation.findMany({
       include: {
         _count: {
@@ -45,12 +52,17 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { name, code, address, phone } = body;
 
-    if (!name || !code) {
+    const cleanName = sanitizeString(name);
+    const cleanCode = sanitizeString(code).toUpperCase();
+    const cleanAddress = address ? sanitizeTextarea(address) : null;
+    const cleanPhone = phone ? sanitizeString(phone) : null;
+
+    if (!cleanName || !cleanCode) {
       return NextResponse.json({ error: "Nama yayasan dan kode unik wajib diisi" }, { status: 400 });
     }
 
     const existing = await prisma.foundation.findUnique({
-      where: { code: code.toUpperCase().trim() },
+      where: { code: cleanCode },
     });
     if (existing) {
       return NextResponse.json({ error: "Kode yayasan sudah terdaftar" }, { status: 400 });
@@ -58,10 +70,10 @@ export async function POST(req: Request) {
 
     const foundation = await prisma.foundation.create({
       data: {
-        name: name.trim(),
-        code: code.toUpperCase().trim(),
-        address: address ? address.trim() : null,
-        phone: phone ? phone.trim() : null,
+        name: cleanName,
+        code: cleanCode,
+        address: cleanAddress,
+        phone: cleanPhone,
       },
     });
 
@@ -110,16 +122,24 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "Data lembaga/sekolah tidak ditemukan" }, { status: 404 });
     }
 
+    const cleanName = name ? sanitizeString(name) : undefined;
+    const cleanCode = code ? sanitizeString(code).toUpperCase() : undefined;
+    const cleanAddress = address !== undefined ? (address ? sanitizeTextarea(address) : null) : undefined;
+    const cleanPhone = phone !== undefined ? (phone ? sanitizeString(phone) : null) : undefined;
+    const cleanLogo = logo !== undefined ? (logo ? sanitizeString(logo) : null) : undefined;
+    const cleanAcademicYear = academicYear !== undefined ? (academicYear ? sanitizeString(academicYear) : null) : undefined;
+    const cleanSemester = semester !== undefined ? (semester ? sanitizeString(semester) : null) : undefined;
+
     const updated = await prisma.foundation.update({
       where: { id: targetId },
       data: {
-        name: name ? name.trim() : undefined,
-        code: code ? code.toUpperCase().trim() : undefined,
-        address: address !== undefined ? (address ? address.trim() : null) : undefined,
-        phone: phone !== undefined ? (phone ? phone.trim() : null) : undefined,
-        logo: logo !== undefined ? (logo ? logo.trim() : null) : undefined,
-        academicYear: academicYear !== undefined ? (academicYear ? academicYear.trim() : null) : undefined,
-        semester: semester !== undefined ? (semester ? semester.trim() : null) : undefined,
+        name: cleanName,
+        code: cleanCode,
+        address: cleanAddress,
+        phone: cleanPhone,
+        logo: cleanLogo,
+        academicYear: cleanAcademicYear,
+        semester: cleanSemester,
       },
     });
 

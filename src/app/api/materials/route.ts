@@ -4,8 +4,9 @@ import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { createBatchNotifications } from "@/lib/notifications";
 
-export const dynamic = "force-dynamic";
+import { sanitizeString, sanitizeTextarea } from "@/lib/sanitize";
 
+export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   try {
@@ -16,11 +17,18 @@ export async function GET(req: Request) {
 
     const role = (session.user as any).role;
     const userId = (session.user as any).id;
+    const foundationId = (session.user as any).foundationId;
 
     const { searchParams } = new URL(req.url);
     const classId = searchParams.get("classId");
 
     const where: any = {};
+    if (foundationId && (role === "ADMIN" || role === "YAYASAN")) {
+      where.class = {
+        foundationId,
+      };
+    }
+
     if (role === "GURU") {
       if (classId && classId !== "SEMUA") {
         where.classId = classId;
@@ -88,22 +96,27 @@ export async function POST(req: Request) {
       finalClassId = teacherClass.id;
     }
 
-    if (!title || !content || !finalClassId || !subjectId) {
+    const cleanTitle = sanitizeString(title);
+    const cleanContent = sanitizeTextarea(content);
+    const cleanAttachmentUrl = attachmentUrl ? sanitizeString(attachmentUrl) : null;
+    const cleanInstructions = assignmentInstructions ? sanitizeTextarea(assignmentInstructions) : null;
+
+    if (!cleanTitle || !cleanContent || !finalClassId || !subjectId) {
       return NextResponse.json({ error: "Judul, isi, dan mata pelajaran wajib diisi" }, { status: 400 });
     }
 
     const material = await prisma.material.create({
       data: {
-        title: title.trim(),
-        content: content.trim(),
+        title: cleanTitle,
+        content: cleanContent,
         classId: finalClassId,
         subjectId,
         createdById: teacherId,
-        attachmentUrl: attachmentUrl || null,
-        assignments: assignmentInstructions
+        attachmentUrl: cleanAttachmentUrl,
+        assignments: cleanInstructions
           ? {
               create: {
-                instructions: assignmentInstructions.trim(),
+                instructions: cleanInstructions,
                 deadline: assignmentDeadline ? new Date(assignmentDeadline) : null,
               },
             }
@@ -154,6 +167,8 @@ export async function DELETE(req: Request) {
     }
 
     const role = (session.user as any).role;
+    const userId = (session.user as any).id;
+
     if (role !== "GURU" && role !== "ADMIN") {
       return NextResponse.json({ error: "Akses ditolak: Hanya Guru atau Admin yang dapat menghapus materi" }, { status: 403 });
     }
@@ -163,6 +178,24 @@ export async function DELETE(req: Request) {
 
     if (!id) {
       return NextResponse.json({ error: "ID materi wajib disertakan" }, { status: 400 });
+    }
+
+    const material = await prisma.material.findUnique({
+      where: { id },
+      include: { class: true },
+    });
+
+    if (!material) {
+      return NextResponse.json({ error: "Materi tidak ditemukan" }, { status: 404 });
+    }
+
+    // Strict authorization for GURU
+    if (role === "GURU") {
+      const isCreator = material.createdById === userId;
+      const isClassTeacher = material.class?.teacherId === userId;
+      if (!isCreator && !isClassTeacher) {
+        return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat menghapus materi yang Anda buat atau di kelas Anda" }, { status: 403 });
+      }
     }
 
     // Delete associated assignments first

@@ -5,8 +5,9 @@ import prisma from "@/lib/prisma";
 import { logActivity } from "@/lib/activityLog";
 import { createNotification } from "@/lib/notifications";
 
-export const dynamic = "force-dynamic";
+import { sanitizeString, sanitizeTextarea } from "@/lib/sanitize";
 
+export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   try {
@@ -17,6 +18,7 @@ export async function GET(req: Request) {
 
     const role = (session.user as any).role;
     const userId = (session.user as any).id;
+    const foundationId = (session.user as any).foundationId;
 
     const { searchParams } = new URL(req.url);
     const studentId = searchParams.get("studentId");
@@ -25,9 +27,18 @@ export async function GET(req: Request) {
     const where: any = {};
     if (studentId) where.studentId = studentId;
 
+    // Foundation scope for Admin / Yayasan
+    if (foundationId && (role === "ADMIN" || role === "YAYASAN")) {
+      where.student = {
+        ...where.student,
+        foundationId,
+      };
+    }
+
     // Data isolation for teachers
     if (role === "GURU") {
       where.student = {
+        ...where.student,
         classes: {
           some: {
             class: {
@@ -39,6 +50,7 @@ export async function GET(req: Request) {
       };
     } else if (classId && classId !== "SEMUA") {
       where.student = {
+        ...where.student,
         classes: {
           some: {
             classId: classId,
@@ -50,6 +62,7 @@ export async function GET(req: Request) {
     // Data isolation for parents
     if (role === "ORANG_TUA") {
       where.student = {
+        ...where.student,
         parentId: userId,
       };
     }
@@ -115,7 +128,12 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { studentId, academicYear, currentCapability, longTermGoal, shortTermGoal } = body;
 
-    if (!studentId || !academicYear || !currentCapability || !longTermGoal || !shortTermGoal) {
+    const cleanAcademicYear = sanitizeString(academicYear);
+    const cleanCapability = sanitizeTextarea(currentCapability);
+    const cleanLongTerm = sanitizeTextarea(longTermGoal);
+    const cleanShortTerm = sanitizeTextarea(shortTermGoal);
+
+    if (!studentId || !cleanAcademicYear || !cleanCapability || !cleanLongTerm || !cleanShortTerm) {
       return NextResponse.json({ error: "Semua kolom target PPI wajib diisi" }, { status: 400 });
     }
 
@@ -143,10 +161,10 @@ export async function POST(req: Request) {
       data: {
         studentId,
         teacherId,
-        academicYear: academicYear.trim(),
-        currentCapability: currentCapability.trim(),
-        longTermGoal: longTermGoal.trim(),
-        shortTermGoal: shortTermGoal.trim(),
+        academicYear: cleanAcademicYear,
+        currentCapability: cleanCapability,
+        longTermGoal: cleanLongTerm,
+        shortTermGoal: cleanShortTerm,
       },
       include: {
         student: true,
@@ -194,6 +212,8 @@ export async function DELETE(req: Request) {
     }
 
     const role = (session.user as any).role;
+    const userId = (session.user as any).id;
+
     if (role !== "GURU" && role !== "ADMIN") {
       return NextResponse.json({ error: "Akses ditolak: Hanya Guru atau Admin yang dapat menghapus PPI" }, { status: 403 });
     }
@@ -207,11 +227,31 @@ export async function DELETE(req: Request) {
 
     const ppi = await prisma.ppiPlan.findUnique({
       where: { id },
-      include: { student: true },
+      include: {
+        student: {
+          include: {
+            classes: {
+              include: {
+                class: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!ppi) {
       return NextResponse.json({ error: "Data PPI tidak ditemukan" }, { status: 404 });
+    }
+
+    // Strict Authorization check for GURU
+    if (role === "GURU") {
+      const isCreator = ppi.teacherId === userId;
+      const isTeacherOfStudent = ppi.student.classes.some((c) => c.class?.teacherId === userId);
+
+      if (!isCreator && !isTeacherOfStudent) {
+        return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat menghapus PPI yang Anda buat atau siswa kelas Anda" }, { status: 403 });
+      }
     }
 
     await prisma.ppiPlan.delete({
@@ -220,7 +260,7 @@ export async function DELETE(req: Request) {
 
     // Log Activity
     await logActivity({
-      userId: (session.user as any).id,
+      userId: userId,
       userName: session.user.name || "Guru",
       userRole: role,
       action: "DELETE",

@@ -6,6 +6,8 @@ import { Score } from "@prisma/client";
 import { logActivity } from "@/lib/activityLog";
 import { createNotification } from "@/lib/notifications";
 
+import { sanitizeTextarea } from "@/lib/sanitize";
+
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
@@ -22,6 +24,8 @@ export async function POST(req: Request) {
 
     const body = await req.json();
     const { ppiPlanId, score, narrativeNotes, evaluationDate } = body;
+
+    const cleanNotes = narrativeNotes ? sanitizeTextarea(narrativeNotes) : null;
 
     if (!ppiPlanId || !score) {
       return NextResponse.json({ error: "Target PPI dan Skor wajib diisi" }, { status: 400 });
@@ -55,7 +59,7 @@ export async function POST(req: Request) {
       data: {
         ppiPlanId,
         score,
-        narrativeNotes: narrativeNotes ? narrativeNotes.trim() : null,
+        narrativeNotes: cleanNotes,
         evaluationDate: evaluationDate ? new Date(evaluationDate) : new Date(),
       },
       include: {

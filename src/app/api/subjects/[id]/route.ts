@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { logActivity } from "@/lib/activityLog";
 
+import { sanitizeString, sanitizeTextarea } from "@/lib/sanitize";
+
 export const dynamic = "force-dynamic";
 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
@@ -29,11 +31,14 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       return NextResponse.json({ error: "Mata pelajaran tidak ditemukan" }, { status: 404 });
     }
 
+    const cleanName = name ? sanitizeString(name) : existing.name;
+    const cleanDesc = description !== undefined ? (description ? sanitizeTextarea(description) : null) : existing.description;
+
     const updated = await prisma.subject.update({
       where: { id: params.id },
       data: {
-        name: name ? name.trim() : existing.name,
-        description: description !== undefined ? (description ? description.trim() : null) : existing.description,
+        name: cleanName,
+        description: cleanDesc,
       },
     });
 
